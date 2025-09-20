@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Users, Settings } from 'lucide-react';
 import { teamsApi, type CreateTeamRequest, type MyTeamResponse } from '../api/teams';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 export default function GroupsPage() {
+  useDocumentTitle('스터디 팀');
   const [teams, setTeams] = useState<MyTeamResponse[]>([]);
   const [loadingTeams, setLoadingTeams] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);

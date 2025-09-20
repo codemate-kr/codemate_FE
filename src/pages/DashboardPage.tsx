@@ -4,8 +4,10 @@ import { Plus, Users, BookOpen, Target, TrendingUp } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { memberApi, type MyProfileResponse } from '../api/member';
 import { teamsApi, type MyTeamResponse } from '../api/teams';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 export default function DashboardPage() {
+  useDocumentTitle('대시보드');
   const { isAuthenticated } = useAuthStore();
   const [userProfile, setUserProfile] = useState<MyProfileResponse | null>(null);
   const [teams, setTeams] = useState<MyTeamResponse[]>([]);

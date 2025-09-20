@@ -11,7 +11,7 @@ export const env = {
   NODE_ENV: import.meta.env.VITE_NODE_ENV || 'development',
 
   // App Configuration
-  APP_TITLE: import.meta.env.VITE_APP_TITLE || 'StudyHelper',
+  APP_TITLE: import.meta.env.VITE_APP_TITLE || 'StudyHalp',
   APP_DESCRIPTION: import.meta.env.VITE_APP_DESCRIPTION || 'Algorithm Study Helper Platform',
 
   // Debugging

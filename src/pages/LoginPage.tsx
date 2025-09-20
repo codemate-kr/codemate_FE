@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { Chrome } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 export default function LoginPage() {
+  useDocumentTitle('로그인');
   const { isAuthenticated } = useAuthStore();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
