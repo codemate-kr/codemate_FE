@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { validateEnv } from './config/env';
@@ -9,8 +9,7 @@ import AuthInitializer from './components/AuthInitializer';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
-import GroupsPage from './pages/GroupsPage';
-import GroupDetailPage from './pages/GroupDetailPage';
+import TeamsPage from './pages/TeamsPage';
 import TeamDetailPage from './pages/TeamDetailPage';
 import ProblemsPage from './pages/ProblemsPage';
 
@@ -45,18 +44,10 @@ function App() {
               }
             />
             <Route
-              path="/groups"
+              path="/teams"
               element={
                 <ProtectedRoute>
-                  <GroupsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/groups/:groupId"
-              element={
-                <ProtectedRoute>
-                  <GroupDetailPage />
+                  <TeamsPage />
                 </ProtectedRoute>
               }
             />
@@ -76,6 +67,9 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            {/* 기존 /groups 경로를 /teams로 리다이렉트 */}
+            <Route path="/groups" element={<Navigate to="/teams" replace />} />
+            <Route path="/groups/:groupId" element={<Navigate to="/teams" replace />} />
           </Routes>
         </Layout>
       </Router>

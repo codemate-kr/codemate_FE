@@ -4,7 +4,7 @@ import { Plus, Users, Settings } from 'lucide-react';
 import { teamsApi, type CreateTeamRequest, type MyTeamResponse } from '../api/teams';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
-export default function GroupsPage() {
+export default function TeamsPage() {
   useDocumentTitle('스터디 팀');
   const [teams, setTeams] = useState<MyTeamResponse[]>([]);
   const [loadingTeams, setLoadingTeams] = useState(true);

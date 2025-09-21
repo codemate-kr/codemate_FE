@@ -1,8 +1,8 @@
-# 📚 StudyHalp
+# 📚 CodeMate
 
 **함께 성장하는 알고리즘 스터디 플랫폼**
 
-StudyHalp는 개발자들이 알고리즘 문제를 체계적으로 학습하고, 팀원들과 함께 성장할 수 있도록 돕는 스터디 관리 플랫폼입니다.
+CodeMate는 개발자들이 알고리즘 문제를 체계적으로 학습하고, 팀원들과 함께 성장할 수 있도록 돕는 스터디 관리 플랫폼입니다.
 
 ## ✨ 주요 기능
 
@@ -68,8 +68,8 @@ VITE_GOOGLE_CLIENT_ID=your_google_client_id_here
 VITE_NODE_ENV=development
 
 # App Configuration
-VITE_APP_TITLE=StudyHalp
-VITE_APP_DESCRIPTION=Algorithm Study Helper Platform
+VITE_APP_TITLE=CodeMate
+VITE_APP_DESCRIPTION=Code Study Mate Platform
 
 # Debugging
 VITE_DEBUG_MODE=true

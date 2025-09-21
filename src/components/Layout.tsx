@@ -47,7 +47,7 @@ export default function Layout({ children }: LayoutProps) {
             <div className="flex items-center">
               <Link to="/" className="flex items-center space-x-2">
                 <BookOpen className="h-8 w-8 text-blue-600" />
-                <span className="text-xl font-bold text-gray-900">StudyHelp</span>
+                <span className="text-xl font-bold text-gray-900">CodeMate</span>
               </Link>
             </div>
 
@@ -62,7 +62,7 @@ export default function Layout({ children }: LayoutProps) {
                     <span>대시보드</span>
                   </Link>
                   <Link
-                    to="/groups"
+                    to="/teams"
                     className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
                   >
                     <Users className="h-4 w-4" />

@@ -50,7 +50,7 @@ export default function DashboardPage() {
         </div>
         <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
           <Link
-            to="/groups?action=create"
+            to="/teams?action=create"
             className="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-auto"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -155,7 +155,7 @@ export default function DashboardPage() {
                   </p>
                   <div className="mt-6">
                     <Link
-                      to="/groups?action=create"
+                      to="/teams?action=create"
                       className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                       <Plus className="h-4 w-4 mr-2" />

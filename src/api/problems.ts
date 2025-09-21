@@ -11,11 +11,11 @@ export interface SearchProblemsRequest {
   limit?: number;
   offset?: number;
   excludeSolved?: boolean;
-  groupId?: string;
+  teamId?: string;
 }
 
 export interface CreateAssignmentRequest {
-  groupId: string;
+  teamId: string;
   problemIds: number[];
   dueDate: string;
 }
@@ -39,8 +39,8 @@ export const problemsApi = {
     return response.data;
   },
 
-  getAssignments: async (groupId: string): Promise<Assignment[]> => {
-    const response = await apiClient.get(`/groups/${groupId}/assignments`);
+  getAssignments: async (teamId: string): Promise<Assignment[]> => {
+    const response = await apiClient.get(`/teams/${teamId}/assignments`);
     return response.data;
   },
 
@@ -49,8 +49,8 @@ export const problemsApi = {
     return response.data;
   },
 
-  getProgress: async (groupId: string): Promise<Progress[]> => {
-    const response = await apiClient.get(`/groups/${groupId}/progress`);
+  getProgress: async (teamId: string): Promise<Progress[]> => {
+    const response = await apiClient.get(`/teams/${teamId}/progress`);
     return response.data;
   },
 

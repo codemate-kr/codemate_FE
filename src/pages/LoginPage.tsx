@@ -38,7 +38,7 @@ export default function LoginPage() {
             계정에 로그인
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            StudyHelp에서 스터디를 시작해보세요
+            CodeMate에서 스터디를 시작해보세요
           </p>
         </div>
 

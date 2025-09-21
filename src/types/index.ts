@@ -8,18 +8,18 @@ export interface User {
   updatedAt: string;
 }
 
-export interface StudyGroup {
+export interface StudyTeam {
   id: string;
   name: string;
   description: string;
   ownerId: string;
   members: User[];
-  settings: GroupSettings;
+  settings: TeamSettings;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface GroupSettings {
+export interface TeamSettings {
   frequency: 'daily' | 'weekly' | 'custom';
   problemCount: number;
   difficulty: {
@@ -49,7 +49,7 @@ export interface Tag {
 
 export interface Assignment {
   id: string;
-  groupId: string;
+  teamId: string;
   problems: Problem[];
   dueDate: string;
   createdAt: string;
