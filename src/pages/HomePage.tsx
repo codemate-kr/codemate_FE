@@ -1,9 +1,13 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { ArrowRight, Users, BookOpen, BarChart3, Mail } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 
 export default function HomePage() {
   const { isAuthenticated } = useAuthStore();
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return (
     <div className="bg-white">
@@ -20,10 +24,10 @@ export default function HomePage() {
           <div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
             <div className="rounded-md shadow">
               <Link
-                to={isAuthenticated ? "/dashboard" : "/login"}
+                to="/login"
                 className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10"
               >
-                {isAuthenticated ? "대시보드로 가기" : "시작하기"}
+                시작하기
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </div>
