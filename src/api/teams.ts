@@ -20,19 +20,19 @@ export interface TeamMemberResponse {
   handle: string;
   email: string;
   role: TeamRole;
+  isMe: boolean;
 }
 
 export interface TeamRecommendationSettingsRequest {
-  days: string[];
+  recommendationDays: string[];
 }
 
 export interface TeamRecommendationSettingsResponse {
-  id: number;
   teamId: number;
-  days: string[];
-  enabled: boolean;
-  createdAt: string;
-  updatedAt: string;
+  teamName: string;
+  recommendationDays: string[];
+  recommendationDayNames: string[];
+  isActive: boolean;
 }
 
 export interface UpdateTeamRequest {
