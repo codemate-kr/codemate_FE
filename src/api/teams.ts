@@ -13,6 +13,7 @@ export interface CreateTeamResponse {
   createdAt: string;
 }
 
+
 export type TeamRole = 'LEADER' | 'MEMBER';
 
 export interface TeamMemberResponse {
