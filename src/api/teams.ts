@@ -24,17 +24,42 @@ export interface TeamMemberResponse {
   isMe: boolean;
 }
 
-export interface TeamRecommendationSettingsRequest {
-  recommendationDays: string[];
+// 백엔드 API 스펙에 따른 타입 정의
+export type RecommendationDayOfWeek = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
+
+export type ProblemDifficultyPreset = 'EASY' | 'NORMAL' | 'HARD' | 'CUSTOM';
+
+// solved.ac 티어 시스템 (Bronze5 = 1, ..., Platinum5 = 20)
+export type SolvedacTier = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20;
+
+export interface DifficultyRange {
+  minTier: SolvedacTier;
+  maxTier: SolvedacTier;
 }
 
+// 요청 DTO 타입 (백엔드 API 스펙에 맞춤)
+export interface TeamRecommendationSettingsRequest {
+  recommendationDays: RecommendationDayOfWeek[];
+  problemDifficultyPreset?: ProblemDifficultyPreset;
+  customMinLevel?: number;
+  customMaxLevel?: number;
+}
+
+// 응답 DTO 타입 (백엔드 API 스펙에 맞춤)
 export interface TeamRecommendationSettingsResponse {
   teamId: number;
   teamName: string;
-  recommendationDays: string[];
-  recommendationDayNames: string[];
   isActive: boolean;
+  recommendationDays: RecommendationDayOfWeek[];
+  recommendationDayNames: string[];
+  problemDifficultyPreset?: ProblemDifficultyPreset;
+  difficultyDisplayName?: string;
+  customMinLevel?: number;
+  customMaxLevel?: number;
 }
+
+// 하위 호환성을 위한 타입 alias
+export type DifficultyPreset = ProblemDifficultyPreset;
 
 export interface UpdateTeamRequest {
   name?: string;
