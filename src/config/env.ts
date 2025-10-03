@@ -24,6 +24,12 @@ export const env = {
 
   get IS_PRODUCTION() {
     return this.NODE_ENV === 'production';
+  },
+
+  // OAuth URL (API_BASE_URL에서 /api를 제거한 베이스 URL)
+  get OAUTH_BASE_URL() {
+    return 'https://api.codemate.kr'
+    // return this.API_BASE_URL.replace('/api', '');
   }
 };
 
