@@ -31,47 +31,54 @@ function App() {
       <AuthInitializer />
       <Router>
         <AuthHandler />
-        <Layout>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <DashboardPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/teams"
-              element={
-                <ProtectedRoute>
-                  <TeamsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/teams/:teamId"
-              element={
-                <ProtectedRoute>
-                  <TeamDetailPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/problems"
-              element={
-                <ProtectedRoute>
-                  <ProblemsPage />
-                </ProtectedRoute>
-              }
-            />
-            {/* 기존 /groups 경로를 /teams로 리다이렉트 */}
-            <Route path="/groups" element={<Navigate to="/teams" replace />} />
-            <Route path="/groups/:groupId" element={<Navigate to="/teams" replace />} />
-          </Routes>
-        </Layout>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route
+            path="/*"
+            element={
+              <Layout>
+                <Routes>
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <DashboardPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/teams"
+                    element={
+                      <ProtectedRoute>
+                        <TeamsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/teams/:teamId"
+                    element={
+                      <ProtectedRoute>
+                        <TeamDetailPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/problems"
+                    element={
+                      <ProtectedRoute>
+                        <ProblemsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  {/* 기존 /groups 경로를 /teams로 리다이렉트 */}
+                  <Route path="/groups" element={<Navigate to="/teams" replace />} />
+                  <Route path="/groups/:groupId" element={<Navigate to="/teams" replace />} />
+                </Routes>
+              </Layout>
+            }
+          />
+        </Routes>
       </Router>
       <Toaster position="top-right" />
     </QueryClientProvider>
