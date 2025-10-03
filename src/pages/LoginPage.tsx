@@ -3,6 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { Chrome } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+import { env } from '../config/env';
 
 export default function LoginPage() {
   useDocumentTitle('로그인');
@@ -20,7 +21,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+      window.location.href = `${env.OAUTH_BASE_URL}/oauth2/authorization/google`;
     } catch (error) {
       console.error('Google login error:', error);
       setIsLoading(false);
