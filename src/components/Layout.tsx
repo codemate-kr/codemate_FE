@@ -10,7 +10,7 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
-  const { isAuthenticated, logout } = useAuthStore();
+  const { isAuthenticated, logout, updateUser } = useAuthStore();
   const navigate = useNavigate();
   const [userProfile, setUserProfile] = useState<MyProfileResponse | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(false);
@@ -26,6 +26,13 @@ export default function Layout({ children }: LayoutProps) {
       setLoadingProfile(true);
       const profile = await memberApi.getMe();
       setUserProfile(profile);
+      // authStore의 user 정보도 업데이트
+      updateUser({
+        id: profile.id.toString(),
+        email: profile.email,
+        handle: profile.handle,
+        name: profile.handle || profile.email,
+      });
     } catch (error) {
       console.error('사용자 프로필 로딩 실패:', error);
     } finally {
