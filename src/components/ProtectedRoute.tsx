@@ -7,11 +7,16 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
   const location = useLocation();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // 백준 핸들이 없으면 핸들 등록 페이지로 리다이렉트
+  if (!user?.handle && location.pathname !== '/verify-handle') {
+    return <Navigate to="/verify-handle" replace />;
   }
 
   return <>{children}</>;

@@ -12,6 +12,7 @@ import DashboardPage from './pages/DashboardPage';
 import TeamsPage from './pages/TeamsPage';
 import TeamDetailPage from './pages/TeamDetailPage';
 import ProblemsPage from './pages/ProblemsPage';
+import VerifyHandlePage from './pages/VerifyHandlePage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,59 +29,68 @@ validateEnv();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthInitializer />
-      <Router>
-        <AuthHandler />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route
-            path="/*"
-            element={
-              <Layout>
-                <Routes>
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <ProtectedRoute>
-                        <DashboardPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/teams"
-                    element={
-                      <ProtectedRoute>
-                        <TeamsPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/teams/:teamId"
-                    element={
-                      <ProtectedRoute>
-                        <TeamDetailPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/problems"
-                    element={
-                      <ProtectedRoute>
-                        <ProblemsPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  {/* 기존 /groups 경로를 /teams로 리다이렉트 */}
-                  <Route path="/groups" element={<Navigate to="/teams" replace />} />
-                  <Route path="/groups/:groupId" element={<Navigate to="/teams" replace />} />
-                </Routes>
-              </Layout>
-            }
-          />
-        </Routes>
-      </Router>
-      <Toaster position="top-right" />
+      <AuthInitializer>
+        <Router>
+          <AuthHandler />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route
+              path="/verify-handle"
+              element={
+                <ProtectedRoute>
+                  <VerifyHandlePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/*"
+              element={
+                <Layout>
+                  <Routes>
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <ProtectedRoute>
+                          <DashboardPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/teams"
+                      element={
+                        <ProtectedRoute>
+                          <TeamsPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/teams/:teamId"
+                      element={
+                        <ProtectedRoute>
+                          <TeamDetailPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/problems"
+                      element={
+                        <ProtectedRoute>
+                          <ProblemsPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    {/* 기존 /groups 경로를 /teams로 리다이렉트 */}
+                    <Route path="/groups" element={<Navigate to="/teams" replace />} />
+                    <Route path="/groups/:groupId" element={<Navigate to="/teams" replace />} />
+                  </Routes>
+                </Layout>
+              }
+            />
+          </Routes>
+        </Router>
+        <Toaster position="top-right" />
+      </AuthInitializer>
     </QueryClientProvider>
   );
 }
