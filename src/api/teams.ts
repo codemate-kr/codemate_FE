@@ -56,6 +56,8 @@ export interface TeamRecommendationSettingsResponse {
   difficultyDisplayName?: string;
   customMinLevel?: number;
   customMaxLevel?: number;
+  minTierName?: string;  // 실제 티어 이름 (예: "Bronze I")
+  maxTierName?: string;  // 실제 티어 이름 (예: "Silver III")
 }
 
 // 하위 호환성을 위한 타입 alias
@@ -153,8 +155,8 @@ export const teamsApi = {
   // 오늘의 문제 API (백엔드 구현 대기 중 - Mock 데이터 사용)
   getTodayProblems: async (teamId: number): Promise<TodayProblemsResponse> => {
     // TODO: 실제 API 연결 시 주석 해제
-    // const response = await apiClient.get<ApiResponse<TodayProblemsResponse>>(`/teams/${teamId}/today-problems`);
-    // return response.data.data;
+    const response = await apiClient.get<ApiResponse<TodayProblemsResponse>>(`/recommendation/team/${teamId}/today-problem`);
+    return response.data.data;
 
     // Mock 데이터 (임시)
     return new Promise((resolve) => {
@@ -199,8 +201,8 @@ export const teamsApi = {
 
   refreshTodayProblems: async (teamId: number): Promise<TodayProblemsResponse> => {
     // TODO: 실제 API 연결 시 주석 해제
-    const response = await apiClient.post<ApiResponse<TodayProblemsResponse>>(`/teams/${teamId}/today-problems/refresh`);
-    return response.data.data;
+    // const response = await apiClient.post<ApiResponse<TodayProblemsResponse>>(`/teams/${teamId}/today-problems/refresh`);
+    // return response.data.data;
 
     // Mock 데이터 (임시)
     return new Promise((resolve) => {

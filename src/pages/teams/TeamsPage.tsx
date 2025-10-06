@@ -4,6 +4,7 @@ import { Plus, Users, Settings, Crown, ChevronRight } from 'lucide-react';
 import { type CreateTeamRequest } from '../../api/teams';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 import { useTeamStore, useTeams, useTeamsLoading } from '../../store/teamStore';
+import { Toast } from '../../components/common/Toast';
 
 export default function TeamsPage() {
   useDocumentTitle('스터디 팀');
@@ -21,6 +22,8 @@ export default function TeamsPage() {
     description: ''
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   useEffect(() => {
     // store의 fetchTeams 사용 (자동 캐싱)
@@ -41,6 +44,14 @@ export default function TeamsPage() {
     }));
   };
 
+  const showToastMessage = (message: string) => {
+    setToastMessage(message);
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) return;
@@ -48,9 +59,10 @@ export default function TeamsPage() {
     setIsLoading(true);
     try {
       // store의 createTeam 사용 (자동으로 store 업데이트)
-      await createTeam(formData);
+      const newTeam = await createTeam(formData);
       setShowCreateForm(false);
       setFormData({ name: '', description: '' });
+      showToastMessage(`${newTeam.name} 팀이 생성되었습니다`);
     } catch (error) {
       // 에러는 이미 store에서 처리됨
     } finally {
@@ -78,6 +90,9 @@ export default function TeamsPage() {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
+      {/* 토스트 메시지 */}
+      {showToast && <Toast message={toastMessage} type="success" />}
+
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-2xl font-semibold text-gray-900">스터디 팀</h1>
