@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { Settings, X, Mail, Calendar, Target, Clock, CheckCircle } from 'lucide-react';
 import { teamsApi, type TeamRecommendationSettingsResponse, type ProblemDifficultyPreset, type RecommendationDayOfWeek, type SolvedacTier } from '../../../api/teams';
 import { CustomTierModal } from '../../problems/components/CustomTierModal';
+import { getTierName } from '../../../utils/tierUtils';
 
 interface TeamSettingsModalProps {
   teamId: number;
   settings: TeamRecommendationSettingsResponse | null;
   onClose: () => void;
   onSettingsUpdate: () => void;
-  onShowToast: () => void;
+  onShowToast: (message: string) => void;
 }
 
 export function TeamSettingsModal({
@@ -86,15 +87,6 @@ export function TeamSettingsModal({
     setShowCustomModal(false);
   };
 
-  const getTierName = (tier: SolvedacTier): string => {
-    const tierNames = [
-      '', 'Bronze 5', 'Bronze 4', 'Bronze 3', 'Bronze 2', 'Bronze 1',
-      'Silver 5', 'Silver 4', 'Silver 3', 'Silver 2', 'Silver 1',
-      'Gold 5', 'Gold 4', 'Gold 3', 'Gold 2', 'Gold 1',
-      'Platinum 5', 'Platinum 4', 'Platinum 3', 'Platinum 2', 'Platinum 1'
-    ];
-    return tierNames[tier] || `Tier ${tier}`;
-  };
 
   const handleSave = async () => {
     if (isEnabled && selectedDays.length === 0) {
@@ -123,7 +115,7 @@ export function TeamSettingsModal({
       }
 
       onSettingsUpdate();
-      onShowToast();
+      onShowToast('저장되었습니다.');
       onClose();
     } catch (error) {
       console.error('설정 저장 실패:', error);
