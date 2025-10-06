@@ -43,15 +43,17 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast }: TodayProble
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200">
+    <div className="bg-white rounded-lg border border-blue-200 shadow-sm overflow-hidden">
       {/* 헤더 */}
-      <div className="px-6 py-4 border-b border-gray-200">
+      <div className="px-6 py-4 bg-blue-50 border-b border-blue-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Calendar className="h-5 w-5 text-gray-700" />
+            <div className="p-1.5 bg-blue-100 rounded-lg">
+              <Calendar className="h-4 w-4 text-blue-600" />
+            </div>
             <h3 className="text-base font-semibold text-gray-900">오늘의 문제</h3>
             {todayProblems && todayProblems.problems.length > 0 && (
-              <span className="text-sm text-gray-500">· {todayProblems.problems.length}개</span>
+              <span className="text-sm text-blue-600 font-medium">· {todayProblems.problems.length}개</span>
             )}
           </div>
           {isTeamLeader && todayProblems && (
@@ -92,17 +94,17 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast }: TodayProble
                 to={`https://www.acmicpc.net/problem/${problem.problemId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex-1 relative bg-white border border-gray-200 rounded-lg p-4 hover:border-gray-400 hover:shadow-sm transition-all"
+                className="group flex-1 relative bg-white border border-blue-100 rounded-lg p-4 hover:border-blue-400 hover:shadow-md transition-all"
               >
                 {/* 번호 */}
-                <div className="absolute -top-2 -left-2 w-6 h-6 bg-gray-800 text-white rounded-full flex items-center justify-center text-xs font-semibold">
+                <div className="absolute -top-2 -left-2 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-semibold shadow-sm">
                   {index + 1}
                 </div>
 
                 <div className="flex flex-col h-full">
                   {/* 제목과 티어 */}
                   <div className="mb-3">
-                    <h4 className="text-sm font-semibold text-gray-900 mb-2 line-clamp-2">
+                    <h4 className="text-sm font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-700 transition-colors">
                       {problem.titleKo}
                     </h4>
                     <div className="flex items-center gap-2 flex-wrap">
@@ -119,29 +121,29 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast }: TodayProble
                   </div>
 
                   {/* 하단 정보 */}
-                  <div className="mt-auto pt-3 border-t border-gray-100">
+                  <div className="mt-auto pt-3 border-t border-blue-50">
                     <div className="flex items-center justify-between text-xs text-gray-500">
                       <div className="flex items-center gap-3">
                         <div className="flex items-center">
-                          <svg className="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                          <svg className="w-3.5 h-3.5 mr-1 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                           </svg>
                           <span>{problem.acceptedUserCount.toLocaleString()}</span>
                         </div>
                         <div className="flex items-center">
-                          <svg className="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                          <svg className="w-3.5 h-3.5 mr-1 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
                           </svg>
                           <span>{problem.averageTries.toFixed(1)}</span>
                         </div>
                       </div>
-                      <span className="font-mono text-gray-400">#{problem.problemId}</span>
+                      <span className="font-mono text-blue-400">#{problem.problemId}</span>
                     </div>
                   </div>
 
                   {/* 외부링크 아이콘 */}
                   <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ExternalLink className="h-4 w-4 text-gray-400" />
+                    <ExternalLink className="h-4 w-4 text-blue-500" />
                   </div>
                 </div>
               </Link>
@@ -149,7 +151,9 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast }: TodayProble
           </div>
         ) : (
           <div className="text-center py-12">
-            <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 mb-3">
+              <Calendar className="h-8 w-8 text-blue-400" />
+            </div>
             <p className="text-sm text-gray-500">
               {isTeamLeader
                 ? '문제 추천 설정을 완료하면 문제가 자동으로 추천됩니다.'
