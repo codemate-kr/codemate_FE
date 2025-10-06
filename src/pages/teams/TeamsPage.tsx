@@ -138,7 +138,7 @@ export default function TeamsPage() {
           </div>
         ) : teams.length === 0 ? (
           <div className="text-center py-16 px-4">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-50 to-blue-100 mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 mb-4">
               <Users className="h-8 w-8 text-blue-600" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -149,7 +149,7 @@ export default function TeamsPage() {
             </p>
             <button
               onClick={() => setShowCreateForm(true)}
-              className="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
+              className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             >
               <Plus className="h-5 w-5 mr-2" />
               첫 스터디 팀 만들기
@@ -161,13 +161,13 @@ export default function TeamsPage() {
               <div
                 key={team.teamId}
                 onClick={() => navigate(`/teams/${team.teamId}`)}
-                className="group bg-white overflow-hidden shadow-sm rounded-xl cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200 border border-gray-100 hover:border-blue-200"
+                className="group bg-white overflow-hidden rounded-lg cursor-pointer hover:shadow-md transition-all border border-gray-200 hover:border-gray-400"
               >
                 <div className="p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-3 flex-1 min-w-0">
                       <div className="flex-shrink-0 mt-1">
-                        <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                        <div className="h-10 w-10 rounded-lg bg-blue-600 flex items-center justify-center">
                           <Users className="h-5 w-5 text-white" />
                         </div>
                       </div>
@@ -201,20 +201,20 @@ export default function TeamsPage() {
                           <Users className="h-4 w-4 mr-1.5" />
                           <span className="font-medium">{team.memberCount}명</span>
                         </div>
-                        <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${
+                        <span className={`px-2.5 py-1 text-xs font-medium rounded ${
                           team.myRole === 'LEADER'
-                            ? 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border border-blue-200'
-                            : 'bg-gray-100 text-gray-700 border border-gray-200'
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-gray-100 text-gray-700'
                         }`}>
                           {team.myRole === 'LEADER' ? '팀장' : '팀원'}
                         </span>
                         {team.isRecommendationActive && (
-                          <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-green-50 to-emerald-100 text-green-700 border border-green-200">
+                          <span className="px-2.5 py-1 text-xs font-medium rounded bg-green-100 text-green-700">
                             추천 활성
                           </span>
                         )}
                       </div>
-                      <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-all" />
+                      <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
                     </div>
                   </div>
                 </div>
