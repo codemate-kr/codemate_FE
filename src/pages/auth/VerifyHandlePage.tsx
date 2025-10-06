@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
-import { memberApi } from '../api/member';
-import { useAuthStore } from '../store/authStore';
+import { memberApi } from '../../api/member';
+import { useAuthStore } from '../../store/authStore';
 
 export default function VerifyHandlePage() {
   const [handle, setHandle] = useState('');

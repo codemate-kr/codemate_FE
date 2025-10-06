@@ -1,2 +1,2 @@
-export { TeamSettingsModal } from './TeamSettingsModal';
-export { CustomTierModal } from './CustomTierModal';
+export { TeamSettingsModal } from '../pages/teams/components/TeamSettingsModal';
+export { CustomTierModal } from '../pages/problems/components/CustomTierModal';

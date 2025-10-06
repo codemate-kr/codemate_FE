@@ -1,23 +1,25 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Users, BookOpen, Target, TrendingUp } from 'lucide-react';
-import { useAuthStore } from '../store/authStore';
-import { memberApi, type MyProfileResponse } from '../api/member';
-import { teamsApi, type MyTeamResponse } from '../api/teams';
-import useDocumentTitle from '../hooks/useDocumentTitle';
+import { useAuthStore } from '../../store/authStore';
+import { useTeamStore, useTeams } from '../../store/teamStore';
+import { memberApi, type MyProfileResponse } from '../../api/member';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 export default function DashboardPage() {
   useDocumentTitle('대시보드');
   const { isAuthenticated } = useAuthStore();
+  const teams = useTeams();
+  const { fetchTeams } = useTeamStore();
   const [userProfile, setUserProfile] = useState<MyProfileResponse | null>(null);
-  const [teams, setTeams] = useState<MyTeamResponse[]>([]);
 
   useEffect(() => {
     if (isAuthenticated) {
       loadUserProfile();
-      loadTeams();
+      // store의 fetchTeams 사용 (자동 캐싱)
+      fetchTeams();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, fetchTeams]);
 
   const loadUserProfile = async () => {
     try {
@@ -25,15 +27,6 @@ export default function DashboardPage() {
       setUserProfile(profile);
     } catch (error) {
       console.error('사용자 프로필 로딩 실패:', error);
-    }
-  };
-
-  const loadTeams = async () => {
-    try {
-      const myTeams = await teamsApi.getMyTeams();
-      setTeams(myTeams);
-    } catch (error) {
-      console.error('팀 목록 로딩 실패:', error);
     }
   };
 

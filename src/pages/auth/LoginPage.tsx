@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { Chrome } from 'lucide-react';
-import { useAuthStore } from '../store/authStore';
-import useDocumentTitle from '../hooks/useDocumentTitle';
-import { env } from '../config/env';
+import { useAuthStore } from '../../store/authStore';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
+import { env } from '../../config/env';
 
 export default function LoginPage() {
   useDocumentTitle('로그인');

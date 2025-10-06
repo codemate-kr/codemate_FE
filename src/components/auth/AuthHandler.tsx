@@ -1,4 +1,4 @@
-import { useAuthToken } from '../hooks/useAuthToken';
+import { useAuthToken } from '../../hooks/useAuthToken';
 
 export default function AuthHandler() {
   useAuthToken();

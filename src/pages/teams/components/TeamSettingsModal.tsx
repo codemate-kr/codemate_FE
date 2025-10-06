@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Settings, X, Mail, Calendar, Target, Clock, CheckCircle } from 'lucide-react';
-import { teamsApi, type TeamRecommendationSettingsResponse, type ProblemDifficultyPreset, type RecommendationDayOfWeek, type SolvedacTier } from '../api/teams';
-import { CustomTierModal } from './CustomTierModal';
+import { teamsApi, type TeamRecommendationSettingsResponse, type ProblemDifficultyPreset, type RecommendationDayOfWeek, type SolvedacTier } from '../../../api/teams';
+import { CustomTierModal } from '../../problems/components/CustomTierModal';
 
 interface TeamSettingsModalProps {
   teamId: number;

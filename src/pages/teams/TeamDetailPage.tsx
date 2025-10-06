@@ -1,47 +1,37 @@
 import { useParams } from 'react-router-dom';
 import { Users, Settings, Plus, Calendar, Target, Lock, CheckCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { teamsApi, type TeamMemberResponse, type TeamRecommendationSettingsResponse } from '../api/teams';
-import { TeamSettingsModal } from '../components';
+import { TeamSettingsModal } from './components/TeamSettingsModal';
+import { useTeamStore, useCurrentTeamDetails, useDetailLoading } from '../../store/teamStore';
 
 export default function TeamDetailPage() {
   const { teamId } = useParams<{ teamId: string }>();
-  const [teamMembers, setTeamMembers] = useState<TeamMemberResponse[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  // Selector hooks 사용
+  const currentTeamDetails = useCurrentTeamDetails();
+  const detailLoading = useDetailLoading();
+  const { fetchTeamDetails, refreshTeamSettings } = useTeamStore();
+
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [recommendationSettings, setRecommendationSettings] = useState<TeamRecommendationSettingsResponse | null>(null);
   const [showToast, setShowToast] = useState(false);
 
   // 현재 사용자가 팀장인지 확인
+  const teamMembers = currentTeamDetails?.members || [];
+  const recommendationSettings = currentTeamDetails?.settings || null;
   const currentUserMember = teamMembers.find(member => member.isMe);
   const isTeamLeader = currentUserMember?.role === 'LEADER';
 
   useEffect(() => {
     if (teamId) {
-      loadTeamMembers();
-      loadRecommendationSettings();
+      // store의 fetchTeamDetails 사용
+      fetchTeamDetails(Number(teamId));
     }
-  }, [teamId]);
-
-  const loadTeamMembers = async () => {
-    try {
-      setLoading(true);
-      const members = await teamsApi.getTeamMembers(Number(teamId));
-      setTeamMembers(members);
-    } catch (error) {
-      console.error('팀 멤버 로딩 실패:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [teamId, fetchTeamDetails]);
 
   const loadRecommendationSettings = async () => {
-    try {
-      const settings = await teamsApi.getRecommendationSettings(Number(teamId));
-      setRecommendationSettings(settings);
-    } catch (error) {
-      console.error('추천 설정 로딩 실패:', error);
-    }
+    if (!teamId) return;
+    // store의 refreshTeamSettings 사용
+    await refreshTeamSettings(Number(teamId));
   };
 
   const showToastMessage = () => {
@@ -51,7 +41,7 @@ export default function TeamDetailPage() {
     }, 3000);
   };
 
-  if (loading) {
+  if (detailLoading) {
     return (
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="animate-pulse">

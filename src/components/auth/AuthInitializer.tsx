@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useAuthStore } from '../store/authStore';
-import { setAuthToken } from '../api/client';
-import { memberApi } from '../api/member';
+import { useAuthStore } from '../../store/authStore';
+import { setAuthToken } from '../../api/client';
+import { memberApi } from '../../api/member';
 
 interface AuthInitializerProps {
   children: React.ReactNode;

@@ -2,17 +2,17 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { validateEnv } from './config/env';
-import Layout from './components/Layout';
-import ProtectedRoute from './components/ProtectedRoute';
-import AuthHandler from './components/AuthHandler';
-import AuthInitializer from './components/AuthInitializer';
-import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import DashboardPage from './pages/DashboardPage';
-import TeamsPage from './pages/TeamsPage';
-import TeamDetailPage from './pages/TeamDetailPage';
-import ProblemsPage from './pages/ProblemsPage';
-import VerifyHandlePage from './pages/VerifyHandlePage';
+import Layout from './components/common/Layout';
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import AuthHandler from './components/auth/AuthHandler';
+import AuthInitializer from './components/auth/AuthInitializer';
+import HomePage from './pages/home/HomePage';
+import LoginPage from './pages/auth/LoginPage';
+import DashboardPage from './pages/dashboard/DashboardPage';
+import TeamsPage from './pages/teams/TeamsPage';
+import TeamDetailPage from './pages/teams/TeamDetailPage';
+import ProblemsPage from './pages/problems/ProblemsPage';
+import VerifyHandlePage from './pages/auth/VerifyHandlePage';
 
 const queryClient = new QueryClient({
   defaultOptions: {

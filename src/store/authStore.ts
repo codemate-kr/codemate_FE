@@ -32,6 +32,11 @@ export const useAuthStore = create<AuthStore>()(
           token: null,
           isAuthenticated: false,
         });
+
+        // teamStore 초기화 (동적 import로 순환 참조 방지)
+        import('./teamStore').then(({ useTeamStore }) => {
+          useTeamStore.getState().reset();
+        });
       },
 
       updateUser: (userData) => {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { X, Target, CheckCircle } from 'lucide-react';
-import { type SolvedacTier } from '../api/teams';
+import { type SolvedacTier } from '../../../api/teams';
 
 interface CustomTierModalProps {
   onClose: () => void;

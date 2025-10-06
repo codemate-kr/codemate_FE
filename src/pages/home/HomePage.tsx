@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Users, BookOpen, BarChart3, Mail, LogOut } from 'lucide-react';
-import { useAuthStore } from '../store/authStore';
-import Footer from '../components/Footer';
+import { useAuthStore } from '../../store/authStore';
+import Footer from '../../components/common/Footer';
 
 export default function HomePage() {
   const { isAuthenticated, logout } = useAuthStore();
