@@ -89,9 +89,11 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
-                    {/* 기존 /groups 경로를 /teams로 리다이렉트 */}
+                    {/* 기존 /groups 경로를 /teams로 리다이렉트
                     <Route path="/groups" element={<Navigate to="/teams" replace />} />
-                    <Route path="/groups/:groupId" element={<Navigate to="/teams" replace />} />
+                    <Route path="/groups/:groupId" element={<Navigate to="/teams" replace />} /> */}
+                    {/* 없는 경로는 홈으로 리다이렉트 */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </Layout>
               }
