@@ -92,7 +92,10 @@ export default function Layout({ children }: LayoutProps) {
                   </Link> */}
 
                   <div className="flex items-center gap-1 sm:gap-3 pl-1 sm:pl-3 border-l border-gray-200">
-                    <div className="flex items-center space-x-1 sm:space-x-2 px-1 sm:px-2">
+                    <Link
+                      to="/profile"
+                      className="flex items-center space-x-1 sm:space-x-2 px-1 sm:px-2 hover:bg-gray-100 rounded-md transition-colors"
+                    >
                       <User className="h-4 w-4 text-gray-500 flex-shrink-0" />
                       {loadingProfile ? (
                         <div className="w-16 sm:w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
@@ -103,7 +106,7 @@ export default function Layout({ children }: LayoutProps) {
                             : '미인증'}
                         </span>
                       )}
-                    </div>
+                    </Link>
                     <button
                       onClick={handleLogout}
                       className="flex items-center space-x-0.5 sm:space-x-1 px-1.5 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"

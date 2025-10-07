@@ -36,6 +36,10 @@ export interface VerifySolvedAcRequest {
   handle: string;
 }
 
+export interface CheckEmailResponse {
+  available: boolean;
+}
+
 export const memberApi = {
   /**
    * 내 프로필 조회 - 민감 정보 포함
@@ -75,5 +79,28 @@ export const memberApi = {
   verifySolvedAc: async (handle: string): Promise<MyProfileResponse> => {
     const response = await apiClient.post<ApiResponse<MyProfileResponse>>('/member/me/verify-solvedac', { handle });
     return response.data.data;
+  },
+
+  /**
+   * 이메일 변경 인증 요청 - 새 이메일로 인증 링크 발송
+   */
+  sendEmailVerification: async (email: string): Promise<void> => {
+    await apiClient.post('/member/me/send-email-verification', { email });
+  },
+
+  /**
+   * 이메일 인증 토큰 검증 - 이메일 변경 완료
+   */
+  verifyEmail: async (token: string): Promise<MyProfileResponse> => {
+    const response = await apiClient.post<ApiResponse<MyProfileResponse>>('/member/verify-email', { token });
+    return response.data.data;
+  },
+
+  /**
+   * 이메일 사용 가능 여부 확인
+   */
+  checkEmail: async (email: string): Promise<boolean> => {
+    const response = await apiClient.post<ApiResponse<CheckEmailResponse>>('/member/check-email', { email });
+    return response.data.data.available;
   }
 };

@@ -14,6 +14,8 @@ import TeamDetailPage from './pages/teams/TeamDetailPage';
 import ProblemsPage from './pages/problems/ProblemsPage';
 import VerifyHandlePage from './pages/auth/VerifyHandlePage';
 import OpenStudyPage from './pages/open-study/OpenStudyPage';
+import MyProfilePage from './pages/profile/MyProfilePage';
+import VerifyEmailPage from './pages/auth/VerifyEmailPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,6 +37,7 @@ function App() {
           <AuthHandler />
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route
               path="/verify-handle"
               element={
@@ -86,6 +89,14 @@ function App() {
                       element={
                         <ProtectedRoute>
                           <OpenStudyPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/profile"
+                      element={
+                        <ProtectedRoute>
+                          <MyProfilePage />
                         </ProtectedRoute>
                       }
                     />
