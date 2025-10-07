@@ -96,8 +96,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 mb-8">
+        {/* Stats Cards - 모바일에서 숨김 */}
+        <div className="hidden sm:grid grid-cols-2 gap-4 lg:grid-cols-4 mb-8">
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-blue-50 rounded-lg">
