@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, User, Users, BarChart3, Globe } from 'lucide-react';
+import { LogOut, User, Users, BarChart3 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { memberApi, type MyProfileResponse } from '../../api/member';
 import { useState, useEffect } from 'react';
