@@ -15,8 +15,6 @@ export default function MyProfilePage() {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [newEmail, setNewEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [emailCheckStatus, setEmailCheckStatus] = useState<'idle' | 'checking' | 'available' | 'unavailable'>('idle');
-  const [emailCheckMessage, setEmailCheckMessage] = useState('');
 
   useEffect(() => {
     loadProfile();
@@ -61,57 +59,10 @@ export default function MyProfilePage() {
     if (!isSubmitting) {
       setShowEmailModal(false);
       setNewEmail('');
-      setEmailCheckStatus('idle');
-      setEmailCheckMessage('');
     }
   };
 
-  // 이메일 입력 변경 핸들러
-  const handleEmailInputChange = async (email: string) => {
-    setNewEmail(email);
 
-    // 빈 값이면 초기화
-    if (!email.trim()) {
-      setEmailCheckStatus('idle');
-      setEmailCheckMessage('');
-      return;
-    }
-
-    // 이메일 형식 검증
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setEmailCheckStatus('idle');
-      setEmailCheckMessage('');
-      return;
-    }
-
-    // 현재 이메일과 동일한지 확인
-    if (email === profile?.email) {
-      setEmailCheckStatus('unavailable');
-      setEmailCheckMessage('현재 이메일과 동일합니다');
-      return;
-    }
-
-    // 이메일 중복 확인
-    try {
-      setEmailCheckStatus('checking');
-      setEmailCheckMessage('확인 중...');
-
-      const available = await memberApi.checkEmail(email);
-
-      if (available) {
-        setEmailCheckStatus('available');
-        setEmailCheckMessage('사용 가능한 이메일입니다');
-      } else {
-        setEmailCheckStatus('unavailable');
-        setEmailCheckMessage('이미 사용 중인 이메일입니다');
-      }
-    } catch (error) {
-      console.error('이메일 확인 실패:', error);
-      setEmailCheckStatus('idle');
-      setEmailCheckMessage('');
-    }
-  };
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
