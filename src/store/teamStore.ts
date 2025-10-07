@@ -136,20 +136,32 @@ export const useTeamStore = create<TeamStore>()(
 
       createTeam: async (data) => {
         try {
-          const newTeam = await teamsApi.create(data);
+          await teamsApi.create(data);
 
-          // Store에 새 팀 추가
-          get().addTeam({
-            teamId: newTeam.id,
-            teamName: newTeam.name,
-            teamDescription: newTeam.description || '',
-            myRole: 'LEADER',
-            memberCount: 1,
-            isRecommendationActive: false,
+          // 팀 생성 후 전체 팀 목록을 다시 가져옴 (새 팀의 ID 포함)
+          await get().fetchTeams({ forceRefresh: true });
+
+          // 방금 생성한 팀 찾기 (가장 최근에 생성된 팀 = createdAt이 가장 늦은 팀)
+          const teams = get().teams;
+          const sortedTeams = [...teams].sort((a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+          const newTeam = sortedTeams[0];
+
+          if (!newTeam) {
+            throw new Error('생성된 팀을 찾을 수 없습니다.');
+          }
+
+          // 팀 상세 정보 로드 (멤버 정보 포함)
+          await get().fetchTeamDetails(newTeam.teamId);
+
+          return {
+            id: newTeam.teamId,
+            name: newTeam.teamName,
+            description: newTeam.teamDescription,
+            leaderId: 0, // 불필요하지만 타입 호환성을 위해
             createdAt: newTeam.createdAt,
-          });
-
-          return newTeam;
+          };
         } catch (error) {
           console.error('팀 생성 실패:', error);
           set({ teamsError: '팀 생성에 실패했습니다.' });
