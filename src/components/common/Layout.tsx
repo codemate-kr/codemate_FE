@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, User, Users, BarChart3 } from 'lucide-react';
+import { LogOut, User, Users, BarChart3, Globe } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { memberApi, type MyProfileResponse } from '../../api/member';
 import { useState, useEffect } from 'react';
@@ -74,8 +74,15 @@ export default function Layout({ children }: LayoutProps) {
                     className="flex items-center space-x-0.5 sm:space-x-1 px-1.5 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
                   >
                     <Users className="h-4 w-4" />
-                    <span className="hidden sm:inline">스터디 팀</span>
+                    <span className="hidden sm:inline">팀 관리</span>
                   </Link>
+                  {/* <Link
+                    to="/open-study"
+                    className="flex items-center space-x-0.5 sm:space-x-1 px-1.5 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  >
+                    <Globe className="h-4 w-4" />
+                    <span className="hidden sm:inline">오픈 스터디</span>
+                  </Link> */}
                   {/* <Link
                     to="/problems"
                     className="flex items-center space-x-0.5 sm:space-x-1 px-1.5 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"

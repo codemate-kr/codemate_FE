@@ -13,6 +13,7 @@ import TeamsPage from './pages/teams/TeamsPage';
 import TeamDetailPage from './pages/teams/TeamDetailPage';
 import ProblemsPage from './pages/problems/ProblemsPage';
 import VerifyHandlePage from './pages/auth/VerifyHandlePage';
+import OpenStudyPage from './pages/open-study/OpenStudyPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -77,6 +78,14 @@ function App() {
                       element={
                         <ProtectedRoute>
                           <ProblemsPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/open-study"
+                      element={
+                        <ProtectedRoute>
+                          <OpenStudyPage />
                         </ProtectedRoute>
                       }
                     />
