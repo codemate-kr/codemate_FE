@@ -1,11 +1,12 @@
 import { useParams } from 'react-router-dom';
-import { Plus, Lock } from 'lucide-react';
+import { Lock, Construction } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { TeamSettingsModal } from './components/TeamSettingsModal';
 import { TodayProblems } from './components/TodayProblems';
 import { Toast } from '../../components/common/Toast';
 import { useTeamStore, useCurrentTeamDetails, useDetailLoading, useTeams } from '../../store/teamStore';
 import { getTierName } from '../../utils/tierUtils';
+import Tooltip from '../../components/common/Tooltip';
 import type { SolvedacTier } from '../../api/teams';
 
 export default function TeamDetailPage() {
@@ -88,10 +89,15 @@ export default function TeamDetailPage() {
           </div>
           <div className="mt-4 sm:mt-0 flex items-center gap-2">
             {isTeamLeader ? (
-              <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-                <Plus className="h-4 w-4 mr-1.5" />
-                멤버 초대
-              </button>
+              <Tooltip text="멤버 초대 기능 개발 중">
+                <button
+                  disabled
+                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-gray-100 rounded-md cursor-not-allowed"
+                >
+                  <Construction className="h-4 w-4 mr-1.5" />
+                  멤버 초대
+                </button>
+              </Tooltip>
             ) : (
               <div className="flex items-center text-xs text-gray-500">
                 <Lock className="h-3.5 w-3.5 mr-1" />

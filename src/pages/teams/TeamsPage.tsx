@@ -5,9 +5,10 @@ import { type CreateTeamRequest } from '../../api/teams';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 import { useTeamStore, useTeams, useTeamsLoading } from '../../store/teamStore';
 import { Toast } from '../../components/common/Toast';
+import Tooltip from '../../components/common/Tooltip';
 
 export default function TeamsPage() {
-  useDocumentTitle('스터디 팀');
+  useDocumentTitle('팀 관리');
   const navigate = useNavigate();
   const nameInputRef = useRef<HTMLInputElement>(null);
 
@@ -95,7 +96,7 @@ export default function TeamsPage() {
 
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
-          <h1 className="text-2xl font-semibold text-gray-900">스터디 팀</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">팀 관리</h1>
           <p className="mt-2 text-sm text-gray-700">
             참여 중인 스터디 팀을 관리하고 새 팀을 만들어보세요.
           </p>
@@ -177,7 +178,9 @@ export default function TeamsPage() {
                             {team.teamName}
                           </h3>
                           {team.myRole === 'LEADER' && (
-                            <Crown className="h-4 w-4 text-yellow-500 flex-shrink-0" />
+                            <Tooltip text="팀장">
+                              <Crown className="h-4 w-4 text-yellow-500 flex-shrink-0" />
+                            </Tooltip>
                           )}
                         </div>
                         <p className="text-sm text-gray-500 mt-1 line-clamp-2">
@@ -185,22 +188,25 @@ export default function TeamsPage() {
                         </p>
                       </div>
                     </div>
-                    <button
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex-shrink-0 ml-2 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                      title="팀 설정"
-                    >
-                      <Settings className="h-4 w-4" />
-                    </button>
+                    <Tooltip text="팀 설정">
+                      <button
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex-shrink-0 ml-2 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        <Settings className="h-4 w-4" />
+                      </button>
+                    </Tooltip>
                   </div>
 
                   <div className="mt-5 pt-5 border-t border-gray-100">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 flex-wrap">
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Users className="h-4 w-4 mr-1.5" />
-                          <span className="font-medium">{team.memberCount}명</span>
-                        </div>
+                        <Tooltip text="멤버 수">
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Users className="h-4 w-4 mr-1.5" />
+                            <span className="font-medium">{team.memberCount}명</span>
+                          </div>
+                        </Tooltip>
                         <span className={`px-2.5 py-1 text-xs font-medium rounded ${
                           team.myRole === 'LEADER'
                             ? 'bg-blue-100 text-blue-700'
@@ -209,9 +215,11 @@ export default function TeamsPage() {
                           {team.myRole === 'LEADER' ? '팀장' : '팀원'}
                         </span>
                         {team.isRecommendationActive && (
-                          <span className="px-2.5 py-1 text-xs font-medium rounded bg-green-100 text-green-700">
-                            추천 활성
-                          </span>
+                          <Tooltip text="문제 추천 활성화됨">
+                            <span className="px-2.5 py-1 text-xs font-medium rounded bg-green-100 text-green-700">
+                              추천 활성
+                            </span>
+                          </Tooltip>
                         )}
                       </div>
                       <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
