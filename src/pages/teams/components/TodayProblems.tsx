@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, RefreshCw, ExternalLink, CheckCircle } from 'lucide-react';
-import { teamsApi, type TodayProblemsResponse } from '../../../api/teams';
+import { Calendar, RefreshCw, ExternalLink, CheckCircle, Settings } from 'lucide-react';
+import { teamsApi, type TodayProblemsResponse, type TeamRecommendationSettingsResponse } from '../../../api/teams';
 import { getTierName, getTierColor } from '../../../utils/tierUtils';
 
 interface TodayProblemsProps {
   teamId: number;
   isTeamLeader: boolean;
   onShowToast: (message: string) => void;
+  onOpenSettings?: () => void;
+  recommendationSettings?: TeamRecommendationSettingsResponse | null;
 }
 
-export function TodayProblems({ teamId, isTeamLeader, onShowToast }: TodayProblemsProps) {
+export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSettings, recommendationSettings }: TodayProblemsProps) {
   const [todayProblems, setTodayProblems] = useState<TodayProblemsResponse | null>(null);
   const [problemsLoading, setProblemsLoading] = useState(false);
 
@@ -56,16 +58,27 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast }: TodayProble
               <span className="text-sm text-blue-600 font-medium">· {todayProblems.problems.length}개</span>
             )}
           </div>
-          {isTeamLeader && todayProblems && (
-            <button
-              onClick={handleRefreshProblems}
-              disabled={true}
-              className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-400 bg-white border border-gray-200 rounded-md cursor-not-allowed opacity-50"
-            >
-              <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
-              새로고침
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {isTeamLeader && onOpenSettings && (
+              <button
+                onClick={onOpenSettings}
+                className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-white border border-blue-200 rounded-md hover:bg-blue-50 transition-colors"
+              >
+                <Settings className="h-3.5 w-3.5 mr-1.5" />
+                추천 설정
+              </button>
+            )}
+            {isTeamLeader && todayProblems && (
+              <button
+                onClick={handleRefreshProblems}
+                disabled={true}
+                className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-400 bg-white border border-gray-200 rounded-md cursor-not-allowed opacity-50"
+              >
+                <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+                새로고침
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -85,6 +98,31 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast }: TodayProble
                 </div>
               </div>
             ))}
+          </div>
+        ) : !recommendationSettings?.isActive ? (
+          <div className="text-center py-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 mb-4">
+              <Calendar className="h-8 w-8 text-blue-400" />
+            </div>
+            <p className="text-sm font-medium text-gray-900 mb-2">
+              {isTeamLeader
+                ? '아직 문제 추천이 설정되지 않았습니다'
+                : '문제 추천이 설정되지 않았습니다'}
+            </p>
+            <p className="text-sm text-gray-500 mb-4">
+              {isTeamLeader
+                ? '추천 설정을 완료하면 팀원들에게 문제가 자동으로 추천됩니다.'
+                : '팀장이 문제 추천을 설정하면 이곳에 표시됩니다.'}
+            </p>
+            {isTeamLeader && onOpenSettings && (
+              <button
+                onClick={onOpenSettings}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                추천 설정 시작하기
+              </button>
+            )}
           </div>
         ) : todayProblems && todayProblems.problems.length > 0 ? (
           <div className="flex items-stretch gap-4 overflow-x-auto pb-2 -mx-6 px-6">
@@ -160,13 +198,14 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast }: TodayProble
           </div>
         ) : (
           <div className="text-center py-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 mb-3">
-              <Calendar className="h-8 w-8 text-blue-400" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-50 mb-4">
+              <Calendar className="h-8 w-8 text-green-500" />
             </div>
+            <p className="text-sm font-medium text-gray-900 mb-2">
+              설정이 완료되었습니다
+            </p>
             <p className="text-sm text-gray-500">
-              {isTeamLeader
-                ? '문제 추천 설정을 완료하면 문제가 자동으로 추천됩니다.'
-                : '팀장이 문제 추천을 설정하면 이곳에 표시됩니다.'}
+              매일 오전 9시에 새로운 문제가 추천됩니다.
             </p>
           </div>
         )}

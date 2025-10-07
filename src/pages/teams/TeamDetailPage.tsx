@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { Settings, Plus, Lock } from 'lucide-react';
+import { Plus, Lock } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { TeamSettingsModal } from './components/TeamSettingsModal';
 import { TodayProblems } from './components/TodayProblems';
@@ -88,19 +88,10 @@ export default function TeamDetailPage() {
           </div>
           <div className="mt-4 sm:mt-0 flex items-center gap-2">
             {isTeamLeader ? (
-              <>
-                <button
-                  onClick={() => setShowSettingsModal(true)}
-                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                >
-                  <Settings className="h-4 w-4 mr-1.5" />
-                  설정
-                </button>
-                <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-                  <Plus className="h-4 w-4 mr-1.5" />
-                  멤버 초대
-                </button>
-              </>
+              <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                <Plus className="h-4 w-4 mr-1.5" />
+                멤버 초대
+              </button>
             ) : (
               <div className="flex items-center text-xs text-gray-500">
                 <Lock className="h-3.5 w-3.5 mr-1" />
@@ -117,6 +108,8 @@ export default function TeamDetailPage() {
             teamId={Number(teamId)}
             isTeamLeader={isTeamLeader}
             onShowToast={showToastMessage}
+            onOpenSettings={() => setShowSettingsModal(true)}
+            recommendationSettings={recommendationSettings}
           />
 
           <div className="mt-6 bg-white border border-gray-200 rounded-lg p-4">
