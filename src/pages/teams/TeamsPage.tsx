@@ -190,7 +190,10 @@ export default function TeamsPage() {
                     </div>
                     <Tooltip text="팀 설정">
                       <button
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          showToastMessage('팀 설정 기능은 개발 중입니다');
+                        }}
                         className="flex-shrink-0 ml-2 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                       >
                         <Settings className="h-4 w-4" />

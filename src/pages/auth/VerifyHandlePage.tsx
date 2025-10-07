@@ -14,14 +14,14 @@ export default function VerifyHandlePage() {
     mutationFn: (handle: string) => memberApi.verifySolvedAc(handle),
     onSuccess: (data) => {
       updateUser({ handle: data.handle });
-      toast.success('백준 핸들이 등록되었습니다');
+      toast.success('백준 아이디가 등록되었습니다');
       navigate('/dashboard');
     },
     onError: (error: any) => {
       if (error.response?.status === 404) {
-        toast.error('존재하지 않는 백준 핸들입니다');
+        toast.error('존재하지 않는 백준 아이디입니다');
       } else {
-        toast.error('핸들 등록에 실패했습니다');
+        toast.error('아이디 등록에 실패했습니다');
       }
     },
   });
@@ -29,7 +29,7 @@ export default function VerifyHandlePage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!handle.trim()) {
-      toast.error('백준 핸들을 입력해주세요');
+      toast.error('백준 아이디를 입력해주세요');
       return;
     }
     verifyMutation.mutate(handle.trim());
@@ -47,7 +47,7 @@ export default function VerifyHandlePage() {
             환영합니다!
           </h1>
           <p className="text-base text-gray-600">
-            CodeMate 시작을 위해 <span className="font-semibold text-gray-700">백준 핸들</span>을 등록해주세요
+            CodeMate 시작을 위해 <span className="font-semibold text-gray-700">백준 아이디</span>를 등록해주세요
           </p>
         </div>
 
@@ -59,7 +59,7 @@ export default function VerifyHandlePage() {
                 <span className="bg-blue-100 text-blue-700 rounded-lg px-2 py-1 text-xs font-semibold mr-2">
                   필수
                 </span>
-                백준 핸들
+                백준 아이디
               </label>
               <div className="relative">
                 <input
@@ -78,7 +78,7 @@ export default function VerifyHandlePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  <a href="https://solved.ac" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 font-medium underline">solved.ac</a>에 등록된 백준 핸들을 입력해주세요
+                  <a href="https://solved.ac" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 font-medium underline">solved.ac</a>에 등록된 백준 아이디를 입력해주세요
                 </p>
               </div>
             </div>
