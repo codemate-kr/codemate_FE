@@ -94,7 +94,7 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast }: TodayProble
                 to={`https://www.acmicpc.net/problem/${problem.problemId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex-shrink-0 w-[calc(33.333%-0.667rem)] relative bg-white border border-blue-100 rounded-lg p-4 hover:border-blue-400 hover:shadow-md hover:bg-blue-50 transition-all cursor-pointer"
+                className="group flex-shrink-0 w-56 relative bg-white border border-blue-100 rounded-lg p-4 hover:border-blue-400 hover:shadow-md hover:bg-blue-50 transition-all cursor-pointer"
               >
                 {/* 번호 */}
                 <div className="absolute top-2 left-2 w-5 h-5 bg-blue-100 text-blue-700 rounded flex items-center justify-center text-xs font-semibold">
