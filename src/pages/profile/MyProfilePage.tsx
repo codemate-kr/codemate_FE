@@ -142,7 +142,7 @@ export default function MyProfilePage() {
       <div className="max-w-4xl mx-auto">
         {/* 헤더 */}
         <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-gray-900">마이페이지</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">마이페이지</h1>
           <p className="mt-2 text-sm text-gray-700">
             내 계정 정보를 확인하고 관리할 수 있습니다
           </p>
@@ -151,19 +151,19 @@ export default function MyProfilePage() {
         {/* 프로필 카드 */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           {/* 프로필 헤더 */}
-          <div className="bg-gradient-to-r from-blue-50 to-blue-50/50 px-6 py-6 border-b border-blue-100">
-            <div className="flex items-center space-x-4">
-              <div className="h-16 w-16 rounded-full bg-blue-600 flex items-center justify-center">
-                <User className="h-8 w-8 text-white" />
+          <div className="bg-gradient-to-r from-blue-50 to-blue-50/50 px-4 sm:px-6 py-4 sm:py-6 border-b border-blue-100">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                <User className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
               </div>
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">
+              <div className="min-w-0 flex-1">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 truncate">
                   {profile.handle || '미인증'}
                 </h2>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-sm text-gray-600">{profile.email}</span>
+                <div className="flex items-center gap-2 mt-1 flex-wrap">
+                  <span className="text-xs sm:text-sm text-gray-600 truncate">{profile.email}</span>
                   {profile.verified && (
-                    <span className="flex items-center gap-1 bg-green-100 text-green-700 rounded-full px-2 py-0.5 text-xs font-medium">
+                    <span className="flex items-center gap-1 bg-green-100 text-green-700 rounded-full px-2 py-0.5 text-xs font-medium flex-shrink-0">
                       <Check className="h-3 w-3" />
                       인증됨
                     </span>
@@ -174,7 +174,7 @@ export default function MyProfilePage() {
           </div>
 
           {/* 프로필 정보 */}
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* 이메일 */}
               <div className="space-y-3">
@@ -182,9 +182,9 @@ export default function MyProfilePage() {
                   <Mail className="h-4 w-4 mr-2 text-gray-500" />
                   이메일
                 </label>
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors cursor-pointer group" onClick={handleEmailChange}>
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4 hover:border-gray-300 transition-colors cursor-pointer group" onClick={handleEmailChange}>
                   <div className="flex items-center justify-between gap-3">
-                    <p className="text-sm text-gray-900">{profile.email}</p>
+                    <p className="text-sm text-gray-900 truncate">{profile.email}</p>
                     <span className="text-sm text-blue-600 group-hover:text-blue-700 font-medium flex-shrink-0">
                       변경
                     </span>
@@ -198,18 +198,18 @@ export default function MyProfilePage() {
                   <User className="h-4 w-4 mr-2 text-gray-500" />
                   백준 아이디
                 </label>
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-gray-900">
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm text-gray-900 truncate">
                       {profile.handle || '미등록'}
                     </p>
                     {profile.verified ? (
-                      <span className="flex items-center gap-1 text-xs text-green-600 font-medium">
+                      <span className="flex items-center gap-1 text-xs text-green-600 font-medium flex-shrink-0">
                         <Check className="h-4 w-4" />
                         인증됨
                       </span>
                     ) : (
-                      <span className="flex items-center gap-1 text-xs text-gray-500">
+                      <span className="flex items-center gap-1 text-xs text-gray-500 flex-shrink-0">
                         <X className="h-4 w-4" />
                         미인증
                       </span>
@@ -224,20 +224,20 @@ export default function MyProfilePage() {
                   <Calendar className="h-4 w-4 mr-2 text-gray-500" />
                   가입일
                 </label>
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4">
                   <p className="text-sm text-gray-900">{formatDate(profile.joinedAt)}</p>
                 </div>
               </div>
             </div>
 
             {/* 알림 설정 */}
-            <div className="mt-8 pt-6 border-t border-gray-100">
+            <div className="mt-6 sm:mt-8 pt-6 border-t border-gray-100">
               <h3 className="text-base font-semibold text-gray-900 mb-4">알림 설정</h3>
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-start gap-3">
-                    <Bell className="h-5 w-5 text-gray-500 mt-0.5" />
-                    <div>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-start gap-3 min-w-0 flex-1">
+                    <Bell className="h-5 w-5 text-gray-500 mt-0.5 flex-shrink-0" />
+                    <div className="min-w-0">
                       <p className="text-sm font-medium text-gray-900">이메일 알림 수신</p>
                       <p className="text-xs text-gray-500 mt-1">
                         팀 활동, 문제 추천 등의 알림을 이메일로 받습니다

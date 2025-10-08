@@ -47,35 +47,35 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSetting
   return (
     <div className="bg-white rounded-lg border border-blue-200 shadow-sm overflow-hidden">
       {/* 헤더 */}
-      <div className="px-6 py-4 bg-blue-50 border-b border-blue-100">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="p-1.5 bg-blue-100 rounded-lg">
+      <div className="px-4 sm:px-6 py-4 bg-blue-50 border-b border-blue-100">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <div className="p-1.5 bg-blue-100 rounded-lg flex-shrink-0">
               <Calendar className="h-4 w-4 text-blue-600" />
             </div>
-            <h3 className="text-base font-semibold text-gray-900">오늘의 문제</h3>
+            <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate">오늘의 문제</h3>
             {todayProblems && todayProblems.problems.length > 0 && (
-              <span className="text-sm text-blue-600 font-medium">· {todayProblems.problems.length}개</span>
+              <span className="text-sm text-blue-600 font-medium flex-shrink-0">· {todayProblems.problems.length}개</span>
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             {isTeamLeader && onOpenSettings && (
               <button
                 onClick={onOpenSettings}
-                className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-white border border-blue-200 rounded-md hover:bg-blue-50 transition-colors"
+                className="inline-flex items-center px-2 sm:px-3 py-1.5 text-xs font-medium text-blue-700 bg-white border border-blue-200 rounded-md hover:bg-blue-50 transition-colors whitespace-nowrap"
               >
-                <Settings className="h-3.5 w-3.5 mr-1.5" />
-                추천 설정
+                <Settings className="h-3.5 w-3.5 sm:mr-1.5" />
+                <span className="hidden sm:inline">추천 설정</span>
               </button>
             )}
             {isTeamLeader && todayProblems && (
               <button
                 onClick={handleRefreshProblems}
                 disabled={true}
-                className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-400 bg-white border border-gray-200 rounded-md cursor-not-allowed opacity-50"
+                className="inline-flex items-center px-2 sm:px-3 py-1.5 text-xs font-medium text-gray-400 bg-white border border-gray-200 rounded-md cursor-not-allowed opacity-50 whitespace-nowrap"
               >
-                <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
-                새로고침
+                <RefreshCw className="h-3.5 w-3.5 sm:mr-1.5" />
+                <span className="hidden sm:inline">새로고침</span>
               </button>
             )}
           </div>
@@ -83,7 +83,7 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSetting
       </div>
 
       {/* 컨텐츠 */}
-      <div className="px-6 pb-6 pt-4">
+      <div className="px-4 sm:px-6 pb-6 pt-4">
         {problemsLoading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
@@ -125,14 +125,14 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSetting
             )}
           </div>
         ) : todayProblems && todayProblems.problems.length > 0 ? (
-          <div className="flex items-stretch gap-4 overflow-x-auto pb-2 -mx-6 px-6">
+          <div className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-2 -mx-4 sm:-mx-6 px-4 sm:px-6">
             {todayProblems.problems.map((problem, index) => (
               <Link
                 key={problem.problemId}
                 to={`https://www.acmicpc.net/problem/${problem.problemId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex-shrink-0 w-56 relative bg-white border border-blue-100 rounded-lg p-4 hover:border-blue-400 hover:shadow-md hover:bg-blue-50 transition-all cursor-pointer"
+                className="group flex-shrink-0 w-52 sm:w-56 relative bg-white border border-blue-100 rounded-lg p-3 sm:p-4 hover:border-blue-400 hover:shadow-md hover:bg-blue-50 transition-all cursor-pointer"
               >
                 {/* 번호 */}
                 <div className="absolute top-2 left-2 w-5 h-5 bg-blue-100 text-blue-700 rounded flex items-center justify-center text-xs font-semibold">

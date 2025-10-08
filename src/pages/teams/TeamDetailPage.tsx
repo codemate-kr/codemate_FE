@@ -73,17 +73,17 @@ export default function TeamDetailPage() {
       <div className="py-6 mb-8 border-b border-gray-200">
         <div className="sm:flex sm:items-center sm:justify-between">
           <div className="sm:flex-auto">
-            <div className="flex items-center space-x-2 mb-1">
-              <h1 className="text-2xl font-bold text-gray-900">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 break-words">
                 {currentTeam?.teamName || recommendationSettings?.teamName || `스터디 팀 #${teamId}`}
               </h1>
               {isTeamLeader && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 flex-shrink-0">
                   팀장
                 </span>
               )}
             </div>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 break-words">
               {currentTeam?.teamDescription || `${teamMembers.length}명의 팀원과 함께 성장하는 알고리즘 스터디`}
             </p>
           </div>
@@ -92,16 +92,17 @@ export default function TeamDetailPage() {
               <Tooltip text="멤버 초대 기능 개발 중">
                 <button
                   disabled
-                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-gray-100 rounded-md cursor-not-allowed"
+                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-gray-100 rounded-md cursor-not-allowed whitespace-nowrap"
                 >
                   <Construction className="h-4 w-4 mr-1.5" />
-                  멤버 초대
+                  <span className="hidden sm:inline">멤버 초대</span>
+                  <span className="sm:hidden">초대</span>
                 </button>
               </Tooltip>
             ) : (
-              <div className="flex items-center text-xs text-gray-500">
+              <div className="flex items-center text-xs text-gray-500 whitespace-nowrap">
                 <Lock className="h-3.5 w-3.5 mr-1" />
-                팀장 전용
+                <span className="hidden sm:inline">팀장 전용</span>
               </div>
             )}
           </div>

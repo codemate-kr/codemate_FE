@@ -74,22 +74,22 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <div className="sm:flex sm:items-center sm:justify-between">
             <div className="sm:flex-auto">
-              <h1 className="text-3xl font-bold text-gray-900 break-words">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 break-words">
                 안녕하세요, {userProfile?.handle || '백준 미인증'}님!
               </h1>
-              <p className="mt-2 text-base text-gray-600">
+              <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">
                 오늘도 알고리즘 문제를 풀어보세요.
               </p>
             </div>
-            <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none w-full sm:w-auto">
+            <div className="mt-3 sm:mt-0 sm:ml-16 sm:flex-none w-full sm:w-auto">
               <Link
                 to="/teams?action=create"
-                className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg bg-blue-600 px-4 sm:px-5 py-2 sm:py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
               >
-                <Plus className="h-5 w-5 mr-2" />
+                <Plus className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 스터디 팀 만들기
               </Link>
             </div>
