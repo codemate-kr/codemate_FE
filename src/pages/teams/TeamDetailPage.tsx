@@ -1,12 +1,12 @@
 import { useParams } from 'react-router-dom';
-import { Lock, Construction } from 'lucide-react';
+import { Lock, UserPlus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { TeamSettingsModal } from './components/TeamSettingsModal';
+import { MemberInviteModal } from './components/MemberInviteModal';
 import { TodayProblems } from './components/TodayProblems';
 import { Toast } from '../../components/common/Toast';
 import { useTeamStore, useCurrentTeamDetails, useDetailLoading, useTeams } from '../../store/teamStore';
 import { getTierName } from '../../utils/tierUtils';
-import Tooltip from '../../components/common/Tooltip';
 import type { SolvedacTier } from '../../api/teams';
 
 export default function TeamDetailPage() {
@@ -19,6 +19,7 @@ export default function TeamDetailPage() {
   const { fetchTeamDetails, refreshTeamSettings } = useTeamStore();
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
@@ -89,16 +90,14 @@ export default function TeamDetailPage() {
           </div>
           <div className="mt-4 sm:mt-0 flex items-center gap-2">
             {isTeamLeader ? (
-              <Tooltip text="멤버 초대 기능 개발 중">
-                <button
-                  disabled
-                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-gray-100 rounded-md cursor-not-allowed whitespace-nowrap"
-                >
-                  <Construction className="h-4 w-4 mr-1.5" />
-                  <span className="hidden sm:inline">멤버 초대</span>
-                  <span className="sm:hidden">초대</span>
-                </button>
-              </Tooltip>
+              <button
+                onClick={() => setShowInviteModal(true)}
+                className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors whitespace-nowrap"
+              >
+                <UserPlus className="h-4 w-4 mr-1.5" />
+                <span className="hidden sm:inline">멤버 초대</span>
+                <span className="sm:hidden">초대</span>
+              </button>
             ) : (
               <div className="flex items-center text-xs text-gray-500 whitespace-nowrap">
                 <Lock className="h-3.5 w-3.5 mr-1" />
@@ -221,6 +220,21 @@ export default function TeamDetailPage() {
           onClose={() => setShowSettingsModal(false)}
           onSettingsUpdate={loadRecommendationSettings}
           onShowToast={showToastMessage}
+        />
+      )}
+
+      {/* 멤버 초대 모달 */}
+      {showInviteModal && (
+        <MemberInviteModal
+          teamId={Number(teamId)}
+          onClose={() => setShowInviteModal(false)}
+          onShowToast={showToastMessage}
+          onInviteSuccess={() => {
+            // 팀 멤버 목록 새로고침
+            if (teamId) {
+              fetchTeamDetails(Number(teamId));
+            }
+          }}
         />
       )}
       </div>
