@@ -24,12 +24,8 @@ export interface MemberPublicResponse {
 export interface MemberSearchResponse {
   id: number;
   handle: string;
-  name: string;
-  email?: string; // 인증된 사용자의 경우에만 포함
+  email: string;
   verified: boolean;
-  tier: number;
-  rating: number;
-  solvedCount: number;
 }
 
 export interface VerifySolvedAcRequest {
@@ -58,10 +54,10 @@ export const memberApi = {
   },
 
   /**
-   * 핸들로 멤버 검색 - 인증된 사용자의 경우 이메일 포함
+   * 핸들로 멤버 검색 - List 반환
    */
-  getByHandle: async (handle: string): Promise<MemberSearchResponse> => {
-    const response = await apiClient.get<ApiResponse<MemberSearchResponse>>(`/member/search?handle=${handle}`);
+  getByHandle: async (handle: string): Promise<MemberSearchResponse[]> => {
+    const response = await apiClient.get<ApiResponse<MemberSearchResponse[]>>(`/member/search?handle=${handle}`);
     return response.data.data;
   },
 

@@ -87,7 +87,14 @@ export interface UpdateTeamRequest {
 }
 
 export interface InviteMemberRequest {
+  memberId: number;
+}
+
+export interface InviteMemberResponse {
+  teamMemberId: number;
   email: string;
+  handle: string;
+  teamName: string;
 }
 
 export interface MyTeamResponse {
@@ -140,8 +147,9 @@ export const teamsApi = {
   inviteMember: async (
     teamId: number,
     data: InviteMemberRequest
-  ): Promise<void> => {
-    await apiClient.post(`/teams/${teamId}/invite`, data);
+  ): Promise<InviteMemberResponse> => {
+    const response = await apiClient.post<ApiResponse<InviteMemberResponse>>(`/teams/${teamId}/invite`, data);
+    return response.data.data;
   },
 
   removeMember: async (teamId: number, userId: number): Promise<void> => {

@@ -44,7 +44,7 @@ export function Toast({ message, type = 'success' }: ToastProps) {
   const Icon = config.icon;
 
   return (
-    <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right duration-300">
+    <div className="fixed top-4 right-4 z-[9999] animate-in slide-in-from-right duration-300">
       <div className={`${config.bgColor} border ${config.borderColor} rounded-lg shadow-sm px-4 py-3`}>
         <div className="flex items-center space-x-2">
           <Icon className={`h-5 w-5 ${config.iconColor}`} />
