@@ -242,10 +242,10 @@ export default function DashboardPage() {
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
                     <BookOpen className="h-8 w-8 text-gray-400" />
                   </div>
-                  <p className="text-sm text-gray-600 mb-1">
+                  <p className="text-base text-gray-600 mb-1">
                     오늘 풀어야 할 문제가 없습니다
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-sm text-gray-500">
                     팀장이 문제를 추천하면 여기에 표시됩니다
                   </p>
                 </div>
