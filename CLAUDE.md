@@ -99,34 +99,86 @@ src/
 
 ### Authentication Flow
 
-1. **Google OAuth Login** → Backend returns access token + sets refresh token in httpOnly cookie
-2. **Token Storage**: Access token stored in Zustand persist (localStorage)
-3. **Auto Token Injection**: `apiClient` request interceptor adds `Authorization: Bearer {token}`
-4. **Auto Token Refresh**: On 401, response interceptor:
-   - Calls `/auth/refresh` (uses httpOnly cookie)
-   - Updates access token in store
-   - Retries original request
-5. **Logout**:
-   - Calls server `/auth/logout` (clears cookie)
-   - Resets authStore + teamStore
-   - Redirects to `/login`
+**Step 1: Google OAuth Login**
+- User clicks "Google로 로그인" button → Redirects to backend OAuth endpoint
+- Backend exchanges code with Google → Returns access token in URL query param
+- URL format: `/?access_token=xyz`
+
+**Step 2: Token Extraction** (`hooks/useAuthToken.ts`)
+- `AuthHandler` component runs on app mount
+- Extracts token from URL: `urlParams.get('access_token')`
+- Fetches user profile via `memberApi.getMe()`
+- Stores both token and user in `authStore.login()`
+- Cleans URL to hide token from browser
+- Redirects to `/dashboard` or `/verify-handle` based on BOJ handle status
+
+**Step 3: BOJ Handle Verification**
+- If `user.handle` is missing, `ProtectedRoute` redirects to `/verify-handle`
+- User enters Baekjoon handle → Verified via `memberApi.verifySolvedAc(handle)`
+- Updates store with handle → Redirects to `/dashboard`
+
+**Step 4: Token Storage & Auto-Injection**
+- Access token: Stored in localStorage via Zustand persist
+- Refresh token: httpOnly cookie (set by backend, managed automatically)
+- `apiClient` request interceptor adds `Authorization: Bearer {token}` to all requests
+
+**Step 5: Auto Token Refresh**
+- On 401 response, interceptor:
+  - Checks if already refreshing (prevents duplicate calls)
+  - Calls `/auth/refresh` with `withCredentials: true` (sends httpOnly cookie)
+  - Uses **request queue pattern** to hold failed requests
+  - On success: Updates token in store, retries all queued requests
+  - On failure: Calls `/auth/logout`, clears state, redirects to `/login`
+- **Important**: Uses raw axios for `/auth/refresh` to bypass interceptor
+
+**Step 6: App Initialization** (`components/auth/AuthInitializer.tsx`)
+- On app mount: Sets token in apiClient if found in store
+- Fetches fresh user profile to sync with server
+- Shows loading screen until complete
+
+**Step 7: Logout**
+- Calls server `/auth/logout` (clears httpOnly cookie)
+- Calls `authStore.logout()` which:
+  - Removes token from apiClient
+  - Clears auth state
+  - Dynamically imports and resets teamStore (avoids circular dependency)
+  - Redirects to `/login`
 
 ### Key Component Patterns
 
 **Protected Routes** (`components/auth/ProtectedRoute.tsx`)
 - Wraps routes requiring authentication
+- Checks both `isAuthenticated` AND `user.handle` (ensures BOJ handle registered)
 - Redirects to `/login` if not authenticated
+- Redirects to `/verify-handle` if handle missing
 
 **Auth Initializer** (`components/auth/AuthInitializer.tsx`)
-- Validates token on app mount
-- Verifies BOJ handle registration status
-- Redirects to appropriate pages
+- Wrapper around Router that runs on app mount
+- Sets token in apiClient before routing starts
+- Validates stored token and fetches user profile
+- Shows loading screen during initialization
 
-**Team Settings Modal** (`pages/teams/components/TeamSettingsModal.tsx`)
+**Team Settings Modal** (`pages/teams/components/TeamSettingsModal.tsx` - 386 lines)
 - Recommendation day selection (weekly schedule)
 - Difficulty preset selection: EASY/NORMAL/HARD/CUSTOM
 - Custom tier range with solved.ac tier levels (1-20)
+- Uses `CustomTierModal` sub-component for tier range UI
+- Integrates with `teamsApi.updateRecommendationSettings()`
 - Calls `onShowToast(message: string)` on save
+
+**Member Invite Modal** (`pages/teams/components/MemberInviteModal.tsx` - 329 lines)
+- Searchable member lookup via `memberApi.getByHandle()`
+- Debounced search (300ms timeout)
+- Multi-select with deduplication
+- Batch invite using `Promise.allSettled()` for parallel invitations
+- Shows success/failure counts
+- Handles "already member" errors gracefully
+
+**Today Problems Component** (`pages/teams/components/TodayProblems.tsx` - 215 lines)
+- Displays recommended problems from `/recommendation/team/{teamId}/today-problem`
+- Shows problem metadata: title, tier, solved status, acceptance rate
+- Refresh button (only visible for team leaders)
+- Uses solved.ac tier utilities for display
 
 ### Git Workflow
 
@@ -268,6 +320,56 @@ import type { TeamMember } from '@/types';
 - **Don't create 500+ line files** - split into logical sub-components
 - **Don't mix concerns** - separate business logic (hooks) from UI (components)
 
+### Special Patterns to Know
+
+**Dynamic Import for Circular Dependencies**
+```typescript
+// In authStore.ts logout action:
+logout: () => {
+  removeAuthToken();
+  set({ user: null, token: null, isAuthenticated: false });
+  // Avoid circular ref: authStore → teamStore
+  import('./teamStore').then(({ useTeamStore }) => {
+    useTeamStore.getState().reset();
+  });
+}
+```
+
+**Request Queue Pattern for Token Refresh**
+- Response interceptor queues failed 401 requests while refreshing token
+- Uses `isRefreshing` flag and `failedQueue` array
+- All queued requests retry after token refresh succeeds
+
+**Selective Persist in Zustand**
+```typescript
+// teamStore only caches essential data
+persist(
+  (set, get) => ({ /* store definition */ }),
+  {
+    name: 'team-store',
+    partialize: (state) => ({
+      teams: state.teams,
+      teamsLastFetched: state.teamsLastFetched,
+      currentTeamId: state.currentTeamId,
+      // teamDetails NOT persisted - always fetched fresh
+    }),
+  }
+)
+```
+
+**Debounced Search Pattern**
+```typescript
+// In MemberInviteModal.tsx - 300ms debounce
+useEffect(() => {
+  const timer = setTimeout(() => {
+    if (searchQuery.trim()) {
+      fetchMembers(searchQuery);
+    }
+  }, 300);
+  return () => clearTimeout(timer);
+}, [searchQuery]);
+```
+
 ## Tech Stack
 
 - **Frontend**: React 19 + TypeScript 5.8
@@ -281,6 +383,58 @@ import type { TeamMember } from '@/types';
 
 ## External Integrations
 
-- **Google OAuth**: Login via Google account
-- **Baekjoon Online Judge (BOJ)**: Problem source, handle verification required
-- **solved.ac API**: Tier system (levels 1-20: Bronze V → Platinum I)
+### Google OAuth
+- Environment: `VITE_OAUTH_BASE_URL` (backend OAuth server)
+- Flow: Frontend redirects to backend → Backend exchanges code with Google → Redirects back with token in URL
+
+### Baekjoon Online Judge (BOJ)
+- Handle verification: `memberApi.verifySolvedAc(handle)` queries BOJ via backend
+- Required for all authenticated users (enforced by `ProtectedRoute`)
+- Used for: User identification, problem solving progress tracking
+
+### solved.ac API
+- Tier system: 1-20 (Bronze V → Platinum I)
+- Utilities: `getTierName(level)`, `getTierColor(level)` in `utils/tierUtils.ts`
+- Used in: Custom tier modal, team recommendations, member profiles
+
+## Backend API Endpoints Reference
+
+```
+/auth
+  POST /auth/google                      # OAuth callback
+  POST /auth/verify-boj                  # BOJ handle verification
+  POST /auth/refresh                     # Token refresh (uses httpOnly cookie)
+  POST /auth/logout                      # Logout (clears cookie)
+
+/teams
+  POST /teams                            # Create team
+  GET /teams/my                          # List user's teams
+  GET /teams/{id}/members                # Get team members
+  GET /teams/{id}/recommendation-settings
+  PUT /teams/{id}/recommendation-settings
+  DELETE /teams/{id}/recommendation-settings
+  POST /teams/{id}/invite                # Invite member
+  DELETE /teams/{id}/members/{userId}
+  POST /teams/{id}/leave
+
+/member
+  GET /member/me                         # Get current user profile
+  POST /member/me/verify-solvedac
+  POST /member/me/send-email-verification
+  POST /member/verify-email
+  GET /member/search?handle=...          # Search members by handle
+  POST /member/check-email
+
+/recommendation
+  GET /recommendation/team/{teamId}/today-problem
+  POST /teams/{teamId}/today-problems/refresh
+```
+
+**API Response Format:**
+```typescript
+interface ApiResponse<T> {
+  data: T;        // Actual response data
+  message: string;
+  status: string;
+}
+```

@@ -14,6 +14,13 @@ interface TeamDetailState {
   settings: TeamRecommendationSettingsResponse | null;
 }
 
+type TeamDetailErrorType = 'not-found' | 'forbidden' | 'network' | 'unknown';
+
+interface TeamDetailError {
+  type: TeamDetailErrorType;
+  message: string;
+}
+
 interface TeamStore {
   // 팀 목록 상태
   teams: MyTeamResponse[];
@@ -25,7 +32,7 @@ interface TeamStore {
   currentTeamId: number | null;
   currentTeamDetails: TeamDetailState | null;
   detailLoading: boolean;
-  detailError: string | null;
+  detailError: TeamDetailError | null;
 
   // 팀 목록 Actions (내부용)
   setTeams: (teams: MyTeamResponse[]) => void;
@@ -46,7 +53,7 @@ interface TeamStore {
   updateTeamMember: (memberId: number, updates: Partial<TeamMemberResponse>) => void;
   removeMember: (memberId: number) => void;
   setDetailLoading: (loading: boolean) => void;
-  setDetailError: (error: string | null) => void;
+  setDetailError: (error: TeamDetailError | null) => void;
 
   // 팀 상세 Actions (API 통합)
   fetchTeamDetails: (teamId: number) => Promise<void>;
@@ -214,7 +221,7 @@ export const useTeamStore = create<TeamStore>()(
         })),
 
       setDetailLoading: (loading) => set({ detailLoading: loading }),
-      setDetailError: (error) => set({ detailError: error }),
+      setDetailError: (error: TeamDetailError | null) => set({ detailError: error }),
 
       // 팀 상세 Actions (API 통합)
       fetchTeamDetails: async (teamId) => {
@@ -232,9 +239,31 @@ export const useTeamStore = create<TeamStore>()(
             currentTeamDetails: { members, settings },
             detailError: null,
           });
-        } catch (error) {
+        } catch (error: any) {
           console.error('팀 데이터 로딩 실패:', error);
-          set({ detailError: '팀 정보를 불러오는데 실패했습니다.' });
+
+          // HTTP 상태 코드에 따라 에러 타입 구분
+          const status = error?.response?.status;
+          let errorType: TeamDetailErrorType = 'unknown';
+          let errorMessage = '팀 정보를 불러오는데 실패했습니다.';
+
+          if (status === 404) {
+            errorType = 'not-found';
+            errorMessage = '존재하지 않는 스터디입니다.';
+          } else if (status === 403) {
+            errorType = 'forbidden';
+            errorMessage = '비공개 스터디입니다. 멤버만 볼 수 있습니다.';
+          } else if (!status || status >= 500) {
+            errorType = 'network';
+            errorMessage = '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+          }
+
+          set({
+            detailError: {
+              type: errorType,
+              message: errorMessage,
+            }
+          });
         } finally {
           set({ detailLoading: false });
         }
@@ -270,3 +299,7 @@ export const useTeamsLoading = () => useTeamStore((state) => state.teamsLoading)
 export const useTeamsError = () => useTeamStore((state) => state.teamsError);
 export const useCurrentTeamDetails = () => useTeamStore((state) => state.currentTeamDetails);
 export const useDetailLoading = () => useTeamStore((state) => state.detailLoading);
+export const useDetailError = () => useTeamStore((state) => state.detailError);
+
+// 타입 export
+export type { TeamDetailError, TeamDetailErrorType };

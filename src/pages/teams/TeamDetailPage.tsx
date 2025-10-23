@@ -5,7 +5,8 @@ import { TeamSettingsModal } from './components/TeamSettingsModal';
 import { MemberInviteModal } from './components/MemberInviteModal';
 import { TodayProblems } from './components/TodayProblems';
 import { Toast } from '../../components/common/Toast';
-import { useTeamStore, useCurrentTeamDetails, useDetailLoading, useTeams } from '../../store/teamStore';
+import { TeamDetailError } from '../../components/common/TeamDetailError';
+import { useTeamStore, useCurrentTeamDetails, useDetailLoading, useDetailError, useTeams } from '../../store/teamStore';
 import { getTierName } from '../../utils/tierUtils';
 import type { SolvedacTier } from '../../api/teams';
 
@@ -15,6 +16,7 @@ export default function TeamDetailPage() {
   // Selector hooks 사용
   const currentTeamDetails = useCurrentTeamDetails();
   const detailLoading = useDetailLoading();
+  const detailError = useDetailError();
   const teams = useTeams();
   const { fetchTeamDetails, refreshTeamSettings } = useTeamStore();
 
@@ -53,6 +55,12 @@ export default function TeamDetailPage() {
     }, 3000);
   };
 
+  const handleRetry = () => {
+    if (teamId) {
+      fetchTeamDetails(Number(teamId));
+    }
+  };
+
   if (detailLoading) {
     return (
       <div className="px-4 sm:px-6 lg:px-8">
@@ -62,6 +70,11 @@ export default function TeamDetailPage() {
         </div>
       </div>
     );
+  }
+
+  // 에러 상태 표시
+  if (detailError) {
+    return <TeamDetailError error={detailError} onRetry={handleRetry} />;
   }
 
   return (
