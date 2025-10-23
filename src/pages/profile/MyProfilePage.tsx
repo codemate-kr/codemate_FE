@@ -157,17 +157,19 @@ export default function MyProfilePage() {
                 <User className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
               </div>
               <div className="min-w-0 flex-1">
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900 truncate">
-                  {profile.handle || '미인증'}
-                </h2>
-                <div className="flex items-center gap-2 mt-1 flex-wrap">
-                  <span className="text-xs sm:text-sm text-gray-600 truncate">{profile.email}</span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900 truncate">
+                    {profile.handle || '미인증'}
+                  </h2>
                   {profile.verified && (
                     <span className="flex items-center gap-1 bg-green-100 text-green-700 rounded-full px-2 py-0.5 text-xs font-medium flex-shrink-0">
                       <Check className="h-3 w-3" />
                       인증됨
                     </span>
                   )}
+                </div>
+                <div className="flex items-center gap-2 mt-1 flex-wrap">
+                  <span className="text-xs sm:text-sm text-gray-600 truncate">{profile.email}</span>
                 </div>
               </div>
             </div>
