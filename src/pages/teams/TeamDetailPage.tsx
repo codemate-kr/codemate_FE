@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { Lock, UserPlus } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { TeamSettingsModal } from './components/TeamSettingsModal';
 import { MemberInviteModal } from './components/MemberInviteModal';
 import { TodayProblems } from './components/TodayProblems';
@@ -8,6 +8,7 @@ import { Toast } from '../../components/common/Toast';
 import { TeamDetailError } from '../../components/common/TeamDetailError';
 import { useTeamStore, useCurrentTeamDetails, useDetailLoading, useDetailError, useTeams } from '../../store/teamStore';
 import { getTierName } from '../../utils/tierUtils';
+import { sortDayNames } from '../../utils/dayUtils';
 import type { SolvedacTier } from '../../api/teams';
 
 export default function TeamDetailPage() {
@@ -33,6 +34,12 @@ export default function TeamDetailPage() {
 
   // 팀 기본 정보 가져오기
   const currentTeam = teams.find(team => team.teamId === Number(teamId));
+
+  // 추천 요일 정렬 (월~일 순서)
+  const sortedDayNames = useMemo(() => {
+    if (!recommendationSettings?.recommendationDayNames) return [];
+    return sortDayNames(recommendationSettings.recommendationDayNames);
+  }, [recommendationSettings?.recommendationDayNames]);
 
   useEffect(() => {
     if (teamId) {
@@ -173,11 +180,11 @@ export default function TeamDetailPage() {
                       </span>
                     </div>
                   ) : null}
-                  {recommendationSettings.recommendationDayNames && (
+                  {sortedDayNames.length > 0 && (
                     <div className="pt-2 border-t border-gray-100">
                       <p className="text-xs text-gray-500 mb-1.5">추천 요일</p>
                       <div className="flex flex-wrap gap-1">
-                        {recommendationSettings.recommendationDayNames.map((day) => (
+                        {sortedDayNames.map((day) => (
                           <span key={day} className="text-xs px-2 py-0.5 bg-gray-100 text-gray-700 rounded">
                             {day}
                           </span>
