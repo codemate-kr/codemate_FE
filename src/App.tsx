@@ -17,6 +17,7 @@ import OpenStudyPage from './pages/open-study/OpenStudyPage';
 import MyProfilePage from './pages/profile/MyProfilePage';
 import VerifyEmailPage from './pages/auth/VerifyEmailPage';
 import PrivacyPolicyPage from './pages/legal/PrivacyPolicyPage';
+import TermsOfServicePage from './pages/legal/TermsOfServicePage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,6 +41,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="/terms-of-service" element={<TermsOfServicePage />} />
             <Route
               path="/verify-handle"
               element={

@@ -46,16 +46,51 @@ export default function PrivacyPolicyPage() {
                 <li>고객 문의 및 지원</li>
               </ul>
               <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-blue-900">
-                  <strong>수집 항목:</strong> 이메일, Google 계정 정보, 백준 온라인 저지 핸들
+                <p className="text-sm text-blue-900 mb-2">
+                  <strong>수집 항목:</strong>
+                </p>
+                <ul className="text-sm text-blue-900 space-y-1 ml-4">
+                  <li>• 필수: 이메일 (Google 계정 연동)</li>
+                  <li>• 필수: 백준 온라인 저지(BOJ) 핸들</li>
+                </ul>
+              </div>
+            </section>
+
+            {/* 2. 자동으로 수집되는 정보 */}
+            <section className="p-6">
+              <h2 className="text-lg font-bold text-gray-900 mb-4">
+                2. 자동으로 수집되는 정보
+              </h2>
+              <p className="text-sm text-gray-600 mb-3">
+                서비스 이용 과정에서 아래 정보가 자동으로 생성되어 수집될 수 있습니다:
+              </p>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 mb-1">쿠키 (Cookie)</p>
+                    <p className="text-xs text-gray-600 mb-1">• 수집 항목: 리프레시 토큰 (httpOnly, Secure 쿠키)</p>
+                    <p className="text-xs text-gray-600 mb-1">• 수집 목적: 로그인 상태 유지 및 자동 로그인</p>
+                    <p className="text-xs text-gray-600">• 보유 기간: 로그아웃 시 또는 토큰 만료 시까지 (최대 14일)</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 mb-1">접속 로그</p>
+                    <p className="text-xs text-gray-600 mb-1">• 수집 항목: IP 주소, 접속 시간, 서비스 이용 기록</p>
+                    <p className="text-xs text-gray-600 mb-1">• 수집 목적: 부정 이용 방지, 서비스 개선</p>
+                    <p className="text-xs text-gray-600">• 보유 기간: 3개월</p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                <p className="text-xs text-amber-900">
+                  <strong>쿠키 거부 방법:</strong> 브라우저 설정을 통해 쿠키를 차단할 수 있으나, 이 경우 로그인 상태가 유지되지 않아 서비스 이용에 제한이 있을 수 있습니다.
                 </p>
               </div>
             </section>
 
-            {/* 2. 개인정보의 처리 및 보유기간 */}
+            {/* 3. 개인정보의 처리 및 보유기간 */}
             <section className="p-6">
               <h2 className="text-lg font-bold text-gray-900 mb-4">
-                2. 개인정보의 처리 및 보유기간
+                3. 개인정보의 처리 및 보유기간
               </h2>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
@@ -82,21 +117,34 @@ export default function PrivacyPolicyPage() {
               </div>
             </section>
 
-            {/* 3. 개인정보의 제3자 제공 */}
+            {/* 4. 개인정보의 제3자 제공 */}
             <section className="p-6">
               <h2 className="text-lg font-bold text-gray-900 mb-4">
-                3. 개인정보의 제3자 제공
+                4. 개인정보의 제3자 제공
               </h2>
-              <p className="text-sm text-gray-600">
-                CodeMate는 법적 근거 없이 개인정보를 제3자에게 제공하지 않습니다.
-                개인정보보호법 제17조, 18조에 해당하는 경우에만 예외적으로 제공합니다.
+              <p className="text-sm text-gray-600 mb-4">
+                CodeMate는 원칙적으로 이용자의 동의 없이 개인정보를 제3자에게 제공하지 않습니다.
+                다만, 서비스 제공을 위해 아래와 같이 외부 서비스를 이용합니다:
+              </p>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 mb-1">Google (OAuth 인증)</p>
+                    <p className="text-xs text-gray-600 mb-1">• 제공 항목: 이메일</p>
+                    <p className="text-xs text-gray-600 mb-1">• 제공 목적: 회원 가입 및 로그인 인증</p>
+                    <p className="text-xs text-gray-600">• 보유 기간: 회원 탈퇴 시까지</p>
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 mt-4">
+                이 외에 개인정보보호법 제17조, 18조에 해당하는 경우(법령에 의한 경우 등)에만 예외적으로 제공됩니다.
               </p>
             </section>
 
-            {/* 4. 정보주체의 권리 */}
+            {/* 5. 정보주체의 권리 */}
             <section className="p-6">
               <h2 className="text-lg font-bold text-gray-900 mb-4">
-                4. 정보주체의 권리
+                5. 정보주체의 권리
               </h2>
               <p className="text-sm text-gray-600 mb-4">
                 이용자는 언제든지 다음 권리를 행사할 수 있습니다:
@@ -131,10 +179,10 @@ export default function PrivacyPolicyPage() {
               </div>
             </section>
 
-            {/* 5. 안전성 확보 조치 */}
+            {/* 6. 안전성 확보 조치 */}
             <section className="p-6">
               <h2 className="text-lg font-bold text-gray-900 mb-4">
-                5. 안전성 확보 조치
+                6. 안전성 확보 조치
               </h2>
               <p className="text-sm text-gray-600 mb-4">
                 CodeMate는 개인정보 보호를 위해 다음과 같은 조치를 취하고 있습니다:
@@ -159,10 +207,10 @@ export default function PrivacyPolicyPage() {
               </div>
             </section>
 
-            {/* 6. 개인정보 보호책임자 */}
+            {/* 7. 개인정보 보호책임자 */}
             <section className="p-6 bg-gray-50">
               <h2 className="text-lg font-bold text-gray-900 mb-4">
-                6. 개인정보 보호책임자
+                7. 개인정보 보호책임자
               </h2>
               <div className="bg-white border border-gray-200 rounded-lg p-4">
                 <p className="text-sm text-gray-600 mb-3">
