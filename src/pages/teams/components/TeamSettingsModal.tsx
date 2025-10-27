@@ -209,7 +209,7 @@ export function TeamSettingsModal({
                     {weekDays.map(day => (
                       <label
                         key={day.key}
-                        className={`relative flex items-center justify-center h-11 rounded-lg cursor-pointer transition-all select-none border-2 ${
+                        className={`relative flex items-center justify-center h-11 rounded-lg cursor-pointer transition-all select-none border ${
                           selectedDays.includes(day.key)
                             ? 'bg-blue-500 border-blue-500 text-white shadow-sm'
                             : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50'
@@ -266,7 +266,7 @@ export function TeamSettingsModal({
                     ].map(preset => (
                       <label
                         key={preset.key}
-                        className={`flex flex-col items-center justify-center p-2.5 border-2 rounded-lg cursor-pointer transition-all ${
+                        className={`flex flex-col items-center justify-center p-2.5 border rounded-lg cursor-pointer transition-all ${
                           selectedPreset === preset.key
                             ? preset.color
                             : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
@@ -295,7 +295,7 @@ export function TeamSettingsModal({
 
                   {/* Second row: 커스텀 (full width) */}
                   <label
-                    className={`flex flex-col items-center justify-center p-2.5 border-2 rounded-lg cursor-pointer transition-all ${
+                    className={`flex flex-col items-center justify-center p-2.5 border rounded-lg cursor-pointer transition-all ${
                       selectedPreset === 'CUSTOM'
                         ? 'bg-purple-50 border-purple-200 text-purple-700'
                         : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300 border-dashed'
