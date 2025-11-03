@@ -1,98 +1,75 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Users, Settings, Crown, ChevronRight } from 'lucide-react';
-import { type CreateTeamRequest } from '../../api/teams';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 import { useTeamStore, useTeams, useTeamsLoading } from '../../store/teamStore';
-import { Toast } from '../../components/common/Toast';
+import { Toast, type ToastType } from '../../components/common/Toast';
 import Tooltip from '../../components/common/Tooltip';
+import CreateTeamModal from './components/CreateTeamModal';
+import type { CreateTeamRequest } from '../../api/teams';
 
 export default function TeamsPage() {
   useDocumentTitle('팀 관리');
   const navigate = useNavigate();
-  const nameInputRef = useRef<HTMLInputElement>(null);
 
   // Selector hooks 사용 (필요한 상태만 구독)
   const teams = useTeams();
   const teamsLoading = useTeamsLoading();
   const { fetchTeams, createTeam } = useTeamStore();
 
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [formData, setFormData] = useState<CreateTeamRequest>({
-    name: '',
-    description: ''
-  });
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState<ToastType>('success');
 
   useEffect(() => {
     // store의 fetchTeams 사용 (자동 캐싱)
     fetchTeams();
   }, [fetchTeams]);
 
-  useEffect(() => {
-    if (showCreateForm && nameInputRef.current) {
-      nameInputRef.current.focus();
-    }
-  }, [showCreateForm]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const showToastMessage = (message: string) => {
+  const showToastMessage = (message: string, type: ToastType = 'success') => {
     setToastMessage(message);
+    setToastType(type);
     setShowToast(true);
     setTimeout(() => {
       setShowToast(false);
     }, 3000);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name.trim()) return;
+  // 팀장으로 있는 팀의 개수 계산
+  const leaderTeamsCount = teams.filter(team => team.myRole === 'LEADER').length;
+  const canCreateTeam = leaderTeamsCount < 3;
 
+  const handleCreateButtonClick = () => {
+    if (!canCreateTeam) {
+      showToastMessage('팀장으로 생성할 수 있는 팀은 최대 3개입니다', 'warning');
+      return;
+    }
+    setShowCreateModal(true);
+  };
+
+  const handleModalSubmit = async (data: CreateTeamRequest) => {
     setIsLoading(true);
     try {
       // store의 createTeam 사용 (자동으로 store 업데이트)
-      const newTeam = await createTeam(formData);
-      setShowCreateForm(false);
-      setFormData({ name: '', description: '' });
+      const newTeam = await createTeam(data);
+      setShowCreateModal(false);
       showToastMessage(`${newTeam.name} 팀이 생성되었습니다`);
-    } catch (error) {
-      // 에러는 이미 store에서 처리됨
+    } catch (error: any) {
+      // 백엔드에서 온 에러 메시지 표시
+      const errorMessage = error?.message || '팀 생성에 실패했습니다.';
+      showToastMessage(errorMessage, 'error');
+      setShowCreateModal(false);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleCloseModal = () => {
-    if (!isLoading) {
-      setShowCreateForm(false);
-      setFormData({ name: '', description: '' });
-    }
-  };
-
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && showCreateForm) {
-        handleCloseModal();
-      }
-    };
-
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [showCreateForm, isLoading]);
-
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       {/* 토스트 메시지 */}
-      {showToast && <Toast message={toastMessage} type="success" />}
+      {showToast && <Toast message={toastMessage} type={toastType} />}
 
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
@@ -103,7 +80,7 @@ export default function TeamsPage() {
         </div>
         <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
           <button
-            onClick={() => setShowCreateForm(true)}
+            onClick={handleCreateButtonClick}
             className="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-auto"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -149,7 +126,7 @@ export default function TeamsPage() {
               새 스터디 팀을 만들어 친구들과 함께 알고리즘 문제를 풀어보세요.
             </p>
             <button
-              onClick={() => setShowCreateForm(true)}
+              onClick={handleCreateButtonClick}
               className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             >
               <Plus className="h-5 w-5 mr-2" />
@@ -235,80 +212,12 @@ export default function TeamsPage() {
         )}
       </div>
 
-      {showCreateForm && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4 animate-in fade-in duration-200"
-          onClick={handleCloseModal}
-        >
-          <div
-            className="relative mx-auto w-full max-w-md animate-in zoom-in-95 duration-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="bg-white rounded-2xl shadow-2xl">
-              <div className="px-6 py-5 border-b border-gray-200">
-                <h3 className="text-xl font-semibold text-gray-900">
-                  새 스터디 팀 만들기
-                </h3>
-              </div>
-              <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    팀 이름 <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    ref={nameInputRef}
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                    placeholder="알고리즘 스터디"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    설명
-                  </label>
-                  <textarea
-                    name="description"
-                    value={formData.description || ''}
-                    onChange={handleInputChange}
-                    rows={4}
-                    className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
-                    placeholder="팀에 대한 간단한 설명을 작성해주세요"
-                  />
-                </div>
-                <div className="flex justify-end gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={handleCloseModal}
-                    disabled={isLoading}
-                    className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    취소
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isLoading || !formData.name.trim()}
-                    className="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    {isLoading ? (
-                      <span className="flex items-center gap-2">
-                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                        </svg>
-                        생성 중...
-                      </span>
-                    ) : '생성'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
+      <CreateTeamModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSubmit={handleModalSubmit}
+        isLoading={isLoading}
+      />
     </div>
   );
 }

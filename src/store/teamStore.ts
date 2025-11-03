@@ -169,10 +169,17 @@ export const useTeamStore = create<TeamStore>()(
             leaderId: 0, // 불필요하지만 타입 호환성을 위해
             createdAt: newTeam.createdAt,
           };
-        } catch (error) {
+        } catch (error: any) {
           console.error('팀 생성 실패:', error);
-          set({ teamsError: '팀 생성에 실패했습니다.' });
-          throw error;
+
+          // 백엔드 에러 메시지 추출
+          const errorMessage = error?.response?.data?.message || '팀 생성에 실패했습니다.';
+          set({ teamsError: errorMessage });
+
+          // 에러 객체에 메시지 추가하여 throw
+          const enhancedError = new Error(errorMessage);
+          (enhancedError as any).originalError = error;
+          throw enhancedError;
         }
       },
 
