@@ -157,7 +157,11 @@ export const teamsApi = {
   },
 
   leaveTeam: async (teamId: number): Promise<void> => {
-    await apiClient.post(`/teams/${teamId}/leave`);
+    await apiClient.post(`/teams/${teamId}/leaveTeam`);
+  },
+
+  deleteTeam: async (teamId: number): Promise<void> => {
+    await apiClient.post(`/teams/${teamId}/deleteTeam`);
   },
 
   // 오늘의 문제 API (백엔드 구현 대기 중 - Mock 데이터 사용)

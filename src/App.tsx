@@ -10,7 +10,7 @@ import HomePage from './pages/home/HomePage';
 import LoginPage from './pages/auth/LoginPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import TeamsPage from './pages/teams/TeamsPage';
-import TeamDetailPage from './pages/teams/TeamDetailPage';
+import TeamDetailPage from './pages/teams/teamDetail/TeamDetailPage';
 import ProblemsPage from './pages/problems/ProblemsPage';
 import VerifyHandlePage from './pages/auth/VerifyHandlePage';
 import OpenStudyPage from './pages/open-study/OpenStudyPage';

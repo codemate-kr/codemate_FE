@@ -45,6 +45,8 @@ interface TeamStore {
   // 팀 목록 Actions (API 통합)
   fetchTeams: (options?: { forceRefresh?: boolean }) => Promise<void>;
   createTeam: (data: CreateTeamRequest) => Promise<CreateTeamResponse>;
+  leaveTeam: (teamId: number) => Promise<void>;
+  deleteTeam: (teamId: number) => Promise<void>;
 
   // 팀 상세 Actions (내부용)
   setCurrentTeamId: (teamId: number | null) => void;
@@ -282,6 +284,52 @@ export const useTeamStore = create<TeamStore>()(
           get().setCurrentTeamSettings(settings);
         } catch (error) {
           console.error('추천 설정 로딩 실패:', error);
+        }
+      },
+
+      // 팀 탈퇴 (MEMBER)
+      leaveTeam: async (teamId) => {
+        try {
+          await teamsApi.leaveTeam(teamId);
+
+          // 팀 목록에서 제거
+          get().removeTeam(teamId);
+
+          // 현재 보고 있던 팀이면 상세 정보도 초기화
+          if (get().currentTeamId === teamId) {
+            set({
+              currentTeamId: null,
+              currentTeamDetails: null,
+            });
+          }
+        } catch (error: any) {
+          console.error('팀 탈퇴 실패:', error);
+          const errorMessage = error?.response?.data?.message || '팀 탈퇴에 실패했습니다.';
+          set({ teamsError: errorMessage });
+          throw new Error(errorMessage);
+        }
+      },
+
+      // 팀 해산 (LEADER)
+      deleteTeam: async (teamId) => {
+        try {
+          await teamsApi.deleteTeam(teamId);
+
+          // 팀 목록에서 제거
+          get().removeTeam(teamId);
+
+          // 현재 보고 있던 팀이면 상세 정보도 초기화
+          if (get().currentTeamId === teamId) {
+            set({
+              currentTeamId: null,
+              currentTeamDetails: null,
+            });
+          }
+        } catch (error: any) {
+          console.error('팀 해산 실패:', error);
+          const errorMessage = error?.response?.data?.message || '팀 해산에 실패했습니다.';
+          set({ teamsError: errorMessage });
+          throw new Error(errorMessage);
         }
       },
 
