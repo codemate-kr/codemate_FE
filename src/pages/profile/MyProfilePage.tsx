@@ -267,7 +267,7 @@ export default function MyProfilePage() {
             </div>
 
             {/* 알림 설정 */}
-            <div className="mt-6 sm:mt-8 pt-6 border-t border-gray-100">
+            {/* <div className="mt-6 sm:mt-8 pt-6 border-t border-gray-100">
               <h3 className="text-base font-semibold text-gray-900 mb-4">알림 설정</h3>
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4">
                 <div className="flex items-center justify-between gap-3">
@@ -288,8 +288,16 @@ export default function MyProfilePage() {
                   </button>
                 </div>
               </div>
-            </div>
+            </div> */}
 
+        {/* 도움말 */}
+        <div className="mt-6 bg-blue-50 border border-blue-100 rounded-lg p-4">
+          <p className="text-sm text-blue-800">
+            <strong>💡 참고:</strong> 백준 아이디는 가입 시 한 번만 등록할 수 있습니다.
+            변경이 필요한 경우 관리자에게 문의해주세요.
+          </p>
+        </div>
+        
             {/* 회원탈퇴 */}
             <div className="mt-6 sm:mt-8 pt-6 border-t border-gray-100">
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -313,13 +321,7 @@ export default function MyProfilePage() {
           </div>
         </div>
 
-        {/* 도움말 */}
-        <div className="mt-6 bg-blue-50 border border-blue-100 rounded-lg p-4">
-          <p className="text-sm text-blue-800">
-            <strong>💡 참고:</strong> 백준 아이디는 가입 시 한 번만 등록할 수 있습니다.
-            변경이 필요한 경우 관리자에게 문의해주세요.
-          </p>
-        </div>
+
       </div>
 
       {/* 이메일 변경 모달 */}
