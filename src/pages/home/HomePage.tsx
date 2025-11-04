@@ -31,7 +31,7 @@ export default function HomePage() {
                     to="/dashboard"
                     className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-6 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap"
                   >
-                    대시보드
+                    시작하기
                   </Link>
                   <button
                     onClick={handleLogout}

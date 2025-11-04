@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Users, BookOpen, Target, TrendingUp, ExternalLink } from 'lucide-react';
+import { Plus, Users, BookOpen, Target, TrendingUp, ExternalLink, Crown, ChevronRight } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useTeamStore, useTeams } from '../../store/teamStore';
 import { memberApi, type MyProfileResponse } from '../../api/member';
 import { teamsApi, type TodayProblem } from '../../api/teams';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
+import Tooltip from '../../components/common/Tooltip';
 
 interface TeamProblem extends TodayProblem {
   teamId: number;
@@ -13,7 +14,7 @@ interface TeamProblem extends TodayProblem {
 }
 
 export default function DashboardPage() {
-  useDocumentTitle('대시보드');
+  useDocumentTitle('내 학습');
   const { isAuthenticated } = useAuthStore();
   const teams = useTeams();
   const { fetchTeams } = useTeamStore();
@@ -185,22 +186,41 @@ export default function DashboardPage() {
                     <Link
                       key={team.teamId}
                       to={`/teams/${team.teamId}`}
-                      className="block border border-gray-200 rounded-lg p-4 hover:border-blue-400 hover:bg-blue-50/50 transition-all"
+                      className="group block bg-white border border-gray-200 rounded-lg p-4 hover:border-blue-400 hover:shadow-md transition-all"
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="min-w-0 flex-1">
-                          <h4 className="text-sm font-semibold text-gray-900 truncate">
-                            {team.teamName}
-                          </h4>
-                          <p className="text-xs text-gray-500 mt-1">
-                            멤버 {team.memberCount}명 · {team.isRecommendationActive ? '✓ 추천 활성' : '○ 추천 비활성'}
-                          </p>
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start space-x-3 flex-1 min-w-0">
+                          <div className="flex-shrink-0 mt-1">
+                            <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                              <Users className="h-5 w-5 text-blue-600" />
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <h4 className="text-sm font-semibold text-gray-900 truncate">
+                                {team.teamName}
+                              </h4>
+                              {team.myRole === 'LEADER' && (
+                                <Tooltip text="팀장">
+                                  <Crown className="h-4 w-4 text-yellow-500 flex-shrink-0" />
+                                </Tooltip>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">
+                              멤버 {team.memberCount}명
+                            </p>
+                          </div>
                         </div>
-                        {team.myRole === 'LEADER' && (
-                          <span className="ml-3 px-2.5 py-1 text-xs font-semibold bg-blue-100 text-blue-700 rounded-md">
-                            팀장
-                          </span>
-                        )}
+                        <div className="flex items-start gap-2 ml-2">
+                          {team.isRecommendationActive && (
+                            <Tooltip text="문제 추천 활성화됨">
+                              <span className="px-2 py-1 text-xs font-medium rounded bg-green-100 text-green-700 flex-shrink-0">
+                                추천 활성
+                              </span>
+                            </Tooltip>
+                          )}
+                          <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                        </div>
                       </div>
                     </Link>
                   ))}
