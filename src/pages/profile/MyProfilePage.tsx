@@ -1,11 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Mail, Calendar, User, Check, X, Bell } from 'lucide-react';
+import { Mail, Calendar, User, Check, X, Bell, UserX } from 'lucide-react';
 import { memberApi, type MyProfileResponse } from '../../api/member';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 import { Toast } from '../../components/common/Toast';
+import DeleteAccountModal from './components/DeleteAccountModal';
+import { useAuthStore } from '../../store/authStore';
+import { useNavigate } from 'react-router-dom';
 
 export default function MyProfilePage() {
   useDocumentTitle('마이페이지');
+
+  const navigate = useNavigate();
+  const logout = useAuthStore((state) => state.logout);
 
   const [profile, setProfile] = useState<MyProfileResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -15,6 +21,8 @@ export default function MyProfilePage() {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [newEmail, setNewEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -102,6 +110,32 @@ export default function MyProfilePage() {
       }
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      setIsDeleting(true);
+
+      // TODO: 백엔드 API 구현 후 주석 해제
+      // await memberApi.deleteAccount();
+
+      // 임시: API 호출 시뮬레이션 (1초 대기)
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      showToastMessage('회원탈퇴가 완료되었습니다', 'success');
+
+      // 1초 후 로그아웃 및 로그인 페이지로 이동
+      setTimeout(() => {
+        logout();
+        navigate('/login');
+      }, 1000);
+
+    } catch (error: any) {
+      console.error('회원탈퇴 실패:', error);
+      showToastMessage('회원탈퇴에 실패했습니다. 다시 시도해주세요.', 'error');
+      setIsDeleting(false);
+      setShowDeleteModal(false);
     }
   };
 
@@ -255,6 +289,27 @@ export default function MyProfilePage() {
                 </div>
               </div>
             </div>
+
+            {/* 회원탈퇴 */}
+            <div className="mt-6 sm:mt-8 pt-6 border-t border-gray-100">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <UserX className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-sm font-semibold text-gray-900 mb-1">회원탈퇴</h4>
+                    <p className="text-xs text-gray-700 mb-3">
+                      계정을 삭제하면 모든 데이터가 영구적으로 삭제되며 복구할 수 없습니다.
+                    </p>
+                    <button
+                      onClick={() => setShowDeleteModal(true)}
+                      className="px-4 py-2 text-sm font-medium text-red-700 bg-white border border-red-300 rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+                    >
+                      회원탈퇴
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -345,6 +400,15 @@ export default function MyProfilePage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* 회원탈퇴 모달 */}
+      {showDeleteModal && (
+        <DeleteAccountModal
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleDeleteAccount}
+          isDeleting={isDeleting}
+        />
       )}
     </div>
   );

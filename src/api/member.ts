@@ -98,5 +98,18 @@ export const memberApi = {
   checkEmail: async (email: string): Promise<boolean> => {
     const response = await apiClient.post<ApiResponse<CheckEmailResponse>>('/member/check-email', { email });
     return response.data.data.available;
+  },
+
+  /**
+   * 회원탈퇴 - 계정 및 모든 관련 데이터 삭제
+   * TODO: 백엔드 API 구현 후 사용 가능
+   * 예상 엔드포인트: DELETE /member/me
+   */
+  deleteAccount: async (): Promise<void> => {
+    // TODO: 백엔드 API 구현 대기 중
+    // 구현 시 아래 주석 해제하여 사용
+    // await apiClient.delete('/member/me');
+
+    throw new Error('회원탈퇴 API가 아직 구현되지 않았습니다');
   }
 };
