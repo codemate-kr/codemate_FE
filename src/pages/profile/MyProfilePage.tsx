@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Mail, Calendar, User, Check, X, Bell, UserX } from 'lucide-react';
+import { Mail, Calendar, User, Check, X, UserX } from 'lucide-react';
 import { memberApi, type MyProfileResponse } from '../../api/member';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 import { Toast } from '../../components/common/Toast';
