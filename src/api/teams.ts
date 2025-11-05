@@ -30,7 +30,7 @@ export type RecommendationDayOfWeek = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THUR
 export type ProblemDifficultyPreset = 'EASY' | 'NORMAL' | 'HARD' | 'CUSTOM';
 
 // solved.ac 티어 시스템 (Bronze5 = 1, ..., Platinum5 = 20)
-export type SolvedacTier = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20;
+export type SolvedacTier = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30;
 
 export interface DifficultyRange {
   minTier: SolvedacTier;
@@ -51,13 +51,9 @@ export interface TeamRecommendationSettingsResponse {
   teamName: string;
   isActive: boolean;
   recommendationDays: RecommendationDayOfWeek[];
-  recommendationDayNames: string[];
   problemDifficultyPreset?: ProblemDifficultyPreset;
-  difficultyDisplayName?: string;
-  customMinLevel?: number;
-  customMaxLevel?: number;
-  minTierName?: string;  // 실제 티어 이름 (예: "Bronze I")
-  maxTierName?: string;  // 실제 티어 이름 (예: "Silver III")
+  minProblemLevel?: number;
+  maxProblemLevel?: number;
 }
 
 // 하위 호환성을 위한 타입 alias
