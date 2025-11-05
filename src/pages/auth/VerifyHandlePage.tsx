@@ -8,15 +8,17 @@ import { useAuthStore } from '../../store/authStore';
 export default function VerifyHandlePage() {
   const [handle, setHandle] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showEmailConfirm, setShowEmailConfirm] = useState(false);
   const navigate = useNavigate();
-  const { updateUser } = useAuthStore();
+  const { updateUser, user } = useAuthStore();
 
   const verifyMutation = useMutation({
     mutationFn: (handle: string) => memberApi.verifySolvedAc(handle),
     onSuccess: (data) => {
       updateUser({ handle: data.handle });
-      toast.success('백준 아이디가 등록되었습니다');
-      navigate('/dashboard');
+      setShowConfirm(false);
+      // 이메일 확인 모달 표시
+      setShowEmailConfirm(true);
     },
     onError: (error: any) => {
       setShowConfirm(false);
@@ -141,7 +143,7 @@ export default function VerifyHandlePage() {
         </div>
       </div>
 
-      {/* 확인 모달 */}
+      {/* 백준 아이디 확인 모달 */}
       {showConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
@@ -203,6 +205,63 @@ export default function VerifyHandlePage() {
                 ) : (
                   '등록하기'
                 )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 이메일 확인 모달 */}
+      {showEmailConfirm && user && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
+            <div className="text-center mb-6">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+                <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">
+                등록 완료!
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                자주 확인하는 이메일이 맞나요?
+              </p>
+              <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-4">
+                <p className="text-xs text-gray-600 mb-1">현재 이메일</p>
+                <p className="text-base font-semibold text-gray-900 break-all">{user.email}</p>
+              </div>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
+              <div className="flex items-start gap-2">
+                <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <p className="text-xs font-semibold text-blue-900 mb-1">이 이메일로 알림을 받게 됩니다</p>
+                  <ul className="text-xs text-blue-800 leading-relaxed space-y-0.5">
+                    <li>• 팀 초대 알림</li>
+                    <li>• 팀 미션 문제 (매주 설정된 요일 오전 9시)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => navigate('/mypage', { state: { openEmailModal: true } })}
+                className="flex-1 px-4 py-3 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 hover:bg-gray-50 rounded-xl transition-colors"
+              >
+                이메일 변경
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/dashboard')}
+                className="flex-1 px-4 py-3 text-sm font-semibold text-white bg-gradient-to-r from-[#1f6bff] to-[#2f88ff] hover:from-[#1a5ee6] hover:to-[#2a7ae6] rounded-xl transition-all"
+              >
+                시작하기
               </button>
             </div>
           </div>

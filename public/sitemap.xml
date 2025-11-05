@@ -48,9 +48,9 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- 내 프로필 -->
+  <!-- 마이페이지 -->
   <url>
-    <loc>https://codemate.kr/profile</loc>
+    <loc>https://codemate.kr/mypage</loc>
     <lastmod>2025-10-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>

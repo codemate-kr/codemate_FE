@@ -40,7 +40,7 @@ export default function VerifyEmailPage() {
 
         // 3초 후 마이페이지로 이동
         setTimeout(() => {
-          navigate('/profile');
+          navigate('/mypage');
         }, 3000);
       } catch (error: any) {
         console.error('이메일 인증 실패:', error);
@@ -101,7 +101,7 @@ export default function VerifyEmailPage() {
                 잠시 후 마이페이지로 이동합니다...
               </p>
               <button
-                onClick={() => navigate('/profile')}
+                onClick={() => navigate('/mypage')}
                 className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
               >
                 마이페이지로 이동
@@ -122,7 +122,7 @@ export default function VerifyEmailPage() {
               </p>
               <div className="flex flex-col gap-3">
                 <button
-                  onClick={() => navigate('/profile')}
+                  onClick={() => navigate('/mypage')}
                   className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                 >
                   마이페이지로 돌아가기

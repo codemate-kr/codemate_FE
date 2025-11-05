@@ -93,7 +93,7 @@ export default function Layout({ children }: LayoutProps) {
 
                   <div className="flex items-center gap-1 sm:gap-3 pl-1 sm:pl-3 border-l border-gray-200">
                     <Link
-                      to="/profile"
+                      to="/mypage"
                       className="flex items-center space-x-1 sm:space-x-2 px-1 sm:px-2 hover:bg-gray-100 rounded-md transition-colors"
                     >
                       <User className="h-4 w-4 text-gray-500 flex-shrink-0" />

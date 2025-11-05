@@ -97,7 +97,7 @@ function App() {
                       }
                     />
                     <Route
-                      path="/profile"
+                      path="/mypage"
                       element={
                         <ProtectedRoute>
                           <MyProfilePage />
