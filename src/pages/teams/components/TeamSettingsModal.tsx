@@ -23,8 +23,8 @@ export function TeamSettingsModal({
   const [isEnabled, setIsEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<ProblemDifficultyPreset | null>(null);
-  const [customMinLevel, setCustomMinLevel] = useState<number | null>(null);
-  const [customMaxLevel, setCustomMaxLevel] = useState<number | null>(null);
+  const [minProblemLevel, setMinProblemLevel] = useState<number | null>(null);
+  const [maxProblemLevel, setMaxProblemLevel] = useState<number | null>(null);
   const [showCustomModal, setShowCustomModal] = useState(false);
 
   // settings가 변경될 때마다 상태 업데이트
@@ -33,14 +33,14 @@ export function TeamSettingsModal({
       setSelectedDays(settings.recommendationDays || []);
       setIsEnabled(settings.isActive || false);
       setSelectedPreset(settings.problemDifficultyPreset || null);
-      setCustomMinLevel(settings.customMinLevel || null);
-      setCustomMaxLevel(settings.customMaxLevel || null);
+      setMinProblemLevel(settings.minProblemLevel || null);
+      setMaxProblemLevel(settings.maxProblemLevel || null);
     } else {
       setSelectedDays([]);
       setIsEnabled(false);
       setSelectedPreset(null);
-      setCustomMinLevel(null);
-      setCustomMaxLevel(null);
+      setMinProblemLevel(null);
+      setMaxProblemLevel(null);
     }
   }, [settings]);
 
@@ -75,15 +75,15 @@ export function TeamSettingsModal({
       setShowCustomModal(true);
     } else {
       setSelectedPreset(prev => prev === preset ? null : preset);
-      setCustomMinLevel(null);
-      setCustomMaxLevel(null);
+      setMinProblemLevel(null);
+      setMaxProblemLevel(null);
     }
   };
 
-  const handleCustomRangeSelect = (minLevel: number, maxLevel: number) => {
+  const handleCustomRangeSelect = (minProblemLevel: number, maxProblemLevel: number) => {
     setSelectedPreset('CUSTOM');
-    setCustomMinLevel(minLevel);
-    setCustomMaxLevel(maxLevel);
+    setMinProblemLevel(minProblemLevel);
+    setMaxProblemLevel(maxProblemLevel);
     setShowCustomModal(false);
   };
 
@@ -101,16 +101,16 @@ export function TeamSettingsModal({
         await teamsApi.updateRecommendationSettings(teamId, {
           recommendationDays: sortedDays,
           problemDifficultyPreset: selectedPreset || undefined,
-          customMinLevel: customMinLevel || undefined,
-          customMaxLevel: customMaxLevel || undefined
+          minProblemLevel: minProblemLevel || undefined,
+          maxProblemLevel: maxProblemLevel || undefined
         });
       } else {
         // await teamsApi.disableRecommendation(teamId);
         await teamsApi.updateRecommendationSettings(teamId, {
           recommendationDays: [],
           problemDifficultyPreset: selectedPreset || undefined,
-          customMinLevel: customMinLevel || undefined,
-          customMaxLevel: customMaxLevel || undefined
+          minProblemLevel: minProblemLevel || undefined,
+          maxProblemLevel: maxProblemLevel || undefined
         });
       }
 
@@ -317,8 +317,8 @@ export function TeamSettingsModal({
                         )}
                       </div>
                       <span className="text-xs text-gray-500">
-                        {selectedPreset === 'CUSTOM' && customMinLevel && customMaxLevel
-                          ? `${getTierName(customMinLevel as SolvedacTier)} ~ ${getTierName(customMaxLevel as SolvedacTier)}`
+                        {selectedPreset === 'CUSTOM' && minProblemLevel && maxProblemLevel
+                          ? `${getTierName(minProblemLevel as SolvedacTier)} ~ ${getTierName(maxProblemLevel as SolvedacTier)}`
                           : '직접 선택'}
                       </span>
                     </div>
@@ -377,8 +377,8 @@ export function TeamSettingsModal({
           <CustomTierModal
             onClose={() => setShowCustomModal(false)}
             onSelect={handleCustomRangeSelect}
-            currentMinLevel={customMinLevel}
-            currentMaxLevel={customMaxLevel}
+            currentMinLevel={minProblemLevel}
+            currentMaxLevel={maxProblemLevel}
           />
         )}
       </div>

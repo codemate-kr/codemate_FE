@@ -41,8 +41,8 @@ export interface DifficultyRange {
 export interface TeamRecommendationSettingsRequest {
   recommendationDays: RecommendationDayOfWeek[];
   problemDifficultyPreset?: ProblemDifficultyPreset;
-  customMinLevel?: number;
-  customMaxLevel?: number;
+  minProblemLevel?: number;
+  maxProblemLevel?: number;
 }
 
 // 응답 DTO 타입 (백엔드 API 스펙에 맞춤)
