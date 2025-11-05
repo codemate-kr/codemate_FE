@@ -34,18 +34,18 @@ export default function TeamInfoSection({
         </div>
         {recommendationSettings?.isActive && (
           <>
-            {(recommendationSettings.minTierName && recommendationSettings.maxTierName) ||
-             (recommendationSettings.customMinLevel && recommendationSettings.customMaxLevel) ? (
+            {recommendationSettings.problemDifficultyPreset && (
               <div className="flex justify-between">
                 <span className="text-gray-500">문제 난이도</span>
                 <span className="font-medium text-gray-900 text-sm">
                   {recommendationSettings.minTierName && recommendationSettings.maxTierName
                     ? `${recommendationSettings.minTierName} ~ ${recommendationSettings.maxTierName}`
-                    : `${getTierName(recommendationSettings.customMinLevel as SolvedacTier)} ~ ${getTierName(recommendationSettings.customMaxLevel as SolvedacTier)}`
-                  }
+                    : recommendationSettings.customMinLevel && recommendationSettings.customMaxLevel
+                    ? `${getTierName(recommendationSettings.customMinLevel as SolvedacTier)} ~ ${getTierName(recommendationSettings.customMaxLevel as SolvedacTier)}`
+                    : ''}
                 </span>
               </div>
-            ) : null}
+            )}
             {sortedDayNames.length > 0 && (
               <div className="pt-2 border-t border-gray-100">
                 <p className="text-xs text-gray-500 mb-1.5">추천 요일</p>
