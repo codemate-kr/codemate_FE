@@ -205,7 +205,7 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSetting
               설정이 완료되었습니다
             </p>
             <p className="text-sm text-gray-500">
-              매일 오전 9시에 새로운 문제가 추천됩니다.
+              오전 9시에 새로운 문제가 추천됩니다.
             </p>
           </div>
         )}
