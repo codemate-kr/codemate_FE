@@ -11,7 +11,9 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const location = useLocation();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    // 현재 경로를 query parameter로 전달
+    const redirectTo = encodeURIComponent(location.pathname + location.search);
+    return <Navigate to={`/login?redirect=${redirectTo}`} replace />;
   }
 
   // 백준 핸들이 없으면 핸들 등록 페이지로 리다이렉트

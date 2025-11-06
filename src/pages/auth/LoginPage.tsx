@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { Chrome } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import { useAuthStore } from '../../store/authStore';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 import { env } from '../../config/env';
@@ -11,7 +12,10 @@ export default function LoginPage() {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
 
-  const from = location.state?.from?.pathname || '/dashboard';
+  // query parameter에서 리다이렉트 경로 가져오기
+  const urlParams = new URLSearchParams(location.search);
+  const redirectParam = urlParams.get('redirect');
+  const from = redirectParam ? decodeURIComponent(redirectParam) : '/dashboard';
 
   if (isAuthenticated) {
     return <Navigate to={from} replace />;
@@ -21,9 +25,74 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      window.location.href = `${env.OAUTH_BASE_URL}/oauth2/authorization/google`;
+      // 팝업 창 크기 설정
+      const width = 500;
+      const height = 600;
+      const left = window.screen.width / 2 - width / 2;
+      const top = window.screen.height / 2 - height / 2;
+
+      // 팝업 창 열기
+      const popup = window.open(
+        `${env.OAUTH_BASE_URL}/oauth2/authorization/google`,
+        'Google Login',
+        `width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no,scrollbars=yes,resizable=yes`
+      );
+
+      if (!popup) {
+        toast.error('팝업 차단을 해제해주세요.');
+        setIsLoading(false);
+        return;
+      }
+
+      // 팝업이 닫혔는지 주기적으로 확인
+      let checkPopupClosed: NodeJS.Timeout | null = null;
+
+      // 팝업에서 메시지 수신 대기
+      const handleMessage = (event: MessageEvent) => {
+        // 보안: origin 확인
+        if (event.origin !== window.location.origin) {
+          return;
+        }
+
+        if (event.data.type === 'oauth-success') {
+          if (popup && !popup.closed) {
+            popup.close();
+          }
+          window.removeEventListener('message', handleMessage);
+          if (checkPopupClosed) clearInterval(checkPopupClosed);
+
+          toast.success('로그인 성공!');
+
+          // handle 없으면 verify-handle로, 있으면 원래 페이지로 이동
+          const user = event.data.user;
+          const targetPath = !user?.handle ? '/verify-handle' : from;
+
+          // 새로고침으로 상태 동기화
+          window.location.href = targetPath;
+        } else if (event.data.type === 'oauth-error') {
+          if (popup && !popup.closed) {
+            popup.close();
+          }
+          window.removeEventListener('message', handleMessage);
+          if (checkPopupClosed) clearInterval(checkPopupClosed);
+          toast.error('로그인에 실패했습니다.');
+          setIsLoading(false);
+        }
+      };
+
+      window.addEventListener('message', handleMessage);
+
+      // 팝업이 닫혔는지 주기적으로 확인
+      checkPopupClosed = setInterval(() => {
+        if (popup.closed) {
+          if (checkPopupClosed) clearInterval(checkPopupClosed);
+          window.removeEventListener('message', handleMessage);
+          setIsLoading(false);
+        }
+      }, 500);
     } catch (error) {
       console.error('Google login error:', error);
+      toast.error('로그인 중 오류가 발생했습니다.');
       setIsLoading(false);
     }
   };
