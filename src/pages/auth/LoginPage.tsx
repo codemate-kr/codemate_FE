@@ -55,8 +55,6 @@ export default function LoginPage() {
         }
 
         if (event.data.type === 'oauth-success') {
-          console.log('OAuth 성공 메시지 수신:', event.data);
-
           try {
             if (popup && !popup.closed) {
               popup.close();
@@ -73,8 +71,6 @@ export default function LoginPage() {
           // handle 없으면 verify-handle로, 있으면 원래 페이지로 이동
           const user = event.data.user;
           const targetPath = !user?.handle ? '/verify-handle' : from;
-
-          console.log('리다이렉트 경로:', targetPath);
 
           // 새로고침으로 상태 확실히 동기화
           window.location.href = targetPath;
