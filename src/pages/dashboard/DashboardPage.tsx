@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Plus, Users, BookOpen, Target, TrendingUp, ExternalLink, Crown, ChevronRight } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useTeamStore, useTeams } from '../../store/teamStore';
-import { memberApi, type MyProfileResponse } from '../../api/member';
 import { teamsApi, type TodayProblem } from '../../api/teams';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 import Tooltip from '../../components/common/Tooltip';
@@ -15,16 +14,14 @@ interface TeamProblem extends TodayProblem {
 
 export default function DashboardPage() {
   useDocumentTitle('내 학습');
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
   const teams = useTeams();
   const { fetchTeams } = useTeamStore();
-  const [userProfile, setUserProfile] = useState<MyProfileResponse | null>(null);
   const [todayProblems, setTodayProblems] = useState<TeamProblem[]>([]);
   const [problemsLoading, setProblemsLoading] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
-      loadUserProfile();
       // store의 fetchTeams 사용 (자동 캐싱)
       fetchTeams();
     }
@@ -35,15 +32,6 @@ export default function DashboardPage() {
       loadAllTodayProblems();
     }
   }, [teams]);
-
-  const loadUserProfile = async () => {
-    try {
-      const profile = await memberApi.getMe();
-      setUserProfile(profile);
-    } catch (error) {
-      console.error('사용자 프로필 로딩 실패:', error);
-    }
-  };
 
   const loadAllTodayProblems = async () => {
     setProblemsLoading(true);
@@ -79,7 +67,7 @@ export default function DashboardPage() {
           <div className="sm:flex sm:items-center sm:justify-between">
             <div className="sm:flex-auto">
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 break-words">
-                안녕하세요, {userProfile?.handle || '백준 미인증'}님!
+                안녕하세요, {user?.handle || '백준 미인증'}님!
               </h1>
               <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">
                 오늘도 알고리즘 문제를 풀어보세요.

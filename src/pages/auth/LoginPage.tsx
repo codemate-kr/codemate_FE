@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { Chrome } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuthStore } from '../../store/authStore';
@@ -10,7 +10,6 @@ export default function LoginPage() {
   useDocumentTitle('로그인');
   const { isAuthenticated } = useAuthStore();
   const location = useLocation();
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   // query parameter에서 리다이렉트 경로 가져오기
@@ -56,9 +55,16 @@ export default function LoginPage() {
         }
 
         if (event.data.type === 'oauth-success') {
-          if (popup && !popup.closed) {
-            popup.close();
+          console.log('OAuth 성공 메시지 수신:', event.data);
+
+          try {
+            if (popup && !popup.closed) {
+              popup.close();
+            }
+          } catch (e) {
+            // COOP 에러 무시
           }
+
           window.removeEventListener('message', handleMessage);
           if (checkPopupClosed) clearInterval(checkPopupClosed);
 
@@ -68,8 +74,10 @@ export default function LoginPage() {
           const user = event.data.user;
           const targetPath = !user?.handle ? '/verify-handle' : from;
 
-          // 페이지 이동 (새로고침 불필요 - Zustand persist가 상태 관리)
-          navigate(targetPath, { replace: true });
+          console.log('리다이렉트 경로:', targetPath);
+
+          // 새로고침으로 상태 확실히 동기화
+          window.location.href = targetPath;
         } else if (event.data.type === 'oauth-error') {
           if (popup && !popup.closed) {
             popup.close();
