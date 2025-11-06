@@ -1,60 +1,12 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Users, BookOpen, BarChart3, Mail, LogOut } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore';
-import Footer from '../../components/common/Footer';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Users, BookOpen, BarChart3, Mail } from 'lucide-react';
+import Layout from '../../components/common/Layout';
 
 export default function HomePage() {
-  const { isAuthenticated, logout } = useAuthStore();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
-      {/* Navigation */}
-      <nav className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <Link to="/" className="flex items-center space-x-1.5 sm:space-x-2">
-                <img src="/logo.svg" alt="CodeMate" className="h-6 w-6 sm:h-8 sm:w-8" />
-                <span className="text-base sm:text-xl font-bold text-gray-900">CodeMate</span>
-              </Link>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-4">
-              {isAuthenticated ? (
-                <>
-                  <Link
-                    to="/dashboard"
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-6 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap"
-                  >
-                    시작하기
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center space-x-1 px-2 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors"
-                  >
-                    <LogOut className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                    <span className="hidden sm:inline">로그아웃</span>
-                  </button>
-                </>
-              ) : (
-                <Link
-                  to="/login"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors"
-                >
-                  로그인
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
-      {/* Hero Section */}
-      <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <Layout>
+        {/* Hero Section */}
         <div className="text-center pt-12 sm:pt-20 pb-12 sm:pb-16">
           <div className="mb-6 sm:mb-8">
             <span className="inline-block px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-blue-100 text-blue-700 text-xs sm:text-sm font-semibold">
@@ -94,7 +46,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-12 sm:gap-8 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 gap-12 sm:gap-8 sm:grid-cols-2 lg:grid-cols-4 px-4 pb-12">
             <div className="group">
               <div className="relative bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
                 <div className="absolute -top-6 left-6 sm:left-8">
@@ -168,9 +120,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </div>
-
-      <Footer />
+      </Layout>
     </div>
   );
 }

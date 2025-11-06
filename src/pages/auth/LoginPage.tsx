@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Chrome } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuthStore } from '../../store/authStore';
@@ -10,6 +10,7 @@ export default function LoginPage() {
   useDocumentTitle('로그인');
   const { isAuthenticated } = useAuthStore();
   const location = useLocation();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   // query parameter에서 리다이렉트 경로 가져오기
@@ -67,8 +68,8 @@ export default function LoginPage() {
           const user = event.data.user;
           const targetPath = !user?.handle ? '/verify-handle' : from;
 
-          // 새로고침으로 상태 동기화
-          window.location.href = targetPath;
+          // 페이지 이동 (새로고침 불필요 - Zustand persist가 상태 관리)
+          navigate(targetPath, { replace: true });
         } else if (event.data.type === 'oauth-error') {
           if (popup && !popup.closed) {
             popup.close();
