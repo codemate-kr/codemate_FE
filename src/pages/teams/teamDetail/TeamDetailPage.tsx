@@ -169,7 +169,12 @@ export default function TeamDetailPage() {
             />
 
             <div className="mt-6 bg-white border border-gray-200 rounded-lg p-4">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">진행률</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-gray-900">진행률</h3>
+                <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-700">
+                  개발 중
+                </span>
+              </div>
               <div className="h-48 flex items-center justify-center bg-gray-50 rounded border border-dashed border-gray-300">
                 <div className="text-center">
                   <svg className="h-12 w-12 text-gray-300 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
