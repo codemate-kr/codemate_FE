@@ -1,4 +1,4 @@
-import { Shield, MessageSquare, Globe, FileText, ChevronDown } from 'lucide-react';
+import { Shield, MessageSquare, Globe, FileText, ChevronDown, Github } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 
@@ -25,8 +25,8 @@ export default function Footer() {
 
   return (
     <footer className="bg-gradient-to-br from-gray-50 to-gray-100 border-t border-gray-200 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8">
           {/* 법률 문서 드롭다운 */}
           <div
             className="relative"
@@ -89,9 +89,21 @@ export default function Footer() {
             <Globe className="h-4 w-4 group-hover:scale-110 transition-transform" />
             <span className="font-medium">개발자 블로그</span>
           </a>
+
+          <div className="hidden sm:block w-px h-4 bg-gray-300"></div>
+
+          <a
+            href="https://github.com/codemate-kr"
+            className="group flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Github className="h-4 w-4 group-hover:scale-110 transition-transform" />
+            <span className="font-medium">GitHub</span>
+          </a>
         </div>
 
-        <div className="mt-6 text-center">
+        <div className="mt-4 sm:mt-6 text-center">
           <p className="text-xs text-gray-500">
             © 2025 CodeMate. All rights reserved.
           </p>

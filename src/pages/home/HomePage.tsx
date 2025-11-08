@@ -14,15 +14,15 @@ export default function HomePage() {
             </span>
           </div>
           <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight font-extrabold text-gray-900 px-4">
-            <span className="block mb-2">코딩테스트를</span>
+            <span className="block mb-2">알고리즘 스터디</span>
             <span className="block bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
-              더 스마트하게
+              코드메이트
             </span>
           </h1>
           <p className="mt-4 sm:mt-6 max-w-2xl mx-auto text-sm sm:text-lg md:text-xl text-gray-600 px-4">
-            그룹 기반 문제 큐레이션과 진행률 관리로 효율적인 알고리즘 학습을 시작하세요.
+            그룹 기반 문제 추천과 진행률 관리로 효율적인 알고리즘 학습을.
             <br className="hidden sm:block" />
-            매일 개인 맞춤형 문제를 이메일로 받아보세요.
+            매일 미션 문제를 이메일로 받아보세요.
           </p>
           <div className="mt-8 sm:mt-10 flex justify-center gap-4 px-4">
             <Link
@@ -56,10 +56,12 @@ export default function HomePage() {
                 </div>
                 <div className="pt-6 sm:pt-8">
                   <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3">
-                    스터디 그룹 관리
+                    스터디 팀
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                    친구들과 스터디 그룹을 만들고 함께 문제를 풀어보세요.
+                    팀원들과 스터디 팀을 만들고
+                    <br />
+                    함께 문제를 풀어보세요.
                   </p>
                 </div>
               </div>
@@ -74,10 +76,10 @@ export default function HomePage() {
                 </div>
                 <div className="pt-6 sm:pt-8">
                   <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3">
-                    맞춤 문제 추천
+                    미션 문제
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                    그룹원 모두가 풀지 않은 문제를 난이도와 태그별로 추천합니다.
+                    난이도별 백준 미션 문제를 자동 추천합니다.
                   </p>
                 </div>
               </div>
@@ -92,10 +94,10 @@ export default function HomePage() {
                 </div>
                 <div className="pt-6 sm:pt-8">
                   <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3">
-                    진행률 시각화
+                    진행률 확인
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                    개인별, 그룹별 문제 해결 현황을 한눈에 확인하세요.
+                    팀원들의 문제 해결 현황을 확인하세요.
                   </p>
                 </div>
               </div>
@@ -113,7 +115,7 @@ export default function HomePage() {
                     이메일 알림
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                    매일 아침 9시, 추천 문제를 이메일로 받아보세요.
+                    매일 아침 9시, 미션 문제를 이메일로 받아보세요.
                   </p>
                 </div>
               </div>
