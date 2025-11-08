@@ -13,15 +13,15 @@ export default function HomePage() {
               스마트한 알고리즘 학습 플랫폼
             </span>
           </div>
-          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight font-extrabold text-gray-900 px-4">
+          <h1 className="text-5xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight font-extrabold text-gray-900 px-4">
             <span className="block mb-2">알고리즘 스터디</span>
             <span className="block bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
               코드메이트
             </span>
           </h1>
-          <p className="mt-4 sm:mt-6 max-w-2xl mx-auto text-sm sm:text-lg md:text-xl text-gray-600 px-4">
+          <p className="mt-4 sm:mt-6 max-w-2xl mx-auto text-base sm:text-lg md:text-xl text-gray-600 px-4">
             그룹 기반 문제 추천과 진행률 관리로 효율적인 알고리즘 학습을.
-            <br className="hidden sm:block" />
+            <br />
             매일 미션 문제를 이메일로 받아보세요.
           </p>
           <div className="mt-8 sm:mt-10 flex justify-center gap-4 px-4">
@@ -59,9 +59,7 @@ export default function HomePage() {
                     스터디 팀
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                    팀원들과 스터디 팀을 만들고
-                    <br />
-                    함께 문제를 풀어보세요.
+                    스터디 팀을 만들고 함께 학습해 보세요.
                   </p>
                 </div>
               </div>
