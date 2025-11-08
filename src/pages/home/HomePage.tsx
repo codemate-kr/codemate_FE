@@ -42,7 +42,7 @@ export default function HomePage() {
               주요 기능
             </h2>
             <p className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-gray-900">
-              스터디를 더 효율적으로
+              꾸준한 학습을 위한 동기부여
             </p>
           </div>
 
