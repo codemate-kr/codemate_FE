@@ -202,17 +202,21 @@ export function TeamSettingsModal({
                       <Calendar className="h-4 w-4 text-gray-600" />
                       <h4 className="text-sm font-semibold text-gray-900">추천 요일</h4>
                     </div>
-                    <span className="text-xs text-gray-500">문제를 받을 요일을 선택하세요</span>
+                    {selectedDays.length > 0 ? (
+                      <span className="text-xs font-medium text-blue-600">{selectedDays.length}개 선택됨</span>
+                    ) : (
+                      <span className="text-xs text-gray-500">문제를 받을 요일을 선택하세요</span>
+                    )}
                   </div>
 
-                  <div className="grid grid-cols-7 gap-2">
+                  <div className="flex gap-1 max-h-10">
                     {weekDays.map(day => (
                       <label
                         key={day.key}
-                        className={`relative flex items-center justify-center h-11 rounded-lg cursor-pointer transition-all select-none border ${
+                        className={`flex-1 aspect-square flex items-center justify-center rounded-md cursor-pointer transition-all select-none border ${
                           selectedDays.includes(day.key)
-                            ? 'bg-blue-500 border-blue-500 text-white shadow-sm'
-                            : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50'
+                            ? 'bg-blue-50 text-blue-600 border-blue-500'
+                            : 'text-gray-300 border-gray-200 hover:border-blue-200 hover:bg-blue-50'
                         }`}
                       >
                         <input
@@ -222,28 +226,10 @@ export function TeamSettingsModal({
                           className="sr-only"
                           disabled={isLoading}
                         />
-                        <span className="text-xs font-semibold">{day.label.charAt(0)}</span>
+                        <span className="text-xs font-medium">{day.label.charAt(0)}</span>
                       </label>
                     ))}
                   </div>
-
-                  {selectedDays.length > 0 && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                      <p className="text-xs text-blue-700 font-medium mb-1.5">
-                        선택된 요일 ({selectedDays.length}개)
-                      </p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {getSortedSelectedDays().map(day => {
-                          const dayInfo = weekDays.find(w => w.key === day);
-                          return (
-                            <span key={day} className="inline-flex items-center px-2 py-0.5 bg-blue-500 text-white text-xs font-medium rounded">
-                              {dayInfo?.label}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
               </div>
 
               {/* Difficulty Selection */}

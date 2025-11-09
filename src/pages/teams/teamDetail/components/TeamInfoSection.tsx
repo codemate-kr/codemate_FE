@@ -13,11 +13,20 @@ export default function TeamInfoSection({
   recommendationSettings,
 }: TeamInfoSectionProps) {
 
+  // 모든 요일 정의 (월~일)
+  const allDays = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
+
   //영어 요일을 한국어로 변환
   const koreanDays = useMemo(() => {
     if (!recommendationSettings?.recommendationDays) return [];
     return DayToKorean(recommendationSettings.recommendationDays);
   }, [recommendationSettings?.recommendationDays]);
+
+  // 오늘 요일 확인
+  const todayDayName = useMemo(() => {
+    const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+    return days[new Date().getDay()];
+  }, []);
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4">
@@ -45,15 +54,31 @@ export default function TeamInfoSection({
                 </span>
               </div>
             )}
-            {koreanDays.length > 0 && (
+            {recommendationSettings?.recommendationDays && recommendationSettings.recommendationDays.length > 0 && (
               <div className="pt-2 border-t border-gray-100">
-                <p className="text-xs text-gray-500 mb-1.5">추천 요일</p>
-                <div className="flex flex-wrap gap-1">
-                  {koreanDays.map((day) => (
-                    <span key={day} className="text-xs px-2 py-0.5 bg-gray-100 text-gray-700 rounded">
-                      {day}
-                    </span>
-                  ))}
+                <p className="text-xs text-gray-500 mb-2">추천 요일</p>
+                <div className="flex gap-1">
+                  {allDays.map((day) => {
+                    const isActive = koreanDays.includes(day);
+                    const isToday = day === todayDayName;
+                    return (
+                      <div
+                        key={day}
+                        className={`flex-1 text-center text-xs font-medium py-1.5 rounded-md border transition-all relative ${
+                          isActive
+                            ? isToday
+                              ? 'bg-blue-50 text-blue-600 border-blue-500 shadow-sm'
+                              : 'bg-blue-50 text-blue-600 border-blue-200'
+                            : 'text-gray-300 border-gray-100'
+                        }`}
+                      >
+                        {isToday && (
+                          <div className="absolute -top-1 -left-1 w-2 h-2 bg-blue-500 rounded-full"></div>
+                        )}
+                        {day.slice(0, 1)}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
