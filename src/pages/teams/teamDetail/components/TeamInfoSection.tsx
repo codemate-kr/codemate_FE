@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { getTierName } from '../../../../utils/tierUtils';
+import { getTierName, getTierColor } from '../../../../utils/tierUtils';
 import { DayToKorean } from '../../../../utils/dayUtils';
 import type { TeamRecommendationSettingsResponse, SolvedacTier } from '../../../../api/teams';
 
@@ -45,13 +45,21 @@ export default function TeamInfoSection({
         {recommendationSettings?.isActive && (
           <>
             {recommendationSettings.problemDifficultyPreset && (
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-gray-500">문제 난이도</span>
-                <span className="font-medium text-gray-900 text-sm">
-                  {recommendationSettings.minProblemLevel && recommendationSettings.maxProblemLevel
-                    ? `${getTierName(recommendationSettings.minProblemLevel as SolvedacTier)} ~ ${getTierName(recommendationSettings.maxProblemLevel as SolvedacTier)}`
-                    : ''}
-                </span>
+                <div className="flex items-center gap-1">
+                  {recommendationSettings.minProblemLevel && recommendationSettings.maxProblemLevel && (
+                    <>
+                      <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${getTierColor(recommendationSettings.minProblemLevel as SolvedacTier)}`}>
+                        {getTierName(recommendationSettings.minProblemLevel as SolvedacTier)}
+                      </span>
+                      <span className="text-gray-400 text-xs">~</span>
+                      <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${getTierColor(recommendationSettings.maxProblemLevel as SolvedacTier)}`}>
+                        {getTierName(recommendationSettings.maxProblemLevel as SolvedacTier)}
+                      </span>
+                    </>
+                  )}
+                </div>
               </div>
             )}
             {recommendationSettings?.recommendationDays && recommendationSettings.recommendationDays.length > 0 && (
