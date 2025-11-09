@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Target, CheckCircle } from 'lucide-react';
+import { X, CheckCircle } from 'lucide-react';
 import { type SolvedacTier } from '../../../api/teams';
 import { getTierName, getTierColor } from '../../../utils/tierUtils';
 
@@ -12,7 +12,7 @@ interface CustomTierModalProps {
 
 export function CustomTierModal({ onClose, onSelect, currentMinLevel, currentMaxLevel }: CustomTierModalProps) {
   const [minTier, setMinTier] = useState<SolvedacTier>(currentMinLevel as SolvedacTier || 1);
-  const [maxTier, setMaxTier] = useState<SolvedacTier>(currentMaxLevel as SolvedacTier || 5);
+  const [maxTier, setMaxTier] = useState<SolvedacTier>(currentMaxLevel as SolvedacTier || 20);
 
   const handleConfirm = () => {
     if (minTier > maxTier) {
@@ -37,53 +37,99 @@ export function CustomTierModal({ onClose, onSelect, currentMinLevel, currentMax
           </div>
 
           <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  최소 티어
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <label className="block text-sm font-medium text-gray-700">
+                  티어 범위 선택
                 </label>
-                <select
-                  value={minTier}
-                  onChange={(e) => setMinTier(Number(e.target.value) as SolvedacTier)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  {Array.from({ length: 20 }, (_, i) => i + 1).map(tier => (
-                    <option key={tier} value={tier}>
-                      {getTierName(tier as SolvedacTier)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  최대 티어
-                </label>
-                <select
-                  value={maxTier}
-                  onChange={(e) => setMaxTier(Number(e.target.value) as SolvedacTier)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  {Array.from({ length: 20 }, (_, i) => i + 1).map(tier => (
-                    <option key={tier} value={tier}>
-                      {getTierName(tier as SolvedacTier)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-start space-x-3">
-                <Target className="h-5 w-5 text-blue-600 mt-0.5" />
-                <div className="text-sm text-blue-700">
-                  <p className="font-medium mb-1">선택된 범위</p>
-                  <p>
-                    <span className={getTierColor(minTier)}>{getTierName(minTier)}</span>
-                    {' ~ '}
-                    <span className={getTierColor(maxTier)}>{getTierName(maxTier)}</span>
-                  </p>
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs font-semibold px-2 py-1 rounded ${getTierColor(minTier)}`}>
+                    {getTierName(minTier)}
+                  </span>
+                  <span className="text-gray-400 text-xs">~</span>
+                  <span className={`text-xs font-semibold px-2 py-1 rounded ${getTierColor(maxTier)}`}>
+                    {getTierName(maxTier)}
+                  </span>
                 </div>
+              </div>
+
+              <div className="relative pt-2 pb-12">
+                {/* 배경 트랙 */}
+                <div className="absolute top-2 left-0 right-0 h-2 bg-gray-200 rounded-lg"></div>
+
+                {/* 눈금 표시 (브5, 실5, 골5, 플5, 다5, 루5) */}
+                {[1, 6, 11, 16, 21, 26].map((tier) => (
+                  <div
+                    key={tier}
+                    className="absolute top-0 w-0.5 h-6 bg-gray-300"
+                    style={{
+                      left: `${((tier - 1) / 29) * 100}%`,
+                      transform: 'translateX(-1px)'
+                    }}
+                  ></div>
+                ))}
+
+                {/* 선택된 범위 표시 */}
+                <div
+                  className="absolute top-2 h-2 bg-blue-500 rounded-lg"
+                  style={{
+                    left: `${((minTier - 1) / 29) * 100}%`,
+                    right: `${((30 - maxTier) / 29) * 100}%`
+                  }}
+                ></div>
+
+                {/* 최소 티어 슬라이더 */}
+                <input
+                  type="range"
+                  min="1"
+                  max="30"
+                  value={minTier}
+                  onChange={(e) => {
+                    const newMin = Number(e.target.value) as SolvedacTier;
+                    if (newMin <= maxTier) {
+                      setMinTier(newMin);
+                    }
+                  }}
+                  className="absolute top-0 left-0 w-full h-6 appearance-none bg-transparent cursor-pointer pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-moz-range-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-blue-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md [&::-moz-range-thumb]:cursor-pointer"
+                  style={{ zIndex: minTier > maxTier - 5 ? 5 : 3 }}
+                />
+
+                {/* 최대 티어 슬라이더 */}
+                <input
+                  type="range"
+                  min="1"
+                  max="30"
+                  value={maxTier}
+                  onChange={(e) => {
+                    const newMax = Number(e.target.value) as SolvedacTier;
+                    if (newMax >= minTier) {
+                      setMaxTier(newMax);
+                    }
+                  }}
+                  className="absolute top-0 left-0 w-full h-6 appearance-none bg-transparent cursor-pointer pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-moz-range-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-blue-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md [&::-moz-range-thumb]:cursor-pointer"
+                  style={{ zIndex: 4 }}
+                />
+
+                {/* 티어 레이블 */}
+                {[
+                  { tier: 1, label: '브5' },
+                  { tier: 6, label: '실5' },
+                  { tier: 11, label: '골5' },
+                  { tier: 16, label: '플5' },
+                  { tier: 21, label: '다5' },
+                  { tier: 26, label: '루5' }
+                ].map(({ tier, label }) => (
+                  <div
+                    key={tier}
+                    className="absolute top-10 text-xs text-gray-400"
+                    style={{
+                      left: `${((tier - 1) / 29) * 100}%`,
+                      transform: 'translateX(-50%)'
+                    }}
+                  >
+                    {label}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
