@@ -173,6 +173,15 @@ export default function TermsOfServicePage() {
                   <p className="text-xs text-gray-600">백준 온라인 저지(BOJ), solved.ac 및 원저작자에 귀속</p>
                 </div>
                 <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                  <p className="text-sm font-medium text-gray-900 mb-1">문제 난이도 티어 아이콘</p>
+                  <p className="text-xs text-gray-600">
+                    <a href="https://solved.ac" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 font-medium">
+                      solved.ac
+                    </a>
+                    에 귀속
+                  </p>
+                </div>
+                <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
                   <p className="text-sm font-medium text-gray-900 mb-1">사용자 생성 콘텐츠</p>
                   <p className="text-xs text-gray-600">해당 회원에게 귀속</p>
                 </div>
