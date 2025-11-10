@@ -111,7 +111,10 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 opacity-60">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 opacity-60 relative">
+            <span className="absolute top-2 right-2 text-xs px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded font-medium">
+              개발 중
+            </span>
             <div className="flex items-center gap-4">
               <div className="p-3 bg-purple-50 rounded-lg">
                 <Target className="h-6 w-6 text-purple-600" />
@@ -123,7 +126,10 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 opacity-60">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 opacity-60 relative">
+            <span className="absolute top-2 right-2 text-xs px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded font-medium">
+              개발 중
+            </span>
             <div className="flex items-center gap-4">
               <div className="p-3 bg-orange-50 rounded-lg">
                 <TrendingUp className="h-6 w-6 text-orange-600" />
