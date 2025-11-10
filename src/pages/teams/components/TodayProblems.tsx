@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, RefreshCw, ExternalLink, CheckCircle, Settings } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { teamsApi, type TodayProblemsResponse, type TeamRecommendationSettingsResponse } from '../../../api/teams';
 import { getTierIcon } from '../../../components/common/TierIcon';
 
@@ -204,11 +205,26 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSetting
                 </button>
               ) : (
                 <button
-                  onClick={() => onShowToast('🚧 개발 중입니다')}
+                  onClick={() => {
+                    // 팡파레 효과
+                    confetti({
+                      
+                      particleCount: 500,
+                      spread: 200,
+                      origin: { x: 0.25 },
+                    });
+                    confetti({
+                      
+                      particleCount: 500,
+                      spread: 200,
+                      origin: { x: 0.75 },
+                    });
+                    onShowToast('🎉 문제 해결을 축하합니다! [개발 중]');
+                  }}
                   className="w-full py-2.5 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1.5"
                 >
                   <CheckCircle className="h-4 w-4" />
-                  해결 인증하기
+                  해결 인증하기 (팡파레)
                 </button>
               )}
               </div>
