@@ -196,7 +196,7 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSetting
                   </div>
                 </div>
               </Link>
-              {problem.problemId%2 ? (
+              {problem.isSolved ? (
                 <button
                   disabled
                   className="w-full py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg flex items-center justify-center gap-1.5 cursor-not-allowed opacity-80"
