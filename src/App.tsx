@@ -13,7 +13,7 @@ import TeamsPage from './pages/teams/TeamsPage';
 import TeamDetailPage from './pages/teams/teamDetail/TeamDetailPage';
 import ProblemsPage from './pages/problems/ProblemsPage';
 import VerifyHandlePage from './pages/auth/VerifyHandlePage';
-import OpenStudyPage from './pages/open-study/OpenStudyPage';
+import TeamListPage from './pages/teams/teamlist/TeamListPage';
 import MyProfilePage from './pages/profile/MyProfilePage';
 import VerifyEmailPage from './pages/auth/VerifyEmailPage';
 import PrivacyPolicyPage from './pages/legal/PrivacyPolicyPage';
@@ -66,6 +66,10 @@ function App() {
                     />
                     <Route
                       path="/teams"
+                      element={<TeamListPage />}
+                    />
+                    <Route
+                      path="/teams/my"
                       element={
                         <ProtectedRoute>
                           <TeamsPage />
@@ -89,14 +93,6 @@ function App() {
                       }
                     />
                     <Route
-                      path="/open-study"
-                      element={
-                        <ProtectedRoute>
-                          <OpenStudyPage />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
                       path="/mypage"
                       element={
                         <ProtectedRoute>
@@ -104,9 +100,6 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
-                    {/* 기존 /groups 경로를 /teams로 리다이렉트
-                    <Route path="/groups" element={<Navigate to="/teams" replace />} />
-                    <Route path="/groups/:groupId" element={<Navigate to="/teams" replace />} /> */}
                     {/* 없는 경로는 홈으로 리다이렉트 */}
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>

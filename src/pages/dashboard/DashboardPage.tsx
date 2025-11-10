@@ -75,7 +75,7 @@ export default function DashboardPage() {
             </div>
             <div className="mt-3 sm:mt-0 sm:ml-16 sm:flex-none w-full sm:w-auto">
               <Link
-                to="/teams?action=create"
+                to="/teams/my?action=create"
                 className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg bg-blue-600 px-4 sm:px-5 py-2 sm:py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
               >
                 <Plus className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
@@ -150,7 +150,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900">내 스터디 팀</h3>
                 <Link
-                  to="/teams"
+                  to="/teams/my"
                   className="text-sm text-blue-600 hover:text-blue-700 font-medium"
                 >
                   전체 보기 →
@@ -167,7 +167,7 @@ export default function DashboardPage() {
                     아직 참여한 스터디 팀이 없습니다
                   </p>
                   <Link
-                    to="/teams?action=create"
+                    to="/teams/my?action=create"
                     className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
                   >
                     <Plus className="h-4 w-4 mr-2" />
@@ -221,7 +221,7 @@ export default function DashboardPage() {
                   {teams.length > 3 && (
                     <div className="pt-2 text-center">
                       <Link
-                        to="/teams"
+                        to="/teams/my"
                         className="text-sm text-gray-500 hover:text-gray-700 font-medium"
                       >
                         외 {teams.length - 3}개 팀 →
