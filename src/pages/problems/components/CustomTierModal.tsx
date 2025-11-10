@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { X, CheckCircle } from 'lucide-react';
 import { type SolvedacTier } from '../../../api/teams';
-import { getTierName, getTierColor } from '../../../utils/tierUtils';
+import { getTierIcon } from '../../../components/common/TierIcon';
 
 interface CustomTierModalProps {
   onClose: () => void;
@@ -43,13 +43,9 @@ export function CustomTierModal({ onClose, onSelect, currentMinLevel, currentMax
                   티어 범위 선택
                 </label>
                 <div className="flex items-center gap-2">
-                  <span className={`text-xs font-semibold px-2 py-1 rounded ${getTierColor(minTier)}`}>
-                    {getTierName(minTier)}
-                  </span>
-                  <span className="text-gray-400 text-xs">~</span>
-                  <span className={`text-xs font-semibold px-2 py-1 rounded ${getTierColor(maxTier)}`}>
-                    {getTierName(maxTier)}
-                  </span>
+                  {getTierIcon(minTier, 20)}
+                  <span className="text-gray-400 text-m">~</span>
+                  {getTierIcon(maxTier, 20)}
                 </div>
               </div>
 
@@ -110,24 +106,17 @@ export function CustomTierModal({ onClose, onSelect, currentMinLevel, currentMax
                   style={{ zIndex: 4 }}
                 />
 
-                {/* 티어 레이블 */}
-                {[
-                  { tier: 1, label: '브5' },
-                  { tier: 6, label: '실5' },
-                  { tier: 11, label: '골5' },
-                  { tier: 16, label: '플5' },
-                  { tier: 21, label: '다5' },
-                  { tier: 26, label: '루5' }
-                ].map(({ tier, label }) => (
+                {/* 티어 아이콘 레이블 */}
+                {[1, 6, 11, 16, 21, 26].map((tier) => (
                   <div
                     key={tier}
-                    className="absolute top-10 text-xs text-gray-400"
+                    className="absolute top-10 flex items-center justify-center"
                     style={{
                       left: `${((tier - 1) / 29) * 100}%`,
                       transform: 'translateX(-50%)'
                     }}
                   >
-                    {label}
+                    {getTierIcon(tier, 12)}
                   </div>
                 ))}
               </div>

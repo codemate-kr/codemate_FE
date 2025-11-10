@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Calendar, RefreshCw, ExternalLink, CheckCircle, Settings } from 'lucide-react';
 import { teamsApi, type TodayProblemsResponse, type TeamRecommendationSettingsResponse } from '../../../api/teams';
 import { getTierName, getTierColor } from '../../../utils/tierUtils';
+import { getTierIcon } from '../../../components/common/TierIcon';
 
 interface TodayProblemsProps {
   teamId: number;
@@ -145,13 +146,11 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSetting
                 <div className="flex flex-col h-full pt-6">
                   {/* 제목과 티어 */}
                   <div className="mb-3">
-                    <h4 className="text-sm font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-700 transition-colors">
-                      {problem.titleKo}
+                    <h4 className="text-sm font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-700 transition-colors flex items-center gap-1.5">
+                      {getTierIcon(problem.level, 14)}
+                      <span className="flex-1">{problem.titleKo}</span>
                     </h4>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getTierColor(problem.level)}`}>
-                        {getTierName(problem.level)}
-                      </span>
                       {problem.isSolved && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">
                           <CheckCircle className="h-3 w-3 mr-1" />
@@ -207,7 +206,7 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSetting
               ) : (
                 <button
                   onClick={() => onShowToast('🚧 개발 중입니다')}
-                  className="w-full py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1.5"
                 >
                   <CheckCircle className="h-4 w-4" />
                   해결 인증하기
