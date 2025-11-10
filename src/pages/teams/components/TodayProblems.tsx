@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, RefreshCw, ExternalLink, CheckCircle, Settings } from 'lucide-react';
 import { teamsApi, type TodayProblemsResponse, type TeamRecommendationSettingsResponse } from '../../../api/teams';
-import { getTierName, getTierColor } from '../../../utils/tierUtils';
 import { getTierIcon } from '../../../components/common/TierIcon';
 
 interface TodayProblemsProps {
