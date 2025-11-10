@@ -62,7 +62,7 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSetting
             {isTeamLeader && onOpenSettings && (
               <button
                 onClick={onOpenSettings}
-                className="inline-flex items-center px-2 sm:px-3 py-1.5 text-xs font-medium text-blue-700 bg-white border border-blue-200 rounded-md hover:bg-blue-50 transition-colors whitespace-nowrap"
+                className="inline-flex items-center px-2 sm:px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap"
               >
                 <Settings className="h-3.5 w-3.5 sm:mr-1.5" />
                 <span className="hidden sm:inline">추천 설정</span>
@@ -127,12 +127,15 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSetting
         ) : todayProblems && todayProblems.problems.length > 0 ? (
           <div className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-2 -mx-4 sm:-mx-6 px-4 sm:px-6">
             {todayProblems.problems.map((problem, index) => (
-              <Link
+              <div
                 key={problem.problemId}
+                className="flex-shrink-0 w-52 sm:w-56 flex flex-col gap-2"
+              >
+              <Link
                 to={`https://www.acmicpc.net/problem/${problem.problemId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex-shrink-0 w-52 sm:w-56 relative bg-white border border-blue-100 rounded-lg p-3 sm:p-4 hover:border-blue-400 hover:shadow-md hover:bg-blue-50 transition-all cursor-pointer"
+                className="group relative bg-white border border-blue-100 rounded-lg p-3 sm:p-4 hover:border-blue-400 hover:shadow-md hover:bg-blue-50 transition-all cursor-pointer"
               >
                 {/* 번호 */}
                 <div className="absolute top-2 left-2 w-5 h-5 bg-blue-100 text-blue-700 rounded flex items-center justify-center text-xs font-semibold">
@@ -187,13 +190,30 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSetting
 
                   {/* 문제 풀기 버튼 */}
                   <div className="absolute top-3 right-3">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white border border-blue-200 text-blue-600 text-xs font-medium rounded group-hover:bg-blue-50 group-hover:border-blue-400 transition-colors">
-                      <span>문제 풀기</span>
-                      <ExternalLink className="h-3 w-3" />
+                    <div className="flex items-center justify-center text-blue-600 group-hover:text-blue-700 transition-colors">
+                      <ExternalLink className="h-4 w-4" />
                     </div>
                   </div>
                 </div>
               </Link>
+              {problem.problemId%2 ? (
+                <button
+                  disabled
+                  className="w-full py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg flex items-center justify-center gap-1.5 cursor-not-allowed opacity-80"
+                >
+                  <CheckCircle className="h-4 w-4" />
+                  인증 완료
+                </button>
+              ) : (
+                <button
+                  onClick={() => onShowToast('🚧 개발 중입니다')}
+                  className="w-full py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <CheckCircle className="h-4 w-4" />
+                  해결 인증하기
+                </button>
+              )}
+              </div>
             ))}
           </div>
         ) : (
