@@ -210,14 +210,20 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSetting
                     confetti({
                       
                       particleCount: 500,
-                      spread: 200,
+                      spread: 240,
                       origin: { x: 0.25 },
                     });
                     confetti({
                       
                       particleCount: 500,
-                      spread: 200,
+                      spread: 240,
                       origin: { x: 0.75 },
+                    });
+                    confetti({
+                      
+                      particleCount: 500,
+                      spread: 240,
+                      origin: { x: 0.5 },
                     });
                     onShowToast('🎉 문제 해결을 축하합니다! [개발 중]');
                   }}
