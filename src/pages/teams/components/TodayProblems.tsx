@@ -1,37 +1,53 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, RefreshCw, ExternalLink, CheckCircle, Settings } from 'lucide-react';
+import { Calendar, RefreshCw, ExternalLink, CheckCircle, Settings, Loader2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { teamsApi, type TodayProblemsResponse, type TeamRecommendationSettingsResponse } from '../../../api/teams';
+import { memberApi } from '../../../api/member';
 import { getTierIcon } from '../../../components/common/TierIcon';
 
 interface TodayProblemsProps {
   teamId: number;
   isTeamLeader: boolean;
+  isTeamMember: boolean;
   onShowToast: (message: string) => void;
   onOpenSettings?: () => void;
   recommendationSettings?: TeamRecommendationSettingsResponse | null;
 }
 
-export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSettings, recommendationSettings }: TodayProblemsProps) {
+export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast, onOpenSettings, recommendationSettings }: TodayProblemsProps) {
   const [todayProblems, setTodayProblems] = useState<TodayProblemsResponse | null>(null);
   const [problemsLoading, setProblemsLoading] = useState(false);
+  const [verifyingProblemId, setVerifyingProblemId] = useState<number | null>(null);
+  const [showErrorFlash, setShowErrorFlash] = useState(false);
 
   useEffect(() => {
-    loadTodayProblems();
-  }, [teamId]);
+    let cancelled = false;
 
-  const loadTodayProblems = async () => {
-    try {
-      setProblemsLoading(true);
-      const problems = await teamsApi.getTodayProblems(teamId);
-      setTodayProblems(problems);
-    } catch (error) {
-      console.error('오늘의 문제 로딩 실패:', error);
-    } finally {
-      setProblemsLoading(false);
-    }
-  };
+    const loadTodayProblems = async () => {
+      try {
+        setProblemsLoading(true);
+        const problems = await teamsApi.getTodayProblems(teamId);
+        if (!cancelled) {
+          setTodayProblems(problems);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error('오늘의 문제 로딩 실패:', error);
+        }
+      } finally {
+        if (!cancelled) {
+          setProblemsLoading(false);
+        }
+      }
+    };
+
+    loadTodayProblems();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [teamId]);
 
   const handleRefreshProblems = async () => {
     if (!isTeamLeader) return;
@@ -45,10 +61,82 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSetting
     }
   };
 
+  const handleVerifyProblem = async (problemId: number) => {
+    setVerifyingProblemId(problemId);
+    try {
+      await memberApi.verifyProblemSolved(problemId);
+
+      // 검증 성공 시 팡파레 효과
+      confetti({
+        particleCount: 500,
+        spread: 240,
+        origin: { x: 0.25 },
+      });
+      confetti({
+        particleCount: 500,
+        spread: 240,
+        origin: { x: 0.75 },
+      });
+      confetti({
+        particleCount: 500,
+        spread: 240,
+        origin: { x: 0.5 },
+      });
+
+      // 문제 상태 업데이트
+      if (todayProblems) {
+        setTodayProblems({
+          ...todayProblems,
+          problems: todayProblems.problems.map(p =>
+            p.problemId === problemId ? { ...p, isSolved: true } : p
+          ),
+        });
+      }
+
+      onShowToast('🎉 문제 해결을 축하합니다!');
+    } catch (error: any) {
+      // 빨간 화면 효과
+      setShowErrorFlash(true);
+      setTimeout(() => setShowErrorFlash(false), 500);
+
+      const status = error?.response?.status;
+      if (status === 404) {
+        onShowToast('문제를 찾을 수 없습니다.');
+      } else if (status === 400) {
+        onShowToast('아직 해결하지 않은 문제입니다. BOJ에서 먼저 문제를 풀어주세요.');
+      } else if (status === 409) {
+        onShowToast('이미 인증된 문제입니다.');
+      } else {
+        onShowToast('문제 인증에 실패했습니다.');
+      }
+    } finally {
+      setVerifyingProblemId(null);
+    }
+  };
+
   return (
-    <div className="bg-white rounded-lg border border-blue-200 shadow-sm overflow-hidden">
-      {/* 헤더 */}
-      <div className="px-4 sm:px-6 py-4 bg-blue-50 border-b border-blue-100">
+    <>
+      {/* 화면 떨림 효과를 위한 스타일 */}
+      <style>
+        {`
+          @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+          }
+          .shake {
+            animation: shake 0.5s ease-in-out;
+          }
+        `}
+      </style>
+
+      <div className={`relative bg-white rounded-lg border shadow-sm overflow-hidden transition-colors duration-300 ${showErrorFlash ? 'shake border-red-400 bg-red-50' : 'border-blue-200'}`}>
+        {/* 에러 플래시 오버레이 - 컴포넌트 내부 */}
+        {showErrorFlash && (
+          <div className="absolute inset-0 bg-red-500/20 z-10 pointer-events-none animate-pulse" />
+        )}
+        {/* 헤더 */}
+        <div className="px-4 sm:px-6 py-4 bg-blue-50 border-b border-blue-100">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <div className="p-1.5 bg-blue-100 rounded-lg flex-shrink-0">
@@ -150,14 +238,6 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSetting
                       {getTierIcon(problem.level, 14)}
                       <span className="flex-1">{problem.titleKo}</span>
                     </h4>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {problem.isSolved && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">
-                          <CheckCircle className="h-3 w-3 mr-1" />
-                          완료
-                        </span>
-                      )}
-                    </div>
                   </div>
 
                   {/* 하단 정보 */}
@@ -201,36 +281,25 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSetting
                   className="w-full py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg flex items-center justify-center gap-1.5 cursor-not-allowed opacity-80"
                 >
                   <CheckCircle className="h-4 w-4" />
-                  인증 완료
+                  해결 완료
                 </button>
               ) : (
                 <button
-                  onClick={() => {
-                    // 팡파레 효과
-                    confetti({
-                      
-                      particleCount: 500,
-                      spread: 240,
-                      origin: { x: 0.25 },
-                    });
-                    confetti({
-                      
-                      particleCount: 500,
-                      spread: 240,
-                      origin: { x: 0.75 },
-                    });
-                    confetti({
-                      
-                      particleCount: 500,
-                      spread: 240,
-                      origin: { x: 0.5 },
-                    });
-                    onShowToast('🎉 문제 해결을 축하합니다! [개발 중]');
-                  }}
-                  className="w-full py-2.5 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1.5"
+                  onClick={() => isTeamMember && handleVerifyProblem(problem.problemId)}
+                  disabled={!isTeamMember || verifyingProblemId === problem.problemId}
+                  className="w-full py-2.5 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-500"
                 >
-                  <CheckCircle className="h-4 w-4" />
-                  해결 인증하기 (팡파레)
+                  {verifyingProblemId === problem.problemId ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      인증 중...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="h-4 w-4" />
+                      {isTeamMember ? '해결 인증하기' : '팀원만 인증 가능'}
+                    </>
+                  )}
                 </button>
               )}
               </div>
@@ -250,6 +319,7 @@ export function TodayProblems({ teamId, isTeamLeader, onShowToast, onOpenSetting
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }

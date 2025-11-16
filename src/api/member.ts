@@ -101,6 +101,16 @@ export const memberApi = {
   },
 
   /**
+   * 문제 해결 인증 - solved.ac API로 검증
+   * @throws 404 - 문제를 찾을 수 없음
+   * @throws 400 - solved.ac에서 해결 확인 안됨
+   * @throws 409 - 이미 인증된 문제
+   */
+  verifyProblemSolved: async (problemId: number): Promise<void> => {
+    await apiClient.post(`/member/me/problems/${problemId}/verify-solved`);
+  },
+
+  /**
    * 회원탈퇴 - 계정 및 모든 관련 데이터 삭제
    * TODO: 백엔드 API 구현 후 사용 가능
    * 예상 엔드포인트: DELETE /member/me

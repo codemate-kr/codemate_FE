@@ -62,19 +62,19 @@ export type DifficultyPreset = ProblemDifficultyPreset;
 // 오늘의 문제 타입 정의
 export interface TodayProblem {
   problemId: number;
+  title: string;
   titleKo: string;
   level: number; // solved.ac 티어 레벨
-  tags: string[];
+  url: string;
   acceptedUserCount: number;
   averageTries: number;
-  isSolved?: boolean; // 팀원이 풀었는지 여부
+  isSolved: boolean; // 로그인 사용자의 해결 여부
 }
 
 export interface TodayProblemsResponse {
-  teamId: number;
-  recommendedDate: string; // ISO 8601 날짜
+  recommendationId: number;
+  createdAt: string; // ISO 8601 날짜
   problems: TodayProblem[];
-  canRefresh: boolean; // 팀장인 경우 true
 }
 
 export interface UpdateTeamRequest {
@@ -160,87 +160,14 @@ export const teamsApi = {
     await apiClient.post(`/teams/${teamId}/deleteTeam`);
   },
 
-  // 오늘의 문제 API (백엔드 구현 대기 중 - Mock 데이터 사용)
+  // 오늘의 문제 API - 로그인 시 해결 유무 정보 포함
   getTodayProblems: async (teamId: number): Promise<TodayProblemsResponse> => {
-    // TODO: 실제 API 연결 시 주석 해제
     const response = await apiClient.get<ApiResponse<TodayProblemsResponse>>(`/recommendation/team/${teamId}/today-problem`);
     return response.data.data;
-
-    // Mock 데이터 (임시)
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          teamId,
-          recommendedDate: new Date().toISOString(),
-          problems: [
-            {
-              problemId: 1000,
-              titleKo: 'A+B',
-              level: 1,
-              tags: ['수학', '구현', '사칙연산'],
-              acceptedUserCount: 500000,
-              averageTries: 1.2,
-              isSolved: false,
-            },
-            {
-              problemId: 1001,
-              titleKo: 'A-B',
-              level: 1,
-              tags: ['수학', '구현', '사칙연산'],
-              acceptedUserCount: 400000,
-              averageTries: 1.3,
-              isSolved: true,
-            },
-            {
-              problemId: 10998,
-              titleKo: 'A×B',
-              level: 1,
-              tags: ['수학', '구현', '사칙연산'],
-              acceptedUserCount: 350000,
-              averageTries: 1.1,
-              isSolved: false,
-            },
-          ],
-          canRefresh: true,
-        });
-      }, 300);
-    });
   },
 
   refreshTodayProblems: async (teamId: number): Promise<TodayProblemsResponse> => {
-    // TODO: 실제 API 연결 시 주석 해제
-    // const response = await apiClient.post<ApiResponse<TodayProblemsResponse>>(`/teams/${teamId}/today-problems/refresh`);
-    // return response.data.data;
-
-    // Mock 데이터 (임시)
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          teamId,
-          recommendedDate: new Date().toISOString(),
-          problems: [
-            {
-              problemId: 2557,
-              titleKo: 'Hello World',
-              level: 1,
-              tags: ['구현'],
-              acceptedUserCount: 300000,
-              averageTries: 1.5,
-              isSolved: false,
-            },
-            {
-              problemId: 10171,
-              titleKo: '고양이',
-              level: 1,
-              tags: ['구현'],
-              acceptedUserCount: 250000,
-              averageTries: 1.2,
-              isSolved: false,
-            },
-          ],
-          canRefresh: true,
-        });
-      }, 500);
-    });
+    const response = await apiClient.post<ApiResponse<TodayProblemsResponse>>(`/recommendation/team/${teamId}/today-problem/refresh`);
+    return response.data.data;
   },
 };

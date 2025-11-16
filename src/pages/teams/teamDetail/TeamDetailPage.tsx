@@ -36,6 +36,7 @@ export default function TeamDetailPage() {
   const recommendationSettings = currentTeamDetails?.settings || null;
   const currentUserMember = teamMembers.find(member => member.isMe);
   const isTeamLeader = currentUserMember?.role === 'LEADER';
+  const isTeamMember = !!currentUserMember;
 
   // 팀 기본 정보 가져오기
   const currentTeam = teams.find(team => team.teamId === Number(teamId));
@@ -163,6 +164,7 @@ export default function TeamDetailPage() {
             <TodayProblems
               teamId={Number(teamId)}
               isTeamLeader={isTeamLeader}
+              isTeamMember={isTeamMember}
               onShowToast={showToastMessage}
               onOpenSettings={() => setShowSettingsModal(true)}
               recommendationSettings={recommendationSettings}
