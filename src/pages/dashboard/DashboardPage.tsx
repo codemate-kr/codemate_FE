@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Users, BookOpen, Target, TrendingUp, ExternalLink, Crown, ChevronRight } from 'lucide-react';
+import { Plus, Users, BookOpen, Target, TrendingUp, ExternalLink, Crown, ChevronRight, CheckCircle } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useTeamStore, useTeams } from '../../store/teamStore';
 import { teamsApi, type TodayProblem } from '../../api/teams';
@@ -111,17 +111,14 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 opacity-60 relative">
-            <span className="absolute top-2 right-2 text-xs px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded font-medium">
-              개발 중
-            </span>
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-purple-50 rounded-lg">
                 <Target className="h-6 w-6 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">이번 주 해결</p>
-                <p className="text-2xl font-bold text-gray-400">-</p>
+                <p className="text-sm text-gray-600 mb-1">총 해결 문제</p>
+                <p className="text-2xl font-bold text-gray-900">{user?.solvedCount ?? 0}</p>
               </div>
             </div>
           </div>
@@ -235,8 +232,25 @@ export default function DashboardPage() {
 
           {/* 오늘의 할 일 */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-blue-50/50 border-b border-blue-100">
-              <h3 className="text-lg font-semibold text-gray-900">오늘의 할 일</h3>
+            <div className="px-6 py-4 bg-blue-50 border-b border-blue-100">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">오늘의 할 일</h3>
+                {todayProblems.length > 0 && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">
+                      {todayProblems.filter(p => p.isSolved).length}/{todayProblems.length} 완료
+                    </span>
+                    <div className="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-green-500 rounded-full transition-all duration-300"
+                        style={{
+                          width: `${(todayProblems.filter(p => p.isSolved).length / todayProblems.length) * 100}%`
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="p-6">
               {problemsLoading ? (
@@ -264,29 +278,56 @@ export default function DashboardPage() {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-2 max-h-80 overflow-y-auto">
+                <div className="space-y-3 max-h-80 overflow-y-auto">
                   {todayProblems.map((problem) => (
                     <a
                       key={`${problem.teamId}-${problem.problemId}`}
                       href={`https://www.acmicpc.net/problem/${problem.problemId}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-start gap-3 p-4 bg-gray-50 hover:bg-blue-50 rounded-lg transition-all border border-transparent hover:border-blue-200"
+                      className={`group block border rounded-lg p-4 transition-all ${
+                        problem.isSolved
+                          ? 'bg-green-50 border-green-200 hover:border-green-400 hover:shadow-md'
+                          : 'bg-white border-gray-200 hover:border-blue-400 hover:shadow-md'
+                      }`}
                     >
-                      <div className="flex-shrink-0 mt-0.5">
-                        <div className="w-5 h-5 rounded border-2 border-gray-300 group-hover:border-blue-500 transition-colors"></div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-blue-700">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start space-x-3 flex-1 min-w-0">
+                          <div className="flex-shrink-0 mt-1">
+                            {problem.isSolved ? (
+                              <CheckCircle className="w-5 h-5 text-green-600" />
+                            ) : (
+                              <div className="w-5 h-5 rounded border-2 border-gray-300 group-hover:border-blue-500 transition-colors" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4
+                              className={`text-sm font-semibold truncate ${
+                                problem.isSolved
+                                  ? 'text-green-700 line-through'
+                                  : 'text-gray-900'
+                              }`}
+                            >
                               {problem.titleKo}
-                            </p>
+                            </h4>
                             <p className="text-xs text-gray-500 mt-1">
-                              {problem.teamName} · 문제 #{problem.problemId}
+                              {problem.teamName} · #{problem.problemId}
                             </p>
                           </div>
-                          <ExternalLink className="h-4 w-4 text-gray-400 group-hover:text-blue-500 flex-shrink-0 mt-0.5" />
+                        </div>
+                        <div className="flex items-start gap-2 ml-2">
+                          {!problem.isSolved && (
+                            <Link
+                              to={`/teams/${problem.teamId}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="text-xs text-blue-600 hover:text-blue-700 hover:underline flex-shrink-0"
+                            >
+                              인증하기
+                            </Link>
+                          )}
+                          <ExternalLink className={`h-5 w-5 flex-shrink-0 ${
+                            problem.isSolved ? 'text-green-500' : 'text-gray-400 group-hover:text-blue-600'
+                          } transition-colors`} />
                         </div>
                       </div>
                     </a>

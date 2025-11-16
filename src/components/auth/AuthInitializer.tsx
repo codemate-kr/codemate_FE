@@ -26,6 +26,7 @@ export default function AuthInitializer({ children }: AuthInitializerProps) {
               email: profile.email,
               handle: profile.handle,
               name: profile.handle || profile.email,
+              solvedCount: profile.solvedCount,
             });
           } catch (error) {
             console.error('프로필 로드 실패:', error);

@@ -6,6 +6,7 @@ export interface User {
   avatar?: string;
   createdAt: string;
   updatedAt: string;
+  solvedCount?: number; // 코드메이트에서 인증한 총 문제 수
 }
 
 export interface StudyTeam {

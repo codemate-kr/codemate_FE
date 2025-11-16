@@ -36,6 +36,7 @@ export const useAuthToken = () => {
             name: profile.handle || profile.email,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
+            solvedCount: profile.solvedCount,
           };
 
           login(user, accessToken);

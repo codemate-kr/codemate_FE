@@ -5,12 +5,13 @@ import confetti from 'canvas-confetti';
 import { teamsApi, type TodayProblemsResponse, type TeamRecommendationSettingsResponse } from '../../../api/teams';
 import { memberApi } from '../../../api/member';
 import { getTierIcon } from '../../../components/common/TierIcon';
+import { useAuthStore } from '../../../store/authStore';
 
 interface TodayProblemsProps {
   teamId: number;
   isTeamLeader: boolean;
   isTeamMember: boolean;
-  onShowToast: (message: string) => void;
+  onShowToast: (message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
   onOpenSettings?: () => void;
   recommendationSettings?: TeamRecommendationSettingsResponse | null;
 }
@@ -20,6 +21,7 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
   const [problemsLoading, setProblemsLoading] = useState(false);
   const [verifyingProblemId, setVerifyingProblemId] = useState<number | null>(null);
   const [showErrorFlash, setShowErrorFlash] = useState(false);
+  const { updateUser, user } = useAuthStore();
 
   useEffect(() => {
     let cancelled = false;
@@ -93,6 +95,11 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
         });
       }
 
+      // 유저의 총 해결 문제 수 증가
+      if (user) {
+        updateUser({ solvedCount: (user.solvedCount ?? 0) + 1 });
+      }
+
       onShowToast('🎉 문제 해결을 축하합니다!');
     } catch (error: any) {
       // 빨간 화면 효과
@@ -101,13 +108,13 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
 
       const status = error?.response?.status;
       if (status === 404) {
-        onShowToast('문제를 찾을 수 없습니다.');
+        onShowToast('문제를 찾을 수 없습니다.', 'error');
       } else if (status === 400) {
-        onShowToast('아직 해결하지 않은 문제입니다. BOJ에서 먼저 문제를 풀어주세요.');
+        onShowToast('아직 해결되지 않은 문제입니다.', 'error');
       } else if (status === 409) {
-        onShowToast('이미 인증된 문제입니다.');
+        onShowToast('이미 인증된 문제입니다.', 'warning');
       } else {
-        onShowToast('문제 인증에 실패했습니다.');
+        onShowToast('문제 인증에 실패했습니다.', 'error');
       }
     } finally {
       setVerifyingProblemId(null);

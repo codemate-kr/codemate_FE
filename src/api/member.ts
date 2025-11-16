@@ -6,9 +6,8 @@ export interface MyProfileResponse {
   handle: string;
   verified: boolean;
   role: string;
-  provider: string;
-  providerId: string;
   joinedAt: string;
+  solvedCount: number; // 코드메이트에서 인증한 총 문제 수
 }
 
 export interface MemberPublicResponse {

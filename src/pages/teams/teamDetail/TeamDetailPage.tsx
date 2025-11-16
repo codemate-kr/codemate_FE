@@ -27,6 +27,7 @@ export default function TeamDetailPage() {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState<'success' | 'error' | 'warning' | 'info'>('success');
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
@@ -52,8 +53,9 @@ export default function TeamDetailPage() {
     await refreshTeamSettings(Number(teamId));
   };
 
-  const showToastMessage = (message: string) => {
+  const showToastMessage = (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'success') => {
     setToastMessage(message);
+    setToastType(type);
     setShowToast(true);
     setTimeout(() => {
       setShowToast(false);
@@ -117,7 +119,7 @@ export default function TeamDetailPage() {
 
   return (
     <div className="relative">
-      {showToast && <Toast message={toastMessage} type="success" />}
+      {showToast && <Toast message={toastMessage} type={toastType} />}
 
       <div className="px-4 sm:px-6 lg:px-8">
         {/* 헤더 */}
