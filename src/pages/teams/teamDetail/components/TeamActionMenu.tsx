@@ -28,19 +28,28 @@ export default function TeamActionMenu({
       }
     };
 
+    // 모바일 환경 감지 (768px 이하)
+    const isMobile = window.innerWidth < 768;
+
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleEscape);
-      // 모바일에서 스크롤 방지
-      document.body.style.overflow = 'hidden';
+      // 모바일에서만 스크롤 방지
+      if (isMobile) {
+        document.body.style.overflow = 'hidden';
+      }
     } else {
-      document.body.style.overflow = 'unset';
+      if (isMobile) {
+        document.body.style.overflow = 'unset';
+      }
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      if (isMobile) {
+        document.body.style.overflow = 'unset';
+      }
     };
   }, [isOpen]);
 
