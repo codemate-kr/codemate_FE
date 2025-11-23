@@ -102,19 +102,25 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
 
       onShowToast('🎉 문제 해결을 축하합니다!');
     } catch (error: any) {
-      // 빨간 화면 효과
-      setShowErrorFlash(true);
-      setTimeout(() => setShowErrorFlash(false), 500);
-
       const status = error?.response?.status;
-      if (status === 404) {
-        onShowToast('문제를 찾을 수 없습니다.', 'error');
-      } else if (status === 400) {
-        onShowToast('아직 해결되지 않은 문제입니다.', 'error');
-      } else if (status === 409) {
-        onShowToast('이미 인증된 문제입니다.', 'warning');
+
+      // 429 에러는 특별 처리 (빨간 화면 효과 없음)
+      if (status === 429) {
+        onShowToast(error.userMessage || error.message || 'solved.ac API 호출 제한에 도달했습니다.\n잠시 후 다시 시도해주세요.', 'warning');
       } else {
-        onShowToast('문제 인증에 실패했습니다.', 'error');
+        // 다른 에러는 빨간 화면 효과
+        setShowErrorFlash(true);
+        setTimeout(() => setShowErrorFlash(false), 500);
+
+        if (status === 404) {
+          onShowToast('문제를 찾을 수 없습니다.', 'error');
+        } else if (status === 400) {
+          onShowToast('아직 해결되지 않은 문제입니다.', 'error');
+        } else if (status === 409) {
+          onShowToast('이미 인증된 문제입니다.', 'warning');
+        } else {
+          onShowToast('문제 인증에 실패했습니다.', 'error');
+        }
       }
     } finally {
       setVerifyingProblemId(null);

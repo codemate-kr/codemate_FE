@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Users, Settings, Crown, ChevronRight } from 'lucide-react';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 import { useTeamStore, useTeams, useTeamsLoading } from '../../store/teamStore';
-import { Toast, type ToastType } from '../../components/common/Toast';
+import { toast } from '../../components/common/toast';
 import Tooltip from '../../components/common/Tooltip';
 import CreateTeamModal from './components/CreateTeamModal';
 import type { CreateTeamRequest } from '../../api/teams';
@@ -19,23 +19,11 @@ export default function TeamsPage() {
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState<ToastType>('success');
 
   useEffect(() => {
     // store의 fetchTeams 사용 (자동 캐싱)
     fetchTeams();
   }, [fetchTeams]);
-
-  const showToastMessage = (message: string, type: ToastType = 'success') => {
-    setToastMessage(message);
-    setToastType(type);
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
-  };
 
   // 팀장으로 있는 팀의 개수 계산
   const leaderTeamsCount = teams.filter(team => team.myRole === 'LEADER').length;
@@ -43,7 +31,7 @@ export default function TeamsPage() {
 
   const handleCreateButtonClick = () => {
     if (!canCreateTeam) {
-      showToastMessage('팀장으로 생성할 수 있는 팀은 최대 3개입니다', 'warning');
+      toast('팀장으로 생성할 수 있는 팀은 최대 3개입니다', 'warning');
       return;
     }
     setShowCreateModal(true);
@@ -55,11 +43,11 @@ export default function TeamsPage() {
       // store의 createTeam 사용 (자동으로 store 업데이트)
       const newTeam = await createTeam(data);
       setShowCreateModal(false);
-      showToastMessage(`${newTeam.name} 팀이 생성되었습니다`);
+      toast(`${newTeam.name} 팀이 생성되었습니다`);
     } catch (error: any) {
       // 백엔드에서 온 에러 메시지 표시
       const errorMessage = error?.message || '팀 생성에 실패했습니다.';
-      showToastMessage(errorMessage, 'error');
+      toast(errorMessage, 'error');
       setShowCreateModal(false);
     } finally {
       setIsLoading(false);
@@ -68,9 +56,6 @@ export default function TeamsPage() {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
-      {/* 토스트 메시지 */}
-      {showToast && <Toast message={toastMessage} type={toastType} />}
-
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-2xl font-semibold text-gray-900">팀 관리</h1>
@@ -169,7 +154,7 @@ export default function TeamsPage() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          showToastMessage('팀 설정 기능은 개발 중입니다');
+                          toast('팀 설정 기능은 개발 중입니다');
                         }}
                         className="flex-shrink-0 ml-2 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                       >

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { memberApi, type MyProfileResponse } from '../../api/member';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
-import { Toast } from '../../components/common/Toast';
+import { toast } from '../../components/common/toast';
 import DeleteAccountModal from './components/DeleteAccountModal';
 import EmailChangeModal from './components/EmailChangeModal';
 import ProfileHeader from './components/ProfileHeader';
@@ -45,19 +45,10 @@ export default function MyProfilePage() {
       setProfile(data);
     } catch (error) {
       console.error('프로필 로딩 실패:', error);
-      showToastMessage('프로필을 불러오는데 실패했습니다', 'error');
+      toast('프로필을 불러오는데 실패했습니다', 'error');
     } finally {
       setLoading(false);
     }
-  };
-
-  const showToastMessage = (message: string, type: 'success' | 'error' = 'success') => {
-    setToastMessage(message);
-    setToastType(type);
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
   };
 
   const handleDeleteAccount = async () => {
@@ -70,7 +61,7 @@ export default function MyProfilePage() {
       // 임시: API 호출 시뮬레이션 (1초 대기)
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      showToastMessage('회원탈퇴가 완료되었습니다', 'success');
+      toast('회원탈퇴가 완료되었습니다', 'success');
 
       // 1초 후 로그아웃 및 로그인 페이지로 이동
       setTimeout(() => {
@@ -80,7 +71,7 @@ export default function MyProfilePage() {
 
     } catch (error: any) {
       console.error('회원탈퇴 실패:', error);
-      showToastMessage('회원탈퇴에 실패했습니다. 다시 시도해주세요.', 'error');
+      toast('회원탈퇴에 실패했습니다. 다시 시도해주세요.', 'error');
       setIsDeleting(false);
       setShowDeleteModal(false);
     }
@@ -118,8 +109,6 @@ export default function MyProfilePage() {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
-      {showToast && <Toast message={toastMessage} type={toastType} />}
-
       <div className="max-w-4xl mx-auto">
         {/* 헤더 */}
         <div className="mb-6">
@@ -147,8 +136,8 @@ export default function MyProfilePage() {
         <EmailChangeModal
           currentEmail={profile.email}
           onClose={() => setShowEmailModal(false)}
-          onSuccess={(message) => showToastMessage(message, 'success')}
-          onError={(message) => showToastMessage(message, 'error')}
+          onSuccess={(message) => toast(message, 'success')}
+          onError={(message) => toast(message, 'error')}
         />
       )}
 

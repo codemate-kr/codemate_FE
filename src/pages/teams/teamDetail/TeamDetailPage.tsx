@@ -1,10 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { UserPlus } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { toast } from '../../../components/common/toast';
 import { TeamSettingsModal } from '../components/TeamSettingsModal';
 import { MemberInviteModal } from '../components/MemberInviteModal';
 import { TodayProblems } from '../components/TodayProblems';
-import { Toast } from '../../../components/common/Toast';
 import { TeamDetailError } from '../../../components/common/TeamDetailError';
 import ConfirmModal from '../../../components/common/ConfirmModal';
 import TeamInfoSection from './components/TeamInfoSection';
@@ -25,9 +25,6 @@ export default function TeamDetailPage() {
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState<'success' | 'error' | 'warning' | 'info'>('success');
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
@@ -54,12 +51,7 @@ export default function TeamDetailPage() {
   };
 
   const showToastMessage = (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'success') => {
-    setToastMessage(message);
-    setToastType(type);
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
+    toast(message, type);
   };
 
   const handleRetry = () => {
@@ -119,8 +111,6 @@ export default function TeamDetailPage() {
 
   return (
     <div className="relative">
-      {showToast && <Toast message={toastMessage} type={toastType} />}
-
       <div className="px-4 sm:px-6 lg:px-8">
         {/* 헤더 */}
         <div className="py-6 mb-8 border-b border-gray-200">

@@ -60,6 +60,21 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // 429 Rate Limit 에러 처리
+    if (error.response?.status === 429) {
+      const retryAfter = error.response.headers['retry-after'];
+      const waitTime = retryAfter ? `${retryAfter}초` : '잠시';
+
+      // 서버에서 보낸 메시지 추출 (있으면 사용, 없으면 기본 메시지)
+      const serverMessage = error.response?.data?.message || error.response?.data?.error;
+
+      // 에러 메시지에 사용자 친화적인 메시지 추가
+      error.message = serverMessage || `요청이 너무 많습니다. ${waitTime} 후에 다시 시도해주세요.`;
+      error.userMessage = serverMessage || `solved.ac API 호출 제한에 도달했습니다.\n잠시 후 다시 시도해주세요. (1분에 최대 10회)`;
+
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         // 이미 리프레시 중이면 큐에 추가
