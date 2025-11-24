@@ -2,7 +2,6 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { UserPlus, Lock } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { toast } from '../../../components/common/toast';
-import { useLoginRedirect } from '../../../hooks/useLoginRedirect';
 import { TeamSettingsModal } from '../components/TeamSettingsModal';
 import { MemberInviteModal } from '../components/MemberInviteModal';
 import { TodayProblems } from '../components/TodayProblems';
@@ -18,7 +17,6 @@ export default function TeamDetailPage() {
   const { teamId } = useParams<{ teamId: string }>();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
-  const loginRedirect = useLoginRedirect();
 
   // Selector hooks 사용
   const currentTeamDetails = useCurrentTeamDetails();
