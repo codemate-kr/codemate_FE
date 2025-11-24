@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Plus, Users, Settings, Crown, ChevronRight } from 'lucide-react';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
+import { useLoginRedirect } from '../../hooks/useLoginRedirect';
 import { useTeamStore, useTeams, useTeamsLoading } from '../../store/teamStore';
+import { useAuthStore } from '../../store/authStore';
 import { toast } from '../../components/common/toast';
 import Tooltip from '../../components/common/Tooltip';
 import CreateTeamModal from './components/CreateTeamModal';
@@ -11,6 +13,8 @@ import type { CreateTeamRequest } from '../../api/teams';
 export default function TeamsPage() {
   useDocumentTitle('팀 관리');
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore();
+  const loginRedirect = useLoginRedirect();
 
   // Selector hooks 사용 (필요한 상태만 구독)
   const teams = useTeams();
@@ -21,9 +25,11 @@ export default function TeamsPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // store의 fetchTeams 사용 (자동 캐싱)
-    fetchTeams();
-  }, [fetchTeams]);
+    // 로그인 상태일 때만 팀 목록 로드
+    if (isAuthenticated) {
+      fetchTeams();
+    }
+  }, [isAuthenticated, fetchTeams]);
 
   // 팀장으로 있는 팀의 개수 계산
   const leaderTeamsCount = teams.filter(team => team.myRole === 'LEADER').length;
@@ -64,18 +70,36 @@ export default function TeamsPage() {
           </p>
         </div>
         <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <button
-            onClick={handleCreateButtonClick}
-            className="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-auto"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            새 팀 만들기
-          </button>
+          {isAuthenticated ? (
+            <button
+              onClick={handleCreateButtonClick}
+              className="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-auto"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              새 팀 만들기
+            </button>
+          ) : (
+            <Link
+              to={loginRedirect}
+              className="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-auto"
+            >
+              로그인하기
+            </Link>
+          )}
         </div>
       </div>
 
-      <div className="mt-8">
-        {teamsLoading ? (
+      <div className="mt-8 relative">
+        {!isAuthenticated && (
+          <Link
+            to={loginRedirect}
+            className="absolute inset-0 z-10 rounded-xl flex flex-col items-center justify-center bg-gray-900/30 cursor-pointer group transition-all hover:bg-gray-900/40"
+          >
+            <p className="text-2xl font-bold text-white mb-2">팀 목록을 보려면</p>
+            <p className="text-lg text-white/90 group-hover:text-white transition-colors">로그인이 필요해요 →</p>
+          </Link>
+        )}
+        {(isAuthenticated && teamsLoading) ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((n) => (
               <div key={n} className="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-100 animate-pulse">
@@ -93,6 +117,81 @@ export default function TeamsPage() {
                     <div className="flex items-center gap-3">
                       <div className="h-5 bg-gray-200 rounded w-16"></div>
                       <div className="h-6 bg-gray-200 rounded w-12"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : !isAuthenticated ? (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              { teamId: 1, teamName: '알고리즘 스터디', teamDescription: '매일 1문제씩 함께 풀어요', memberCount: 5, myRole: 'LEADER', isRecommendationActive: true },
+              { teamId: 2, teamName: '코딩 테스트 준비반', teamDescription: 'FAANG 대비 코테 준비', memberCount: 8, myRole: 'MEMBER', isRecommendationActive: true },
+              { teamId: 3, teamName: 'PS 연습', teamDescription: null, memberCount: 3, myRole: 'MEMBER', isRecommendationActive: false },
+            ].map((team) => (
+              <div
+                key={team.teamId}
+                className="bg-white overflow-hidden rounded-lg cursor-default border border-gray-200"
+              >
+                <div className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start space-x-3 flex-1 min-w-0">
+                      <div className="flex-shrink-0 mt-1">
+                        <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                          <Users className="h-5 w-5 text-blue-600" />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-lg font-semibold text-gray-900 truncate">
+                            {team.teamName}
+                          </h3>
+                          {team.myRole === 'LEADER' && (
+                            <Tooltip text="팀장">
+                              <Crown className="h-4 w-4 text-yellow-500 flex-shrink-0" />
+                            </Tooltip>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                          {team.teamDescription || '설명이 없습니다'}
+                        </p>
+                      </div>
+                    </div>
+                    <Tooltip text="팀 설정">
+                      <button
+                        className="flex-shrink-0 ml-2 p-2 text-gray-400 rounded-lg"
+                      >
+                        <Settings className="h-4 w-4" />
+                      </button>
+                    </Tooltip>
+                  </div>
+
+                  <div className="mt-5 pt-5 border-t border-gray-100">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <Tooltip text="멤버 수">
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Users className="h-4 w-4 mr-1.5" />
+                            <span className="font-medium">{team.memberCount}명</span>
+                          </div>
+                        </Tooltip>
+                        <span className={`px-2.5 py-1 text-xs font-medium rounded ${
+                          team.myRole === 'LEADER'
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-gray-100 text-gray-700'
+                        }`}>
+                          {team.myRole === 'LEADER' ? '팀장' : '팀원'}
+                        </span>
+                        {team.isRecommendationActive && (
+                          <Tooltip text="문제 추천 활성화됨">
+                            <span className="px-2.5 py-1 text-xs font-medium rounded bg-green-100 text-green-700">
+                              추천 활성
+                            </span>
+                          </Tooltip>
+                        )}
+                      </div>
+                      <ChevronRight className="h-5 w-5 text-gray-400" />
                     </div>
                   </div>
                 </div>

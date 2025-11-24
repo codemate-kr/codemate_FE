@@ -1,7 +1,8 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { UserPlus } from 'lucide-react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { UserPlus, Lock } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { toast } from '../../../components/common/toast';
+import { useLoginRedirect } from '../../../hooks/useLoginRedirect';
 import { TeamSettingsModal } from '../components/TeamSettingsModal';
 import { MemberInviteModal } from '../components/MemberInviteModal';
 import { TodayProblems } from '../components/TodayProblems';
@@ -11,10 +12,13 @@ import TeamInfoSection from './components/TeamInfoSection';
 import TeamMembersList from './components/TeamMembersList';
 import TeamActionMenu from './components/TeamActionMenu';
 import { useTeamStore, useCurrentTeamDetails, useDetailLoading, useDetailError, useTeams } from '../../../store/teamStore';
+import { useAuthStore } from '../../../store/authStore';
 
 export default function TeamDetailPage() {
   const { teamId } = useParams<{ teamId: string }>();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore();
+  const loginRedirect = useLoginRedirect();
 
   // Selector hooks 사용
   const currentTeamDetails = useCurrentTeamDetails();
@@ -131,21 +135,33 @@ export default function TeamDetailPage() {
               </p>
             </div>
             <div className="mt-4 sm:mt-0 flex items-center justify-end gap-2">
-              {isTeamLeader && (
-                <button
-                  onClick={() => setShowInviteModal(true)}
-                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors whitespace-nowrap"
+              {!isAuthenticated ? (
+                <Link
+                  to="/login"
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors whitespace-nowrap"
                 >
-                  <UserPlus className="h-4 w-4 mr-1.5" />
-                  <span className="hidden sm:inline">멤버 초대</span>
-                  <span className="sm:hidden">초대</span>
-                </button>
+                  <Lock className="h-4 w-4 mr-1.5" />
+                  로그인하여 참여하기
+                </Link>
+              ) : (
+                <>
+                  {isTeamLeader && (
+                    <button
+                      onClick={() => setShowInviteModal(true)}
+                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors whitespace-nowrap"
+                    >
+                      <UserPlus className="h-4 w-4 mr-1.5" />
+                      <span className="hidden sm:inline">멤버 초대</span>
+                      <span className="sm:hidden">초대</span>
+                    </button>
+                  )}
+                  <TeamActionMenu
+                    isTeamLeader={isTeamLeader}
+                    onLeaveClick={() => setShowLeaveConfirm(true)}
+                    onDeleteClick={() => setShowDeleteConfirm(true)}
+                  />
+                </>
               )}
-              <TeamActionMenu
-                isTeamLeader={isTeamLeader}
-                onLeaveClick={() => setShowLeaveConfirm(true)}
-                onDeleteClick={() => setShowDeleteConfirm(true)}
-              />
             </div>
           </div>
         </div>
