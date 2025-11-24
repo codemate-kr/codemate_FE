@@ -3,7 +3,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { validateEnv } from './config/env';
 import Layout from './components/common/Layout';
-import ProtectedRoute from './components/auth/ProtectedRoute';
 import AuthHandler from './components/auth/AuthHandler';
 import AuthInitializer from './components/auth/AuthInitializer';
 import HomePage from './pages/home/HomePage';
@@ -42,64 +41,19 @@ function App() {
             <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-            <Route
-              path="/verify-handle"
-              element={
-                <ProtectedRoute>
-                  <VerifyHandlePage />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/verify-handle" element={<VerifyHandlePage />} />
             <Route
               path="/*"
               element={
                 <Layout>
                   <Routes>
                     <Route path="/login" element={<LoginPage />} />
-                    <Route
-                      path="/dashboard"
-                      element={
-                        <ProtectedRoute>
-                          <DashboardPage />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/teams"
-                      element={<TeamListPage />}
-                    />
-                    <Route
-                      path="/teams/my"
-                      element={
-                        <ProtectedRoute>
-                          <TeamsPage />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/teams/:teamId"
-                      element={
-                        <ProtectedRoute>
-                          <TeamDetailPage />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/problems"
-                      element={
-                        <ProtectedRoute>
-                          <ProblemsPage />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/mypage"
-                      element={
-                        <ProtectedRoute>
-                          <MyProfilePage />
-                        </ProtectedRoute>
-                      }
-                    />
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/teams" element={<TeamListPage />} />
+                    <Route path="/teams/my" element={<TeamsPage />} />
+                    <Route path="/teams/:teamId" element={<TeamDetailPage />} />
+                    <Route path="/problems" element={<ProblemsPage />} />
+                    <Route path="/mypage" element={<MyProfilePage />} />
                     {/* 없는 경로는 홈으로 리다이렉트 */}
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
