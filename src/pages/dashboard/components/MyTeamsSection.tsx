@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
 import { Plus, Users, Crown, ChevronRight } from 'lucide-react';
 import Tooltip from '../../../components/common/Tooltip';
-import type { TeamSummary } from '../../../api/teams';
+import type { MyTeamResponse } from '../../../api/teams';
 
 interface MyTeamsSectionProps {
   isAuthenticated: boolean;
   loginRedirect: string;
-  teams: TeamSummary[];
+  teams: MyTeamResponse[];
 }
 
 const SAMPLE_TEAMS = [
