@@ -166,8 +166,11 @@ export const teamsApi = {
     return response.data.data;
   },
 
-  refreshTodayProblems: async (teamId: number): Promise<TodayProblemsResponse> => {
-    const response = await apiClient.post<ApiResponse<TodayProblemsResponse>>(`/recommendation/team/${teamId}/today-problem/refresh`);
+  // 수동 추천 생성 - 팀장 전용
+  createManualRecommendation: async (teamId: number): Promise<TodayProblemsResponse> => {
+    const response = await apiClient.post<ApiResponse<TodayProblemsResponse>>(
+      `/recommendation/team/${teamId}/manual`
+    );
     return response.data.data;
   },
 };

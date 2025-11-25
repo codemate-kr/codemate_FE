@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, RefreshCw, ExternalLink, CheckCircle, Settings, Loader2 } from 'lucide-react';
+import { Calendar, RefreshCw, ExternalLink, CheckCircle, Settings, Loader2, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { teamsApi, type TodayProblemsResponse, type TeamRecommendationSettingsResponse } from '../../../api/teams';
 import { memberApi } from '../../../api/member';
@@ -35,7 +35,7 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
         }
       } catch (error) {
         if (!cancelled) {
-          console.error('오늘의 문제 로딩 실패:', error);
+          console.error('오늘의 미션 로딩 실패:', error);
         }
       } finally {
         if (!cancelled) {
@@ -53,13 +53,34 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
 
   const handleRefreshProblems = async () => {
     if (!isTeamLeader) return;
+
+    setProblemsLoading(true);
     try {
-      const newProblems = await teamsApi.refreshTodayProblems(teamId);
+      const newProblems = await teamsApi.createManualRecommendation(teamId);
       setTodayProblems(newProblems);
-      onShowToast('문제가 새로고침되었습니다!');
-    } catch (error) {
-      console.error('문제 새로고침 실패:', error);
-      onShowToast('문제 새로고침에 실패했습니다.');
+      onShowToast('✨ 오늘의 미션이 생성되었습니다!', 'success');
+    } catch (error: any) {
+      console.error('수동 미션 생성 실패:', error);
+
+      const status = error?.response?.status;
+      const message = error?.response?.data?.message || error?.message;
+
+      // Handle specific error cases from backend
+      if (status === 409) {
+        // Duplicate recommendation within the same mission cycle
+        onShowToast('오늘은 이미 미션을 받았습니다.\n새벽 2시 이후 다시 시도해주세요.', 'warning');
+      } else if (status === 403) {
+        // Blocked time window (01:00-02:00)
+        onShowToast('미션 전환 시간대(01:00-02:00)에는 즉시 미션 생성이 불가합니다.', 'warning');
+      } else if (status === 400 && message?.includes('추천 설정')) {
+        // Recommendation settings not configured or inactive
+        onShowToast('문제 추천 설정을 먼저 활성화해주세요.', 'warning');
+      } else {
+        // Generic error
+        onShowToast('미션 생성에 실패했습니다. 잠시 후 다시 시도해주세요.', 'error');
+      }
+    } finally {
+      setProblemsLoading(false);
     }
   };
 
@@ -155,7 +176,7 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
             <div className="p-1.5 bg-blue-100 rounded-lg flex-shrink-0">
               <Calendar className="h-4 w-4 text-blue-600" />
             </div>
-            <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate">오늘의 문제</h3>
+            <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate">오늘의 미션</h3>
             {todayProblems && todayProblems.problems.length > 0 && (
               <span className="text-sm text-blue-600 font-medium flex-shrink-0">· {todayProblems.problems.length}개</span>
             )}
@@ -167,17 +188,17 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
                 className="inline-flex items-center px-2 sm:px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap"
               >
                 <Settings className="h-3.5 w-3.5 sm:mr-1.5" />
-                <span className="hidden sm:inline">추천 설정</span>
+                <span className="hidden sm:inline">문제 추천 설정</span>
               </button>
             )}
-            {isTeamLeader && todayProblems && (
+            {isTeamLeader && todayProblems && todayProblems.problems.length > 0 && (
               <button
                 onClick={handleRefreshProblems}
-                disabled={true}
-                className="inline-flex items-center px-2 sm:px-3 py-1.5 text-xs font-medium text-gray-400 bg-white border border-gray-200 rounded-md cursor-not-allowed opacity-50 whitespace-nowrap"
+                disabled={problemsLoading}
+                className="inline-flex items-center px-2 sm:px-3 py-1.5 text-xs font-medium text-blue-700 bg-white border border-blue-300 rounded-md hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white whitespace-nowrap"
               >
-                <RefreshCw className="h-3.5 w-3.5 sm:mr-1.5" />
-                <span className="hidden sm:inline">새로고침</span>
+                <RefreshCw className={`h-3.5 w-3.5 sm:mr-1.5 ${problemsLoading ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">미션 다시 받기</span>
               </button>
             )}
           </div>
@@ -202,27 +223,27 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
             ))}
           </div>
         ) : !recommendationSettings?.isActive ? (
-          <div className="text-center py-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 mb-4">
-              <Calendar className="h-8 w-8 text-blue-400" />
+          <div className="text-center py-8">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-50 mb-3">
+              <Calendar className="h-7 w-7 text-blue-400" />
             </div>
-            <p className="text-sm font-medium text-gray-900 mb-2">
+            <p className="text-sm font-medium text-gray-900 mb-1">
               {isTeamLeader
                 ? '아직 문제 추천이 설정되지 않았습니다'
                 : '문제 추천이 설정되지 않았습니다'}
             </p>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-xs text-gray-500 mb-5">
               {isTeamLeader
-                ? '추천 설정을 완료하면 팀원들에게 문제가 자동으로 추천됩니다.'
+                ? '문제 추천을 설정하면 팀원들에게 미션이 자동으로 제공됩니다.'
                 : '팀장이 문제 추천을 설정하면 이곳에 표시됩니다.'}
             </p>
             {isTeamLeader && onOpenSettings && (
               <button
                 onClick={onOpenSettings}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                className="inline-flex items-center px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
               >
                 <Settings className="h-4 w-4 mr-2" />
-                추천 설정 시작하기
+                문제 추천 설정하기
               </button>
             )}
           </div>
@@ -319,16 +340,41 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-50 mb-4">
-              <Calendar className="h-8 w-8 text-green-500" />
+          <div className="text-center py-8">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-50 mb-3">
+              <Calendar className="h-7 w-7 text-green-500" />
             </div>
-            <p className="text-sm font-medium text-gray-900 mb-2">
+            <p className="text-sm font-medium text-gray-900 mb-1">
               설정이 완료되었습니다
             </p>
-            <p className="text-sm text-gray-500">
-              오전 9시에 새로운 문제가 추천됩니다.
+            <p className="text-xs text-gray-500 mb-5">
+              추천 요일마다 새벽에 미션이 제공되며, 오전 9시에 이메일이 발송됩니다.
             </p>
+
+            {isTeamLeader && (
+              <>
+                <button
+                  onClick={handleRefreshProblems}
+                  disabled={problemsLoading}
+                  className="inline-flex items-center px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                >
+                  {problemsLoading ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                      미션 생성 중...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      바로 미션 받기
+                    </>
+                  )}
+                </button>
+                <p className="text-xs text-gray-400 mt-2">
+                  하루 1회 · 새벽 2시 초기화
+                </p>
+              </>
+            )}
           </div>
         )}
       </div>
