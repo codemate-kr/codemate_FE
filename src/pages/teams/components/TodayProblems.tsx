@@ -191,16 +191,6 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
                 <span className="hidden sm:inline">문제 추천 설정</span>
               </button>
             )}
-            {isTeamLeader && todayProblems && todayProblems.problems.length > 0 && (
-              <button
-                onClick={handleRefreshProblems}
-                disabled={problemsLoading}
-                className="inline-flex items-center px-2 sm:px-3 py-1.5 text-xs font-medium text-blue-700 bg-white border border-blue-300 rounded-md hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white whitespace-nowrap"
-              >
-                <RefreshCw className={`h-3.5 w-3.5 sm:mr-1.5 ${problemsLoading ? 'animate-spin' : ''}`} />
-                <span className="hidden sm:inline">미션 다시 받기</span>
-              </button>
-            )}
           </div>
         </div>
       </div>
