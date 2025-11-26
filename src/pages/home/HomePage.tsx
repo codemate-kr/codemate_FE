@@ -26,7 +26,7 @@ export default function HomePage() {
           </p>
           <div className="mt-8 sm:mt-10 flex justify-center gap-4 px-4">
             <Link
-              to="/login"
+              to="/dashboard"
               className="group flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
             >
               시작하기
