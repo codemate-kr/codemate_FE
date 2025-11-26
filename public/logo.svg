@@ -13,7 +13,7 @@
   </defs>
 
   <!-- Background -->
-  <rect x="16" y="16" width="992" height="992" rx="200" fill="url(#bgGrad)"/>
+  <rect x="0" y="0" width="1024" height="1024" rx="200" fill="url(#bgGrad)"/>
 
   <!-- Glyphs with improved spacing -->
   <!-- Left < -->
