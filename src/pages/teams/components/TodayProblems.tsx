@@ -64,13 +64,20 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
 
       const status = error?.response?.status;
       const message = error?.response?.data?.message || error?.message;
+      const errorCode = error?.response?.data?.code;
 
       // Handle specific error cases from backend
-      if (status === 409) {
+      if (status === 409 && errorCode === '5009') {
+        // Blocked time window (01:00-02:00)
+        onShowToast('새벽 1시~2시에는 미션 생성이 불가합니다.\n새벽 2시 이후 다시 시도해주세요.', 'warning');
+      } else if (status === 409 && errorCode === '5008') {
         // Duplicate recommendation within the same mission cycle
         onShowToast('오늘은 이미 미션을 받았습니다.\n새벽 2시 이후 다시 시도해주세요.', 'warning');
+      } else if (status === 409) {
+        // Other 409 conflict errors
+        onShowToast('미션 생성에 실패했습니다. 잠시 후 다시 시도해주세요.', 'warning');
       } else if (status === 403) {
-        // Blocked time window (01:00-02:00)
+        // Blocked time window (fallback)
         onShowToast('미션 전환 시간대(01:00-02:00)에는 즉시 미션 생성이 불가합니다.', 'warning');
       } else if (status === 400 && message?.includes('추천 설정')) {
         // Recommendation settings not configured or inactive
