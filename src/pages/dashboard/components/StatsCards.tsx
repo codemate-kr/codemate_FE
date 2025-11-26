@@ -17,7 +17,7 @@ export default function StatsCards({
   solvedCount,
 }: StatsCardsProps) {
   return (
-    <div className="hidden sm:grid grid-cols-2 gap-4 lg:grid-cols-4 mb-8 relative">
+    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 mb-8 relative">
       {!isAuthenticated && (
         <Link
           to={loginRedirect}
