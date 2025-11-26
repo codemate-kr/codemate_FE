@@ -28,6 +28,11 @@ export default function AuthInitializer({ children }: AuthInitializerProps) {
               name: profile.handle || profile.email,
               solvedCount: profile.solvedCount,
             });
+
+            // Amplitude 사용자 식별 (user_id는 최소 5자 이상 필요)
+            if (window.amplitude) {
+              window.amplitude.setUserId('user_' + profile.id.toString());
+            }
           } catch (error) {
             console.error('프로필 로드 실패:', error);
           }
