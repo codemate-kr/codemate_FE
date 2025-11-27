@@ -57,7 +57,16 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
     setProblemsLoading(true);
     try {
       const newProblems = await teamsApi.createManualRecommendation(teamId);
-      setTodayProblems(newProblems);
+      // 오전 6시 기준으로 날짜 계산 (6시 전이면 전날 날짜)
+      const now = new Date();
+      const missionDate = new Date(now);
+      if (now.getHours() < 6) {
+        missionDate.setDate(missionDate.getDate() - 1);
+      }
+      setTodayProblems({
+        ...newProblems,
+        createdAt: newProblems.createdAt || missionDate.toISOString(),
+      });
       onShowToast('✨ 오늘의 미션이 생성되었습니다!', 'success');
     } catch (error: any) {
       console.error('수동 미션 생성 실패:', error);
@@ -69,10 +78,10 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
       // Handle specific error cases from backend
       if (status === 409 && errorCode === '5009') {
         // Blocked time window (01:00-02:00)
-        onShowToast('새벽 1시~2시에는 미션 생성이 불가합니다.\n새벽 2시 이후 다시 시도해주세요.', 'warning');
+        onShowToast('새벽 1시~2시에는 미션 생성이 불가합니다.\n오전 6시 이후 다시 시도해주세요.', 'warning');
       } else if (status === 409 && errorCode === '5008') {
         // Duplicate recommendation within the same mission cycle
-        onShowToast('오늘은 이미 미션을 받았습니다.\n새벽 2시 이후 다시 시도해주세요.', 'warning');
+        onShowToast('오늘은 이미 미션을 받았습니다.\n오전 6시 이후 다시 시도해주세요.', 'warning');
       } else if (status === 409) {
         // Other 409 conflict errors
         onShowToast('미션 생성에 실패했습니다. 잠시 후 다시 시도해주세요.', 'warning');
@@ -187,6 +196,7 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
             {todayProblems && todayProblems.problems.length > 0 && (
               <span className="text-sm text-blue-600 font-medium flex-shrink-0">· {todayProblems.problems.length}개</span>
             )}
+            <span className="text-xs text-gray-400 flex-shrink-0">· 오전 6시 초기화</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             {isTeamLeader && onOpenSettings && (
@@ -345,7 +355,7 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
               설정이 완료되었습니다
             </p>
             <p className="text-xs text-gray-500 mb-5">
-              추천 요일마다 새벽에 미션이 제공되며, 오전 9시에 이메일이 발송됩니다.
+              추천 요일마다 오전 6시에 미션이 제공되며, 오전 9시에 이메일이 발송됩니다.
             </p>
 
             {isTeamLeader && (
@@ -368,7 +378,7 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
                   )}
                 </button>
                 <p className="text-xs text-gray-400 mt-2">
-                  하루 1회 · 새벽 2시 초기화
+                  하루 1회 · 이메일 즉시 발송
                 </p>
               </>
             )}
