@@ -79,14 +79,15 @@ export default function TeamsPage() {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
-      <div className="sm:flex sm:items-center">
-        <div className="sm:flex-auto">
-          <h1 className="text-2xl font-semibold text-gray-900">팀 관리</h1>
-          <p className="mt-2 text-sm text-gray-700">
-            참여 중인 스터디 팀을 관리하고 새 팀을 만들어보세요.
-          </p>
-        </div>
-        <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+      <div className="mb-6 sm:mb-8">
+        <div className="sm:flex sm:items-center sm:justify-between">
+          <div className="sm:flex-auto">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">내 팀</h1>
+            <p className="mt-1 sm:mt-2 text-sm text-gray-600">
+              참여 중인 스터디 팀을 관리하고 새 팀을 만들어보세요.
+            </p>
+          </div>
+          <div className="mt-3 sm:mt-0 sm:ml-16 sm:flex-none">
           {isAuthenticated ? (
             <button
               onClick={handleCreateButtonClick}
@@ -103,10 +104,11 @@ export default function TeamsPage() {
               로그인하기
             </Link>
           )}
+          </div>
         </div>
       </div>
 
-      <div className="mt-8 relative">
+      <div className="relative">
         {!isAuthenticated && (
           <Link
             to={loginRedirect}

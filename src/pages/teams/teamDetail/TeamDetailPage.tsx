@@ -118,6 +118,11 @@ export default function TeamDetailPage() {
   const handleOpenDeleteConfirm = useCallback(() => setShowDeleteConfirm(true), []);
   const handleCloseDeleteConfirm = useCallback(() => setShowDeleteConfirm(false), []);
 
+  const handleJoinRequest = useCallback(() => {
+    // TODO: 가입 신청 API 연동
+    toast('가입 신청 기능은 준비 중입니다', 'error');
+  }, []);
+
   if (detailLoading) {
     return (
       <div className="px-4 sm:px-6 lg:px-8">
@@ -183,8 +188,10 @@ export default function TeamDetailPage() {
                   )}
                   <TeamActionMenu
                     isTeamLeader={isTeamLeader}
+                    isTeamMember={isTeamMember}
                     onLeaveClick={handleOpenLeaveConfirm}
                     onDeleteClick={handleOpenDeleteConfirm}
+                    onJoinClick={handleJoinRequest}
                   />
                 </>
               )}

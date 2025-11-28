@@ -40,41 +40,42 @@ export default function TeamListPage() {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       {/* 헤더 */}
-      <div className="py-6 mb-6 border-b border-gray-200">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">팀 찾기</h1>
-        <p className="text-sm text-gray-500">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">팀 찾기</h1>
+        <p className="mt-1 sm:mt-2 text-sm text-gray-600">
           다양한 공개 스터디 팀을 탐색하고 참여하세요
         </p>
       </div>
 
       {/* 검색 */}
-      <div className="mb-6">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+      <div className="mb-4 sm:mb-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="팀 이름으로 검색..."
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            className="w-full sm:max-w-md pl-9 sm:pl-10 pr-4 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
           />
         </div>
       </div>
 
       {/* 팀 목록 */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2 sm:gap-3">
         {isLoading ? (
           // 로딩 스켈레톤
           [1, 2, 3].map((n) => (
-            <div key={n} className="bg-white border border-gray-200 rounded-lg p-4 animate-pulse">
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-xl bg-gray-200" />
+            <div key={n} className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 animate-pulse">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="hidden sm:block h-12 w-12 rounded-xl bg-gray-200" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-5 bg-gray-200 rounded w-1/3" />
-                  <div className="h-4 bg-gray-200 rounded w-2/3" />
-                  <div className="flex gap-3">
-                    <div className="h-4 bg-gray-200 rounded w-16" />
-                    <div className="h-4 bg-gray-200 rounded w-24" />
+                  <div className="h-4 sm:h-5 bg-gray-200 rounded w-1/3" />
+                  <div className="h-3 sm:h-4 bg-gray-200 rounded w-2/3" />
+                  <div className="flex gap-2 sm:gap-3">
+                    <div className="h-3 sm:h-4 bg-gray-200 rounded w-14 sm:w-16" />
+                    <div className="h-3 sm:h-4 bg-gray-200 rounded w-10 sm:w-12" />
+                    <div className="h-3 sm:h-4 bg-gray-200 rounded w-12 sm:w-16" />
                   </div>
                 </div>
               </div>

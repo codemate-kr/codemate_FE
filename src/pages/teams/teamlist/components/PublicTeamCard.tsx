@@ -28,64 +28,62 @@ export const PublicTeamCard = memo(function PublicTeamCard({
   return (
     <div
       onClick={onClick}
-      className="bg-white border border-gray-200 rounded-lg hover:shadow-md hover:border-blue-300 transition-all cursor-pointer group"
+      className="bg-white border border-gray-200 rounded-lg hover:shadow-md hover:border-blue-300 transition-all cursor-pointer group active:bg-gray-50"
     >
-      <div className="p-4 flex items-center justify-between gap-4">
-        {/* 왼쪽: 팀 정보 */}
-        <div className="flex items-center gap-4 flex-1 min-w-0">
-          <div className="flex-shrink-0">
-            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
-              <Users className="h-6 w-6 text-blue-600" />
-            </div>
+      <div className="p-3 sm:p-4 flex items-center justify-between gap-3">
+        {/* 왼쪽: 아이콘 (모바일에서 숨김) */}
+        <div className="hidden sm:block flex-shrink-0">
+          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
+            <Users className="h-6 w-6 text-blue-600" />
           </div>
-          <div className="flex-1 min-w-0">
-            {/* 팀 이름 + 팀장 */}
-            <div className="flex items-center gap-2">
-              <h3 className="text-base font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
-                {team.teamName}
-              </h3>
-              <div className="flex items-center gap-1 text-xs text-gray-400 flex-shrink-0">
-                <Crown className="h-3.5 w-3.5 text-yellow-500" />
-                <span>{team.leaderHandle}</span>
-              </div>
-            </div>
+        </div>
 
-            {/* 설명 */}
-            {team.description && (
-              <p className="text-sm text-gray-500 mt-1 truncate">
-                {team.description}
-              </p>
+        {/* 팀 정보 */}
+        <div className="flex-1 min-w-0">
+          {/* 팀 이름 */}
+          <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+            {team.teamName}
+          </h3>
+
+          {/* 설명 */}
+          {team.description && (
+            <p className="text-xs sm:text-sm text-gray-500 mt-0.5 truncate">
+              {team.description}
+            </p>
+          )}
+
+          {/* 메타 정보 */}
+          <div className="flex items-center flex-wrap gap-x-2 sm:gap-x-3 gap-y-1 mt-1.5 sm:mt-2 text-xs text-gray-500">
+            <div className="flex items-center gap-1">
+              <Crown className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-yellow-500" />
+              <span className="truncate max-w-[80px] sm:max-w-none">{team.leaderHandle}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-400" />
+              <span>{team.memberCount}명</span>
+            </div>
+            {team.minProblemLevel > 0 && team.maxProblemLevel > 0 && (
+              <div className="hidden sm:flex items-center gap-1">
+                <span className={`font-medium px-1.5 py-0.5 rounded text-xs ${getTierColor(team.minProblemLevel)}`}>
+                  {getTierName(team.minProblemLevel)}
+                </span>
+                <span className="text-gray-400">~</span>
+                <span className={`font-medium px-1.5 py-0.5 rounded text-xs ${getTierColor(team.maxProblemLevel)}`}>
+                  {getTierName(team.maxProblemLevel)}
+                </span>
+              </div>
             )}
-
-            {/* 메타 정보 */}
-            <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+            {days && (
               <div className="flex items-center gap-1">
-                <Users className="h-3.5 w-3.5 text-gray-400" />
-                <span>{team.memberCount}명</span>
+                <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-400" />
+                <span>{days}</span>
               </div>
-              {team.minProblemLevel > 0 && team.maxProblemLevel > 0 && (
-                <div className="flex items-center gap-1">
-                  <span className={`font-medium px-1.5 py-0.5 rounded text-xs ${getTierColor(team.minProblemLevel)}`}>
-                    {getTierName(team.minProblemLevel)}
-                  </span>
-                  <span className="text-gray-400">~</span>
-                  <span className={`font-medium px-1.5 py-0.5 rounded text-xs ${getTierColor(team.maxProblemLevel)}`}>
-                    {getTierName(team.maxProblemLevel)}
-                  </span>
-                </div>
-              )}
-              {days && (
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-3.5 w-3.5 text-gray-400" />
-                  <span>{days}</span>
-                </div>
-              )}
-            </div>
+            )}
           </div>
         </div>
 
         {/* 오른쪽: 화살표 */}
-        <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+        <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
       </div>
     </div>
   );
