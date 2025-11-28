@@ -41,7 +41,12 @@ export default function TeamListPage() {
     <div className="px-4 sm:px-6 lg:px-8">
       {/* 헤더 */}
       <div className="mb-6 sm:mb-8">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">팀 찾기</h1>
+        <div className="flex items-center gap-2 flex-wrap">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">팀 찾기</h1>
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-700">
+            개발 중
+          </span>
+        </div>
         <p className="mt-1 sm:mt-2 text-sm text-gray-600">
           다양한 공개 스터디 팀을 탐색하고 참여하세요
         </p>
