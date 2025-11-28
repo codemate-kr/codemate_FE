@@ -1,5 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { type CreateTeamRequest } from '../../../api/teams';
+
+const INITIAL_FORM_DATA: CreateTeamRequest = {
+  name: '',
+  description: '',
+  isPrivate: false
+};
 
 interface CreateTeamModalProps {
   isOpen: boolean;
@@ -15,10 +21,18 @@ export default function CreateTeamModal({
   isLoading,
 }: CreateTeamModalProps) {
   const nameInputRef = useRef<HTMLInputElement>(null);
-  const [formData, setFormData] = useState<CreateTeamRequest>({
-    name: '',
-    description: ''
-  });
+  const [formData, setFormData] = useState<CreateTeamRequest>(INITIAL_FORM_DATA);
+
+  const resetForm = useCallback(() => {
+    setFormData(INITIAL_FORM_DATA);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    if (!isLoading) {
+      resetForm();
+      onClose();
+    }
+  }, [isLoading, onClose, resetForm]);
 
   useEffect(() => {
     if (isOpen && nameInputRef.current) {
@@ -35,43 +49,45 @@ export default function CreateTeamModal({
 
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
-  }, [isOpen, isLoading]);
+  }, [isOpen, isLoading, handleClose]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+    setFormData(prev => ({ ...prev, [name]: value }));
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePrivateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, isPrivate: e.target.checked }));
+  }, []);
+
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) return;
 
     await onSubmit(formData);
+    resetForm();
+  }, [formData, onSubmit, resetForm]);
 
-    // 성공 시 폼 초기화 (부모 컴포넌트에서 onClose 호출됨)
-    setFormData({ name: '', description: '' });
-  };
-
-  const handleClose = () => {
-    if (!isLoading) {
-      setFormData({ name: '', description: '' });
-      onClose();
+  const handleBackdropClick = useCallback((e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      handleClose();
     }
-  };
+  }, [handleClose]);
+
+  const stopPropagation = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+  }, []);
 
   if (!isOpen) return null;
 
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4 animate-in fade-in duration-200"
-      onClick={handleClose}
+      onClick={handleBackdropClick}
     >
       <div
         className="relative mx-auto w-full max-w-md animate-in zoom-in-95 duration-200"
-        onClick={(e) => e.stopPropagation()}
+        onClick={stopPropagation}
       >
         <div className="bg-white rounded-2xl shadow-2xl">
           <div className="px-6 py-5 border-b border-gray-200">
@@ -107,6 +123,16 @@ export default function CreateTeamModal({
                 className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
                 placeholder="팀에 대한 간단한 설명을 작성해주세요"
               />
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                id="isPrivate"
+                type="checkbox"
+                checked={formData.isPrivate}
+                onChange={handlePrivateChange}
+                className="h-3.5 w-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+              />
+              <label htmlFor="isPrivate" className="text-xs text-gray-500 cursor-pointer">비공개 팀으로 설정</label>
             </div>
             <div className="flex justify-end gap-3 pt-2">
               <button

@@ -3,6 +3,7 @@ import { apiClient, type ApiResponse } from './client';
 export interface CreateTeamRequest {
   name: string;
   description?: string;
+  isPrivate?: boolean;
 }
 
 export interface CreateTeamResponse {
@@ -100,7 +101,24 @@ export interface MyTeamResponse {
   myRole: TeamRole;
   memberCount: number;
   isRecommendationActive: boolean;
+  isPrivate: boolean;
   createdAt: string;
+}
+
+// 팀 상세 통합 조회 응답
+export interface TeamInfo {
+  teamId: number;
+  teamName: string;
+  description: string;
+  isPrivate: boolean;
+  memberCount: number;
+}
+
+export interface TeamDetailResponse {
+  team: TeamInfo;
+  members: TeamMemberResponse[];
+  recommendationSettings: TeamRecommendationSettingsResponse | null;
+  todayProblem: TodayProblemsResponse | null;
 }
 
 export const teamsApi = {
@@ -111,6 +129,12 @@ export const teamsApi = {
 
   getMyTeams: async (): Promise<MyTeamResponse[]> => {
     const response = await apiClient.get<ApiResponse<MyTeamResponse[]>>('/teams/my');
+    return response.data.data;
+  },
+
+  // 팀 상세 통합 조회 (멤버, 설정, 오늘의 문제 포함)
+  getTeamDetail: async (teamId: number): Promise<TeamDetailResponse> => {
+    const response = await apiClient.get<ApiResponse<TeamDetailResponse>>(`/teams/${teamId}`);
     return response.data.data;
   },
 

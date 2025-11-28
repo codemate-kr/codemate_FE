@@ -1,22 +1,22 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { getTierName, getTierColor } from '../../../../utils/tierUtils';
 import { DayToKorean } from '../../../../utils/dayUtils';
 import type { TeamRecommendationSettingsResponse, SolvedacTier } from '../../../../api/teams';
+
+// 상수를 컴포넌트 외부로 추출
+const ALL_DAYS = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'] as const;
+const DAYS_FROM_SUNDAY = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'] as const;
 
 interface TeamInfoSectionProps {
   memberCount: number;
   recommendationSettings: TeamRecommendationSettingsResponse | null;
 }
 
-export default function TeamInfoSection({
+export default memo(function TeamInfoSection({
   memberCount,
   recommendationSettings,
 }: TeamInfoSectionProps) {
-
-  // 모든 요일 정의 (월~일)
-  const allDays = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
-
-  //영어 요일을 한국어로 변환
+  // 영어 요일을 한국어로 변환
   const koreanDays = useMemo(() => {
     if (!recommendationSettings?.recommendationDays) return [];
     return DayToKorean(recommendationSettings.recommendationDays);
@@ -24,8 +24,7 @@ export default function TeamInfoSection({
 
   // 오늘 요일 확인
   const todayDayName = useMemo(() => {
-    const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-    return days[new Date().getDay()];
+    return DAYS_FROM_SUNDAY[new Date().getDay()];
   }, []);
 
   return (
@@ -66,7 +65,7 @@ export default function TeamInfoSection({
               <div className="pt-2 border-t border-gray-100">
                 <p className="text-xs text-gray-500 mb-2">추천 요일</p>
                 <div className="flex gap-1">
-                  {allDays.map((day) => {
+                  {ALL_DAYS.map((day) => {
                     const isActive = koreanDays.includes(day);
                     const isToday = day === todayDayName;
                     return (
@@ -95,4 +94,4 @@ export default function TeamInfoSection({
       </div>
     </div>
   );
-}
+});

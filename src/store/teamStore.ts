@@ -5,13 +5,17 @@ import type {
   TeamMemberResponse,
   TeamRecommendationSettingsResponse,
   CreateTeamRequest,
-  CreateTeamResponse
+  CreateTeamResponse,
+  TeamInfo,
+  TodayProblemsResponse
 } from '../api/teams';
 import { teamsApi } from '../api/teams';
 
 interface TeamDetailState {
+  team: TeamInfo | null;
   members: TeamMemberResponse[];
   settings: TeamRecommendationSettingsResponse | null;
+  todayProblem: TodayProblemsResponse | null;
 }
 
 type TeamDetailErrorType = 'not-found' | 'forbidden' | 'network' | 'unknown';
@@ -194,8 +198,10 @@ export const useTeamStore = create<TeamStore>()(
       setCurrentTeamMembers: (members) =>
         set((state) => ({
           currentTeamDetails: {
+            team: state.currentTeamDetails?.team || null,
             members,
             settings: state.currentTeamDetails?.settings || null,
+            todayProblem: state.currentTeamDetails?.todayProblem || null,
           },
           detailError: null,
         })),
@@ -203,8 +209,10 @@ export const useTeamStore = create<TeamStore>()(
       setCurrentTeamSettings: (settings) =>
         set((state) => ({
           currentTeamDetails: {
+            team: state.currentTeamDetails?.team || null,
             members: state.currentTeamDetails?.members || [],
             settings,
+            todayProblem: state.currentTeamDetails?.todayProblem || null,
           },
           detailError: null,
         })),
@@ -237,29 +245,32 @@ export const useTeamStore = create<TeamStore>()(
         try {
           set({ detailLoading: true, detailError: null });
 
-          // 병렬로 멤버와 설정 로드
-          const [members, settings] = await Promise.all([
-            teamsApi.getTeamMembers(teamId),
-            teamsApi.getRecommendationSettings(teamId).catch(() => null),
-          ]);
+          // 통합 API로 모든 데이터 한번에 로드
+          const detail = await teamsApi.getTeamDetail(teamId);
 
           set({
             currentTeamId: teamId,
-            currentTeamDetails: { members, settings },
+            currentTeamDetails: {
+              team: detail.team,
+              members: detail.members,
+              settings: detail.recommendationSettings,
+              todayProblem: detail.todayProblem,
+            },
             detailError: null,
           });
         } catch (error: any) {
           console.error('팀 데이터 로딩 실패:', error);
 
-          // HTTP 상태 코드에 따라 에러 타입 구분
+          // HTTP 상태 코드와 에러 코드에 따라 에러 타입 구분
           const status = error?.response?.status;
+          const errorCode = error?.response?.data?.code;
           let errorType: TeamDetailErrorType = 'unknown';
           let errorMessage = '팀 정보를 불러오는데 실패했습니다.';
 
-          if (status === 404) {
+          if (status === 404 || errorCode === '3001') {
             errorType = 'not-found';
             errorMessage = '존재하지 않는 스터디입니다.';
-          } else if (status === 403) {
+          } else if (status === 403 || errorCode === '3005') {
             errorType = 'forbidden';
             errorMessage = '비공개 스터디입니다. 멤버만 볼 수 있습니다.';
           } else if (!status || status >= 500) {

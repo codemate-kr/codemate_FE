@@ -1,14 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Plus, Users, Settings, Crown, ChevronRight } from 'lucide-react';
+import { Plus, Users } from 'lucide-react';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 import { useLoginRedirect } from '../../hooks/useLoginRedirect';
 import { useTeamStore, useTeams, useTeamsLoading } from '../../store/teamStore';
 import { useAuthStore } from '../../store/authStore';
 import { toast } from '../../components/common/toast';
-import Tooltip from '../../components/common/Tooltip';
 import CreateTeamModal from './components/CreateTeamModal';
-import type { CreateTeamRequest } from '../../api/teams';
+import { TeamCard } from './components/TeamCard';
+import type { CreateTeamRequest, MyTeamResponse } from '../../api/teams';
+
+// 비로그인 시 보여줄 데모 팀 데이터
+const DEMO_TEAMS: MyTeamResponse[] = [
+  { teamId: 1, teamName: '알고리즘 스터디', teamDescription: '매일 1문제씩 함께 풀어요', memberCount: 5, myRole: 'LEADER', isRecommendationActive: true, isPrivate: false, createdAt: '' },
+  { teamId: 2, teamName: '코딩 테스트 준비반', teamDescription: 'FAANG 대비 코테 준비', memberCount: 8, myRole: 'MEMBER', isRecommendationActive: true, isPrivate: false, createdAt: '' },
+  { teamId: 3, teamName: 'PS 연습', teamDescription: '', memberCount: 3, myRole: 'MEMBER', isRecommendationActive: false, isPrivate: true, createdAt: '' },
+];
 
 export default function TeamsPage() {
   useDocumentTitle('팀 관리');
@@ -25,40 +32,50 @@ export default function TeamsPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // 로그인 상태일 때만 팀 목록 로드
     if (isAuthenticated) {
       fetchTeams();
     }
   }, [isAuthenticated, fetchTeams]);
 
-  // 팀장으로 있는 팀의 개수 계산
-  const leaderTeamsCount = teams.filter(team => team.myRole === 'LEADER').length;
-  const canCreateTeam = leaderTeamsCount < 3;
+  // 팀장으로 있는 팀의 개수 계산 (메모이제이션)
+  const canCreateTeam = useMemo(
+    () => teams.filter(team => team.myRole === 'LEADER').length < 3,
+    [teams]
+  );
 
-  const handleCreateButtonClick = () => {
+  const handleCreateButtonClick = useCallback(() => {
     if (!canCreateTeam) {
       toast('팀장으로 생성할 수 있는 팀은 최대 3개입니다', 'warning');
       return;
     }
     setShowCreateModal(true);
-  };
+  }, [canCreateTeam]);
 
-  const handleModalSubmit = async (data: CreateTeamRequest) => {
+  const handleCloseModal = useCallback(() => setShowCreateModal(false), []);
+
+  const handleModalSubmit = useCallback(async (data: CreateTeamRequest) => {
     setIsLoading(true);
     try {
-      // store의 createTeam 사용 (자동으로 store 업데이트)
       const newTeam = await createTeam(data);
       setShowCreateModal(false);
       toast(`${newTeam.name} 팀이 생성되었습니다`);
     } catch (error: any) {
-      // 백엔드에서 온 에러 메시지 표시
       const errorMessage = error?.message || '팀 생성에 실패했습니다.';
       toast(errorMessage, 'error');
       setShowCreateModal(false);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [createTeam]);
+
+  const handleTeamClick = useCallback((teamId: number) => {
+    navigate(`/teams/${teamId}`);
+  }, [navigate]);
+
+  const handleSettingsClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    toast('팀 설정 기능은 개발 중입니다');
+  }, []);
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
@@ -125,77 +142,12 @@ export default function TeamsPage() {
           </div>
         ) : !isAuthenticated ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              { teamId: 1, teamName: '알고리즘 스터디', teamDescription: '매일 1문제씩 함께 풀어요', memberCount: 5, myRole: 'LEADER', isRecommendationActive: true },
-              { teamId: 2, teamName: '코딩 테스트 준비반', teamDescription: 'FAANG 대비 코테 준비', memberCount: 8, myRole: 'MEMBER', isRecommendationActive: true },
-              { teamId: 3, teamName: 'PS 연습', teamDescription: null, memberCount: 3, myRole: 'MEMBER', isRecommendationActive: false },
-            ].map((team) => (
-              <div
+            {DEMO_TEAMS.map((team) => (
+              <TeamCard
                 key={team.teamId}
-                className="bg-white overflow-hidden rounded-lg cursor-default border border-gray-200"
-              >
-                <div className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-3 flex-1 min-w-0">
-                      <div className="flex-shrink-0 mt-1">
-                        <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                          <Users className="h-5 w-5 text-blue-600" />
-                        </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-lg font-semibold text-gray-900 truncate">
-                            {team.teamName}
-                          </h3>
-                          {team.myRole === 'LEADER' && (
-                            <Tooltip text="팀장">
-                              <Crown className="h-4 w-4 text-yellow-500 flex-shrink-0" />
-                            </Tooltip>
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                          {team.teamDescription || '설명이 없습니다'}
-                        </p>
-                      </div>
-                    </div>
-                    <Tooltip text="팀 설정">
-                      <button
-                        className="flex-shrink-0 ml-2 p-2 text-gray-400 rounded-lg"
-                      >
-                        <Settings className="h-4 w-4" />
-                      </button>
-                    </Tooltip>
-                  </div>
-
-                  <div className="mt-5 pt-5 border-t border-gray-100">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <Tooltip text="멤버 수">
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Users className="h-4 w-4 mr-1.5" />
-                            <span className="font-medium">{team.memberCount}명</span>
-                          </div>
-                        </Tooltip>
-                        <span className={`px-2.5 py-1 text-xs font-medium rounded ${
-                          team.myRole === 'LEADER'
-                            ? 'bg-blue-100 text-blue-700'
-                            : 'bg-gray-100 text-gray-700'
-                        }`}>
-                          {team.myRole === 'LEADER' ? '팀장' : '팀원'}
-                        </span>
-                        {team.isRecommendationActive && (
-                          <Tooltip text="문제 추천 활성화됨">
-                            <span className="px-2.5 py-1 text-xs font-medium rounded bg-green-100 text-green-700">
-                              추천 활성
-                            </span>
-                          </Tooltip>
-                        )}
-                      </div>
-                      <ChevronRight className="h-5 w-5 text-gray-400" />
-                    </div>
-                  </div>
-                </div>
-              </div>
+                team={team}
+                isInteractive={false}
+              />
             ))}
           </div>
         ) : teams.length === 0 ? (
@@ -220,77 +172,12 @@ export default function TeamsPage() {
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {teams.map((team) => (
-              <div
+              <TeamCard
                 key={team.teamId}
-                onClick={() => navigate(`/teams/${team.teamId}`)}
-                className="group bg-white overflow-hidden rounded-lg cursor-pointer hover:shadow-md transition-all border border-gray-200 hover:border-gray-400"
-              >
-                <div className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-3 flex-1 min-w-0">
-                      <div className="flex-shrink-0 mt-1">
-                        <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                          <Users className="h-5 w-5 text-blue-600" />
-                        </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-lg font-semibold text-gray-900 truncate">
-                            {team.teamName}
-                          </h3>
-                          {team.myRole === 'LEADER' && (
-                            <Tooltip text="팀장">
-                              <Crown className="h-4 w-4 text-yellow-500 flex-shrink-0" />
-                            </Tooltip>
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                          {team.teamDescription || '설명이 없습니다'}
-                        </p>
-                      </div>
-                    </div>
-                    <Tooltip text="팀 설정">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toast('팀 설정 기능은 개발 중입니다');
-                        }}
-                        className="flex-shrink-0 ml-2 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                      >
-                        <Settings className="h-4 w-4" />
-                      </button>
-                    </Tooltip>
-                  </div>
-
-                  <div className="mt-5 pt-5 border-t border-gray-100">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <Tooltip text="멤버 수">
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Users className="h-4 w-4 mr-1.5" />
-                            <span className="font-medium">{team.memberCount}명</span>
-                          </div>
-                        </Tooltip>
-                        <span className={`px-2.5 py-1 text-xs font-medium rounded ${
-                          team.myRole === 'LEADER'
-                            ? 'bg-blue-100 text-blue-700'
-                            : 'bg-gray-100 text-gray-700'
-                        }`}>
-                          {team.myRole === 'LEADER' ? '팀장' : '팀원'}
-                        </span>
-                        {team.isRecommendationActive && (
-                          <Tooltip text="문제 추천 활성화됨">
-                            <span className="px-2.5 py-1 text-xs font-medium rounded bg-green-100 text-green-700">
-                              추천 활성
-                            </span>
-                          </Tooltip>
-                        )}
-                      </div>
-                      <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
-                    </div>
-                  </div>
-                </div>
-              </div>
+                team={team}
+                onClick={() => handleTeamClick(team.teamId)}
+                onSettingsClick={handleSettingsClick}
+              />
             ))}
           </div>
         )}
@@ -298,7 +185,7 @@ export default function TeamsPage() {
 
       <CreateTeamModal
         isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
+        onClose={handleCloseModal}
         onSubmit={handleModalSubmit}
         isLoading={isLoading}
       />

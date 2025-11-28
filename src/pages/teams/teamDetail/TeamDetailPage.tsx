@@ -1,6 +1,6 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { UserPlus, Lock } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { toast } from '../../../components/common/toast';
 import { TeamSettingsModal } from '../components/TeamSettingsModal';
 import { MemberInviteModal } from '../components/MemberInviteModal';
@@ -18,6 +18,9 @@ export default function TeamDetailPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
 
+  // teamId를 숫자로 변환 (메모이제이션)
+  const numericTeamId = useMemo(() => teamId ? Number(teamId) : null, [teamId]);
+
   // Selector hooks 사용
   const currentTeamDetails = useCurrentTeamDetails();
   const detailLoading = useDetailLoading();
@@ -31,70 +34,89 @@ export default function TeamDetailPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
 
-  // 현재 사용자가 팀장인지 확인
-  const teamMembers = currentTeamDetails?.members || [];
-  const recommendationSettings = currentTeamDetails?.settings || null;
-  const currentUserMember = teamMembers.find(member => member.isMe);
+  // 현재 팀 정보 (메모이제이션)
+  const teamInfo = currentTeamDetails?.team ?? null;
+  const teamMembers = currentTeamDetails?.members ?? [];
+  const recommendationSettings = currentTeamDetails?.settings ?? null;
+
+  const currentUserMember = useMemo(
+    () => teamMembers.find(member => member.isMe),
+    [teamMembers]
+  );
   const isTeamLeader = currentUserMember?.role === 'LEADER';
   const isTeamMember = !!currentUserMember;
 
-  // 팀 기본 정보 가져오기
-  const currentTeam = teams.find(team => team.teamId === Number(teamId));
+  // 팀 기본 정보 (통합 API의 team 정보 우선, 없으면 teams 목록에서 가져옴)
+  const currentTeam = useMemo(
+    () => teams.find(team => team.teamId === numericTeamId),
+    [teams, numericTeamId]
+  );
 
   useEffect(() => {
-    if (teamId) {
-      fetchTeamDetails(Number(teamId));
+    if (numericTeamId) {
+      fetchTeamDetails(numericTeamId);
     }
-  }, [teamId, fetchTeamDetails]);
+  }, [numericTeamId, fetchTeamDetails]);
 
-  const loadRecommendationSettings = async () => {
-    if (!teamId) return;
-    await refreshTeamSettings(Number(teamId));
-  };
+  const handleSettingsUpdate = useCallback(async () => {
+    if (!numericTeamId) return;
+    await refreshTeamSettings(numericTeamId);
+  }, [numericTeamId, refreshTeamSettings]);
 
-  const showToastMessage = (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'success') => {
-    toast(message, type);
-  };
-
-  const handleRetry = () => {
-    if (teamId) {
-      fetchTeamDetails(Number(teamId));
+  const handleRetry = useCallback(() => {
+    if (numericTeamId) {
+      fetchTeamDetails(numericTeamId);
     }
-  };
+  }, [numericTeamId, fetchTeamDetails]);
 
-  const handleLeaveTeam = async () => {
-    if (!teamId) return;
+  const handleLeaveTeam = useCallback(async () => {
+    if (!numericTeamId) return;
 
     setIsActionLoading(true);
     try {
-      await leaveTeam(Number(teamId));
-      showToastMessage('팀에서 탈퇴했습니다');
+      await leaveTeam(numericTeamId);
+      toast('팀에서 탈퇴했습니다');
       setShowLeaveConfirm(false);
       setTimeout(() => navigate('/teams'), 1000);
     } catch (error: any) {
-      showToastMessage(error?.message || '팀 탈퇴에 실패했습니다');
+      toast(error?.message || '팀 탈퇴에 실패했습니다', 'error');
       setShowLeaveConfirm(false);
     } finally {
       setIsActionLoading(false);
     }
-  };
+  }, [numericTeamId, leaveTeam, navigate]);
 
-  const handleDeleteTeam = async () => {
-    if (!teamId) return;
+  const handleDeleteTeam = useCallback(async () => {
+    if (!numericTeamId) return;
 
     setIsActionLoading(true);
     try {
-      await deleteTeam(Number(teamId));
-      showToastMessage('팀이 해산되었습니다');
+      await deleteTeam(numericTeamId);
+      toast('팀이 해산되었습니다');
       setShowDeleteConfirm(false);
       setTimeout(() => navigate('/teams'), 1000);
     } catch (error: any) {
-      showToastMessage(error?.message || '팀 해산에 실패했습니다');
+      toast(error?.message || '팀 해산에 실패했습니다', 'error');
       setShowDeleteConfirm(false);
     } finally {
       setIsActionLoading(false);
     }
-  };
+  }, [numericTeamId, deleteTeam, navigate]);
+
+  const handleInviteSuccess = useCallback(() => {
+    if (numericTeamId) {
+      fetchTeamDetails(numericTeamId);
+    }
+  }, [numericTeamId, fetchTeamDetails]);
+
+  const handleOpenSettings = useCallback(() => setShowSettingsModal(true), []);
+  const handleCloseSettings = useCallback(() => setShowSettingsModal(false), []);
+  const handleOpenInvite = useCallback(() => setShowInviteModal(true), []);
+  const handleCloseInvite = useCallback(() => setShowInviteModal(false), []);
+  const handleOpenLeaveConfirm = useCallback(() => setShowLeaveConfirm(true), []);
+  const handleCloseLeaveConfirm = useCallback(() => setShowLeaveConfirm(false), []);
+  const handleOpenDeleteConfirm = useCallback(() => setShowDeleteConfirm(true), []);
+  const handleCloseDeleteConfirm = useCallback(() => setShowDeleteConfirm(false), []);
 
   if (detailLoading) {
     return (
@@ -120,8 +142,14 @@ export default function TeamDetailPage() {
             <div className="sm:flex-auto">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900 break-words">
-                  {currentTeam?.teamName || recommendationSettings?.teamName || `스터디 팀 #${teamId}`}
+                  {teamInfo?.teamName || currentTeam?.teamName || `스터디 팀 #${teamId}`}
                 </h1>
+                {(teamInfo?.isPrivate || currentTeam?.isPrivate) && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 flex-shrink-0">
+                    <Lock className="h-3 w-3 mr-1" />
+                    비공개
+                  </span>
+                )}
                 {isTeamLeader && (
                   <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 flex-shrink-0">
                     팀장
@@ -129,7 +157,7 @@ export default function TeamDetailPage() {
                 )}
               </div>
               <p className="text-sm text-gray-500 break-words">
-                {currentTeam?.teamDescription || `${teamMembers.length}명의 팀원과 함께 성장하는 알고리즘 스터디`}
+                {teamInfo?.description || currentTeam?.teamDescription || `${teamMembers.length}명의 팀원과 함께 성장하는 알고리즘 스터디`}
               </p>
             </div>
             <div className="mt-4 sm:mt-0 flex items-center justify-end gap-2">
@@ -145,7 +173,7 @@ export default function TeamDetailPage() {
                 <>
                   {isTeamLeader && (
                     <button
-                      onClick={() => setShowInviteModal(true)}
+                      onClick={handleOpenInvite}
                       className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors whitespace-nowrap"
                     >
                       <UserPlus className="h-4 w-4 mr-1.5" />
@@ -155,8 +183,8 @@ export default function TeamDetailPage() {
                   )}
                   <TeamActionMenu
                     isTeamLeader={isTeamLeader}
-                    onLeaveClick={() => setShowLeaveConfirm(true)}
-                    onDeleteClick={() => setShowDeleteConfirm(true)}
+                    onLeaveClick={handleOpenLeaveConfirm}
+                    onDeleteClick={handleOpenDeleteConfirm}
                   />
                 </>
               )}
@@ -168,12 +196,13 @@ export default function TeamDetailPage() {
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <TodayProblems
-              teamId={Number(teamId)}
+              teamId={numericTeamId!}
               isTeamLeader={isTeamLeader}
               isTeamMember={isTeamMember}
-              onShowToast={showToastMessage}
-              onOpenSettings={() => setShowSettingsModal(true)}
+              onShowToast={toast}
+              onOpenSettings={handleOpenSettings}
               recommendationSettings={recommendationSettings}
+              initialTodayProblems={currentTeamDetails?.todayProblem}
             />
 
             <div className="mt-6 bg-white border border-gray-200 rounded-lg p-4">
@@ -207,25 +236,21 @@ export default function TeamDetailPage() {
         {/* 설정 모달 */}
         {showSettingsModal && (
           <TeamSettingsModal
-            teamId={Number(teamId)}
+            teamId={numericTeamId!}
             settings={recommendationSettings}
-            onClose={() => setShowSettingsModal(false)}
-            onSettingsUpdate={loadRecommendationSettings}
-            onShowToast={showToastMessage}
+            onClose={handleCloseSettings}
+            onSettingsUpdate={handleSettingsUpdate}
+            onShowToast={toast}
           />
         )}
 
         {/* 멤버 초대 모달 */}
         {showInviteModal && (
           <MemberInviteModal
-            teamId={Number(teamId)}
-            onClose={() => setShowInviteModal(false)}
-            onShowToast={showToastMessage}
-            onInviteSuccess={() => {
-              if (teamId) {
-                fetchTeamDetails(Number(teamId));
-              }
-            }}
+            teamId={numericTeamId!}
+            onClose={handleCloseInvite}
+            onShowToast={toast}
+            onInviteSuccess={handleInviteSuccess}
           />
         )}
 
@@ -238,7 +263,7 @@ export default function TeamDetailPage() {
           cancelText="취소"
           confirmButtonVariant="danger"
           onConfirm={handleLeaveTeam}
-          onCancel={() => setShowLeaveConfirm(false)}
+          onCancel={handleCloseLeaveConfirm}
           isLoading={isActionLoading}
         />
 
@@ -251,7 +276,7 @@ export default function TeamDetailPage() {
           cancelText="취소"
           confirmButtonVariant="danger"
           onConfirm={handleDeleteTeam}
-          onCancel={() => setShowDeleteConfirm(false)}
+          onCancel={handleCloseDeleteConfirm}
           isLoading={isActionLoading}
         />
       </div>

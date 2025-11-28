@@ -14,42 +14,23 @@ interface TodayProblemsProps {
   onShowToast: (message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
   onOpenSettings?: () => void;
   recommendationSettings?: TeamRecommendationSettingsResponse | null;
+  initialTodayProblems?: TodayProblemsResponse | null;
 }
 
-export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast, onOpenSettings, recommendationSettings }: TodayProblemsProps) {
-  const [todayProblems, setTodayProblems] = useState<TodayProblemsResponse | null>(null);
+export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast, onOpenSettings, recommendationSettings, initialTodayProblems }: TodayProblemsProps) {
+  // 통합 API에서 받아온 초기 데이터 사용 (중복 API 호출 방지)
+  const [todayProblems, setTodayProblems] = useState<TodayProblemsResponse | null>(initialTodayProblems ?? null);
   const [problemsLoading, setProblemsLoading] = useState(false);
   const [verifyingProblemId, setVerifyingProblemId] = useState<number | null>(null);
   const [showErrorFlash, setShowErrorFlash] = useState(false);
   const { updateUser, user } = useAuthStore();
 
+  // initialTodayProblems가 변경되면 상태 동기화
   useEffect(() => {
-    let cancelled = false;
-
-    const loadTodayProblems = async () => {
-      try {
-        setProblemsLoading(true);
-        const problems = await teamsApi.getTodayProblems(teamId);
-        if (!cancelled) {
-          setTodayProblems(problems);
-        }
-      } catch (error) {
-        if (!cancelled) {
-          console.error('오늘의 미션 로딩 실패:', error);
-        }
-      } finally {
-        if (!cancelled) {
-          setProblemsLoading(false);
-        }
-      }
-    };
-
-    loadTodayProblems();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [teamId]);
+    if (initialTodayProblems !== undefined) {
+      setTodayProblems(initialTodayProblems);
+    }
+  }, [initialTodayProblems]);
 
   const handleRefreshProblems = async () => {
     if (!isTeamLeader) return;
