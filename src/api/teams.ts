@@ -121,6 +121,18 @@ export interface TeamDetailResponse {
   todayProblem: TodayProblemsResponse | null;
 }
 
+// 공개 팀 목록 응답 타입
+export interface PublicTeamResponse {
+  teamId: number;
+  teamName: string;
+  description?: string;
+  leaderHandle: string;
+  memberCount: number;
+  recommendationDays: RecommendationDayOfWeek[];
+  minProblemLevel: number;
+  maxProblemLevel: number;
+}
+
 export const teamsApi = {
   create: async (data: CreateTeamRequest): Promise<CreateTeamResponse> => {
     const response = await apiClient.post<ApiResponse<CreateTeamResponse>>('/teams', data);
@@ -195,6 +207,12 @@ export const teamsApi = {
     const response = await apiClient.post<ApiResponse<TodayProblemsResponse>>(
       `/recommendation/team/${teamId}/manual`
     );
+    return response.data.data;
+  },
+
+  // 공개 팀 목록 조회 (비로그인 가능)
+  getPublicTeams: async (): Promise<PublicTeamResponse[]> => {
+    const response = await apiClient.get<ApiResponse<PublicTeamResponse[]>>('/teams/public');
     return response.data.data;
   },
 };
