@@ -51,12 +51,7 @@ export default function MyProfilePage() {
   const handleDeleteAccount = async () => {
     try {
       setIsDeleting(true);
-
-      // TODO: 백엔드 API 구현 후 주석 해제
-      // await memberApi.deleteAccount();
-
-      // 임시: API 호출 시뮬레이션 (1초 대기)
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await memberApi.withdraw();
 
       toast('회원탈퇴가 완료되었습니다', 'success');
 
@@ -68,7 +63,16 @@ export default function MyProfilePage() {
 
     } catch (error: any) {
       console.error('회원탈퇴 실패:', error);
-      toast('회원탈퇴에 실패했습니다. 다시 시도해주세요.', 'error');
+
+      const status = error?.response?.status;
+      const errorCode = error?.response?.data?.code;
+
+      if (status === 409 && errorCode === '3013') {
+        toast('팀에 소속되어 있어 탈퇴할 수 없습니다.\n모든 팀에서 탈퇴 후 다시 시도해주세요.', 'error');
+      } else {
+        toast('회원탈퇴에 실패했습니다. 다시 시도해주세요.', 'error');
+      }
+
       setIsDeleting(false);
       setShowDeleteModal(false);
     }

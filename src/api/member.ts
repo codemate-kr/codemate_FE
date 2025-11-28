@@ -111,14 +111,9 @@ export const memberApi = {
 
   /**
    * 회원탈퇴 - 계정 및 모든 관련 데이터 삭제
-   * TODO: 백엔드 API 구현 후 사용 가능
-   * 예상 엔드포인트: DELETE /member/me
+   * @throws 409 (code: 3013) - 팀에 소속된 경우 탈퇴 불가
    */
-  deleteAccount: async (): Promise<void> => {
-    // TODO: 백엔드 API 구현 대기 중
-    // 구현 시 아래 주석 해제하여 사용
-    // await apiClient.delete('/member/me');
-
-    throw new Error('회원탈퇴 API가 아직 구현되지 않았습니다');
+  withdraw: async (): Promise<void> => {
+    await apiClient.post('/member/me/withdraw');
   }
 };
