@@ -70,7 +70,7 @@ export const PublicTeamCard = memo(function PublicTeamCard({
               <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-400" />
               <span>{team.memberCount}명</span>
             </div>
-            {team.minProblemLevel > 0 && team.maxProblemLevel > 0 && (
+            {days && team.minProblemLevel > 0 && team.maxProblemLevel > 0 && (
               <>
                 {/* 모바일: 짧은 형태 */}
                 <div className="flex sm:hidden items-center gap-1">
