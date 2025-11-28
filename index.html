@@ -66,39 +66,46 @@
 
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
 
-    <!-- Amplitude Analytics -->
-    <script src="https://cdn.amplitude.com/script/d29975377e9bf3b327ec17e364227651.js"></script>
+    <!-- Amplitude Analytics (프로덕션 환경에서만 활성화) -->
     <script>
-      // localStorage에서 저장된 사용자 ID 가져오기
-      // Amplitude user_id는 최소 5자 이상이어야 함
-      var storedUserId = null;
-      try {
-        var authStorage = localStorage.getItem('auth-storage');
-        if (authStorage) {
-          var parsed = JSON.parse(authStorage);
-          if (parsed.state && parsed.state.user && parsed.state.user.id) {
-            storedUserId = 'user_' + String(parsed.state.user.id);
+      var isProduction = window.location.hostname === 'codemate.kr' || window.location.hostname === 'www.codemate.kr';
+      if (isProduction) {
+        var amplitudeScript = document.createElement('script');
+        amplitudeScript.src = 'https://cdn.amplitude.com/script/d29975377e9bf3b327ec17e364227651.js';
+        amplitudeScript.onload = function() {
+          // localStorage에서 저장된 사용자 ID 가져오기
+          // Amplitude user_id는 최소 5자 이상이어야 함
+          var storedUserId = null;
+          try {
+            var authStorage = localStorage.getItem('auth-storage');
+            if (authStorage) {
+              var parsed = JSON.parse(authStorage);
+              if (parsed.state && parsed.state.user && parsed.state.user.id) {
+                storedUserId = 'user_' + String(parsed.state.user.id);
+              }
+            }
+          } catch (e) {
+            console.error('Failed to parse auth storage:', e);
           }
-        }
-      } catch (e) {
-        console.error('Failed to parse auth storage:', e);
-      }
 
-      window.amplitude.add(window.sessionReplay.plugin({sampleRate: 1}));
-      window.amplitude.init('d29975377e9bf3b327ec17e364227651', storedUserId, {
-        "fetchRemoteConfig": true,
-        "autocapture": {
-          "attribution": true,
-          "fileDownloads": true,
-          "formInteractions": true,
-          "pageViews": true,
-          "sessions": true,
-          "elementInteractions": true,
-          "networkTracking": true,
-          "webVitals": true,
-          "frustrationInteractions": true
-        }
-      });
+          window.amplitude.add(window.sessionReplay.plugin({sampleRate: 1}));
+          window.amplitude.init('d29975377e9bf3b327ec17e364227651', storedUserId, {
+            "fetchRemoteConfig": true,
+            "autocapture": {
+              "attribution": true,
+              "fileDownloads": true,
+              "formInteractions": true,
+              "pageViews": true,
+              "sessions": true,
+              "elementInteractions": true,
+              "networkTracking": true,
+              "webVitals": true,
+              "frustrationInteractions": true
+            }
+          });
+        };
+        document.head.appendChild(amplitudeScript);
+      }
     </script>
   </head>
   <body>
