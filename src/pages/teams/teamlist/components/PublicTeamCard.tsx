@@ -19,6 +19,14 @@ const DAY_MAP: Record<string, string> = {
   SUNDAY: '일',
 };
 
+// 티어 레벨을 짧은 이름으로 변환 (모바일용)
+const getShortTierName = (level: number): string => {
+  const tierPrefixes = ['B', 'S', 'G', 'P', 'D', 'R'];
+  const tierIndex = Math.floor((level - 1) / 5);
+  const tierNumber = 5 - ((level - 1) % 5);
+  return `${tierPrefixes[tierIndex] || '?'}${tierNumber}`;
+};
+
 export const PublicTeamCard = memo(function PublicTeamCard({
   team,
   onClick,
@@ -63,15 +71,28 @@ export const PublicTeamCard = memo(function PublicTeamCard({
               <span>{team.memberCount}명</span>
             </div>
             {team.minProblemLevel > 0 && team.maxProblemLevel > 0 && (
-              <div className="hidden sm:flex items-center gap-1">
-                <span className={`font-medium px-1.5 py-0.5 rounded text-xs ${getTierColor(team.minProblemLevel)}`}>
-                  {getTierName(team.minProblemLevel)}
-                </span>
-                <span className="text-gray-400">~</span>
-                <span className={`font-medium px-1.5 py-0.5 rounded text-xs ${getTierColor(team.maxProblemLevel)}`}>
-                  {getTierName(team.maxProblemLevel)}
-                </span>
-              </div>
+              <>
+                {/* 모바일: 짧은 형태 */}
+                <div className="flex sm:hidden items-center gap-1">
+                  <span className={`font-medium px-1 py-0.5 rounded text-xs ${getTierColor(team.minProblemLevel)}`}>
+                    {getShortTierName(team.minProblemLevel)}
+                  </span>
+                  <span className="text-gray-400">~</span>
+                  <span className={`font-medium px-1 py-0.5 rounded text-xs ${getTierColor(team.maxProblemLevel)}`}>
+                    {getShortTierName(team.maxProblemLevel)}
+                  </span>
+                </div>
+                {/* 데스크톱: 전체 이름 */}
+                <div className="hidden sm:flex items-center gap-1">
+                  <span className={`font-medium px-1.5 py-0.5 rounded text-xs ${getTierColor(team.minProblemLevel)}`}>
+                    {getTierName(team.minProblemLevel)}
+                  </span>
+                  <span className="text-gray-400">~</span>
+                  <span className={`font-medium px-1.5 py-0.5 rounded text-xs ${getTierColor(team.maxProblemLevel)}`}>
+                    {getTierName(team.maxProblemLevel)}
+                  </span>
+                </div>
+              </>
             )}
             {days && (
               <div className="flex items-center gap-1">
