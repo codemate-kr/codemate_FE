@@ -29,9 +29,9 @@ export default function AuthInitializer({ children }: AuthInitializerProps) {
               solvedCount: profile.solvedCount,
             });
 
-            // Amplitude 사용자 식별 (user_id는 최소 5자 이상 필요)
-            if (window.amplitude) {
-              window.amplitude.setUserId('user_' + profile.id.toString());
+            // Amplitude 사용자 식별
+            if (window.amplitude && profile.email) {
+              window.amplitude.setUserId(profile.email);
             }
           } catch (error) {
             console.error('프로필 로드 실패:', error);
