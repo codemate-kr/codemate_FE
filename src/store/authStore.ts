@@ -24,9 +24,9 @@ export const useAuthStore = create<AuthStore>()(
           isAuthenticated: true,
         });
 
-        // Amplitude 사용자 식별
-        if (window.amplitude && user.id) {
-          window.amplitude.setUserId(String(user.id));
+        // Amplitude 사용자 식별 (user_id는 최소 5자 이상 필요)
+        if (window.amplitude) {
+          window.amplitude.setUserId('user_' + String(user.id));
         }
       },
 

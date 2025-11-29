@@ -74,13 +74,14 @@
         amplitudeScript.src = 'https://cdn.amplitude.com/script/d29975377e9bf3b327ec17e364227651.js';
         amplitudeScript.onload = function() {
           // localStorage에서 저장된 사용자 ID 가져오기
+          // Amplitude user_id는 최소 5자 이상이어야 함
           var storedUserId = null;
           try {
             var authStorage = localStorage.getItem('auth-storage');
             if (authStorage) {
               var parsed = JSON.parse(authStorage);
               if (parsed.state && parsed.state.user && parsed.state.user.id) {
-                storedUserId = String(parsed.state.user.id);
+                storedUserId = 'user_' + String(parsed.state.user.id);
               }
             }
           } catch (e) {
