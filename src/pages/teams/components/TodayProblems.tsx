@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, RefreshCw, ExternalLink, CheckCircle, Settings, Loader2, Sparkles } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { teamsApi, type TodayProblemsResponse, type TeamRecommendationSettingsResponse } from '../../../api/teams';
-import { memberApi } from '../../../api/member';
 import { getTierIcon } from '../../../components/common/TierIcon';
-import { useAuthStore } from '../../../store/authStore';
+import { verifyProblemSolved, type VerifyErrorType } from '../../../utils/problemVerify';
 
 interface TodayProblemsProps {
   teamId: number;
@@ -23,7 +21,6 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
   const [problemsLoading, setProblemsLoading] = useState(false);
   const [verifyingProblemId, setVerifyingProblemId] = useState<number | null>(null);
   const [showErrorFlash, setShowErrorFlash] = useState(false);
-  const { updateUser, user } = useAuthStore();
 
   // initialTodayProblems가 변경되면 상태 동기화
   useEffect(() => {
@@ -83,66 +80,30 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
 
   const handleVerifyProblem = async (problemId: number) => {
     setVerifyingProblemId(problemId);
-    try {
-      await memberApi.verifyProblemSolved(problemId);
 
-      // 검증 성공 시 팡파레 효과
-      confetti({
-        particleCount: 500,
-        spread: 240,
-        origin: { x: 0.25 },
-      });
-      confetti({
-        particleCount: 500,
-        spread: 240,
-        origin: { x: 0.75 },
-      });
-      confetti({
-        particleCount: 500,
-        spread: 240,
-        origin: { x: 0.5 },
-      });
-
-      // 문제 상태 업데이트
-      if (todayProblems) {
-        setTodayProblems({
-          ...todayProblems,
-          problems: todayProblems.problems.map(p =>
-            p.problemId === problemId ? { ...p, isSolved: true } : p
-          ),
-        });
-      }
-
-      // 유저의 총 해결 문제 수 증가
-      if (user) {
-        updateUser({ solvedCount: (user.solvedCount ?? 0) + 1 });
-      }
-
-      onShowToast('🎉 문제 해결을 축하합니다!');
-    } catch (error: any) {
-      const status = error?.response?.status;
-
-      // 429 에러는 특별 처리 (빨간 화면 효과 없음)
-      if (status === 429) {
-        onShowToast(error.userMessage || error.message || 'solved.ac API 호출 제한에 도달했습니다.\n잠시 후 다시 시도해주세요.', 'warning');
-      } else {
-        // 다른 에러는 빨간 화면 효과
-        setShowErrorFlash(true);
-        setTimeout(() => setShowErrorFlash(false), 500);
-
-        if (status === 404) {
-          onShowToast('문제를 찾을 수 없습니다.', 'error');
-        } else if (status === 400) {
-          onShowToast('아직 해결되지 않은 문제입니다.', 'error');
-        } else if (status === 409) {
-          onShowToast('이미 인증된 문제입니다.', 'warning');
-        } else {
-          onShowToast('문제 인증에 실패했습니다.', 'error');
+    await verifyProblemSolved(problemId, {
+      customToast: onShowToast,
+      onSuccess: () => {
+        // 문제 상태 업데이트
+        if (todayProblems) {
+          setTodayProblems({
+            ...todayProblems,
+            problems: todayProblems.problems.map(p =>
+              p.problemId === problemId ? { ...p, isSolved: true } : p
+            ),
+          });
         }
-      }
-    } finally {
-      setVerifyingProblemId(null);
-    }
+      },
+      onError: (errorType: VerifyErrorType) => {
+        // rate-limit 에러는 빨간 화면 효과 없음
+        if (errorType !== 'rate-limit') {
+          setShowErrorFlash(true);
+          setTimeout(() => setShowErrorFlash(false), 500);
+        }
+      },
+    });
+
+    setVerifyingProblemId(null);
   };
 
   return (

@@ -1,12 +1,15 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, CheckCircle, ExternalLink } from 'lucide-react';
+import { BookOpen, CheckCircle, ExternalLink, Loader2 } from 'lucide-react';
 import type { TodayProblem } from '../../../api/teams';
+import { verifyProblemSolved, type VerifyErrorType } from '../../../utils/problemVerify';
 
 interface TodayTodoSectionProps {
   isAuthenticated: boolean;
   loginRedirect: string;
   problems: Array<TodayProblem & { teamId: number; teamName: string }>;
   loading: boolean;
+  onProblemVerified?: (problemId: number) => void;
 }
 
 const SAMPLE_PROBLEMS = [
@@ -20,14 +23,54 @@ export default function TodayTodoSection({
   loginRedirect,
   problems,
   loading,
+  onProblemVerified,
 }: TodayTodoSectionProps) {
+  const [verifyingProblemId, setVerifyingProblemId] = useState<number | null>(null);
+  const [showErrorFlash, setShowErrorFlash] = useState(false);
   const displayProblems = isAuthenticated ? problems : SAMPLE_PROBLEMS;
+
+  const handleVerify = async (e: React.MouseEvent, problemId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setVerifyingProblemId(problemId);
+    await verifyProblemSolved(problemId, {
+      onSuccess: () => onProblemVerified?.(problemId),
+      onAlreadyVerified: () => onProblemVerified?.(problemId),
+      onError: (errorType: VerifyErrorType) => {
+        // rate-limit 에러는 빨간 화면 효과 없음
+        if (errorType !== 'rate-limit') {
+          setShowErrorFlash(true);
+          setTimeout(() => setShowErrorFlash(false), 500);
+        }
+      },
+    });
+    setVerifyingProblemId(null);
+  };
   const solvedCount = displayProblems.filter(p => p.isSolved).length;
   const totalCount = displayProblems.length;
   const progressPercent = totalCount > 0 ? (solvedCount / totalCount) * 100 : 0;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden relative">
+    <>
+      {/* 화면 떨림 효과를 위한 스타일 */}
+      <style>
+        {`
+          @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+          }
+          .shake {
+            animation: shake 0.5s ease-in-out;
+          }
+        `}
+      </style>
+      <div className={`rounded-xl shadow-sm border overflow-hidden relative transition-colors duration-300 ${showErrorFlash ? 'shake border-red-400 bg-red-50' : 'bg-white border-gray-100'}`}>
+        {/* 에러 플래시 오버레이 - 컴포넌트 전체 덮음 */}
+        {showErrorFlash && (
+          <div className="absolute inset-0 bg-red-500/20 z-10 pointer-events-none animate-pulse" />
+        )}
       {!isAuthenticated && (
         <Link
           to={loginRedirect}
@@ -136,50 +179,70 @@ export default function TodayTodoSection({
                 href={`https://www.acmicpc.net/problem/${problem.problemId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`group block border rounded-lg p-4 transition-all ${
+                className={`block border rounded-lg p-4 transition-all group ${
                   problem.isSolved
-                    ? 'bg-green-50 border-green-200 hover:border-green-400 hover:shadow-md'
+                    ? 'bg-green-50 border-green-200'
                     : 'bg-white border-gray-200 hover:border-blue-400 hover:shadow-md'
                 }`}
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start space-x-3 flex-1 min-w-0">
-                    <div className="flex-shrink-0 mt-1">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center space-x-3 flex-1 min-w-0">
+                    <div className="flex-shrink-0 relative group/checkbox">
                       {problem.isSolved ? (
-                        <CheckCircle className="w-5 h-5 text-green-600" />
+                        <>
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                          <span className="absolute left-0 top-7 px-2 py-1 text-xs bg-gray-800 text-white rounded whitespace-nowrap opacity-0 group-hover/checkbox:opacity-100 transition-opacity pointer-events-none z-10">
+                            해결 완료
+                          </span>
+                        </>
                       ) : (
-                        <div className="w-5 h-5 rounded border-2 border-gray-300 group-hover:border-blue-500 transition-colors" />
+                        <>
+                          <div className="w-5 h-5 rounded border-2 border-gray-300" />
+                          <span className="absolute left-0 top-7 px-2 py-1 text-xs bg-gray-800 text-white rounded whitespace-nowrap opacity-0 group-hover/checkbox:opacity-100 transition-opacity pointer-events-none z-10">
+                            미해결
+                          </span>
+                        </>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4
-                        className={`text-sm font-semibold truncate ${
-                          problem.isSolved
-                            ? 'text-green-700 line-through'
-                            : 'text-gray-900'
-                        }`}
-                      >
-                        {problem.titleKo}
-                      </h4>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <div className="flex items-center gap-1.5">
+                        <h4
+                          className={`text-sm font-semibold truncate ${
+                            problem.isSolved
+                              ? 'text-green-700 line-through'
+                              : 'text-gray-900'
+                          }`}
+                        >
+                          {problem.titleKo}
+                        </h4>
+                        <ExternalLink className={`h-4 w-4 flex-shrink-0 transition-colors ${
+                          problem.isSolved ? 'text-green-500' : 'text-gray-400 group-hover:text-blue-500'
+                        }`} />
+                      </div>
+                      <p className="text-xs text-gray-500 mt-0.5">
                         {problem.teamName} · #{problem.problemId}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-2 ml-2">
-                    {!problem.isSolved && (
-                      <Link
-                        to={`/teams/${problem.teamId}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="text-xs text-blue-600 hover:text-blue-700 hover:underline flex-shrink-0"
-                      >
-                        인증하기
-                      </Link>
-                    )}
-                    <ExternalLink className={`h-5 w-5 flex-shrink-0 ${
-                      problem.isSolved ? 'text-green-500' : 'text-gray-400 group-hover:text-blue-600'
-                    } transition-colors`} />
-                  </div>
+                  {!problem.isSolved && (
+                    <button
+                      onClick={(e) => handleVerify(e, problem.problemId)}
+                      disabled={verifyingProblemId === problem.problemId}
+                      className="flex-shrink-0 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-gray-800 disabled:bg-gray-100 disabled:text-gray-400 rounded-md transition-colors flex items-center gap-1.5 border border-gray-200"
+                    >
+                      {verifyingProblemId === problem.problemId ? (
+                        <>
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                          확인 중
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle className="h-3 w-3" />
+                          해결 인증
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
               </a>
             ))}
@@ -187,5 +250,6 @@ export default function TodayTodoSection({
         )}
       </div>
     </div>
+    </>
   );
 }

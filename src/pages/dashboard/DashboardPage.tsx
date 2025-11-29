@@ -115,6 +115,11 @@ export default function DashboardPage() {
             loginRedirect={loginRedirect}
             problems={todayProblems}
             loading={problemsLoading}
+            onProblemVerified={(problemId) => {
+              setTodayProblems(prev =>
+                prev.map(p => p.problemId === problemId ? { ...p, isSolved: true } : p)
+              );
+            }}
           />
 
           {/* 최근 성취 */}
