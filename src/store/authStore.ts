@@ -25,8 +25,8 @@ export const useAuthStore = create<AuthStore>()(
         });
 
         // Amplitude 사용자 식별
-        if (window.amplitude && user.email) {
-          window.amplitude.setUserId(user.email);
+        if (window.amplitude && user.id) {
+          window.amplitude.setUserId(String(user.id));
         }
       },
 

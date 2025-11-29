@@ -30,8 +30,8 @@ export default function AuthInitializer({ children }: AuthInitializerProps) {
             });
 
             // Amplitude 사용자 식별
-            if (window.amplitude && profile.email) {
-              window.amplitude.setUserId(profile.email);
+            if (window.amplitude && profile.id) {
+              window.amplitude.setUserId(String(profile.id));
             }
           } catch (error) {
             console.error('프로필 로드 실패:', error);
