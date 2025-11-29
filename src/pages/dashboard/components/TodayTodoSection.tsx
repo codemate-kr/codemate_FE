@@ -137,9 +137,9 @@ export default function TodayTodoSection({
                       : 'bg-white border-gray-200'
                   }`}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-3 flex-1 min-w-0">
-                      <div className="flex-shrink-0 mt-1">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center space-x-3 flex-1 min-w-0">
+                      <div className="flex-shrink-0">
                         {problem.isSolved ? (
                           <CheckCircle className="w-5 h-5 text-green-600" />
                         ) : (
@@ -147,25 +147,31 @@ export default function TodayTodoSection({
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4
-                          className={`text-sm font-semibold truncate ${
-                            problem.isSolved
-                              ? 'text-green-700 line-through'
-                              : 'text-gray-900'
-                          }`}
-                        >
-                          {problem.titleKo}
-                        </h4>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <div className="flex items-center gap-1.5">
+                          <h4
+                            className={`text-sm font-semibold truncate ${
+                              problem.isSolved
+                                ? 'text-green-700 line-through'
+                                : 'text-gray-900'
+                            }`}
+                          >
+                            {problem.titleKo}
+                          </h4>
+                          <ExternalLink className={`h-4 w-4 flex-shrink-0 ${
+                            problem.isSolved ? 'text-green-500' : 'text-gray-400'
+                          }`} />
+                        </div>
+                        <p className="text-xs text-gray-500 mt-0.5">
                           {problem.teamName} · #{problem.problemId}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-start gap-2 ml-2">
-                      <ExternalLink className={`h-5 w-5 flex-shrink-0 ${
-                        problem.isSolved ? 'text-green-500' : 'text-gray-400'
-                      }`} />
-                    </div>
+                    {!problem.isSolved && (
+                      <div className="flex-shrink-0 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-md flex items-center gap-1.5 border border-gray-200">
+                        <CheckCircle className="h-3 w-3" />
+                        해결 인증
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
