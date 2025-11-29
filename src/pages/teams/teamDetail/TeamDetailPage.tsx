@@ -7,6 +7,7 @@ import { MemberInviteModal } from '../components/MemberInviteModal';
 import { TodayProblems } from '../components/TodayProblems';
 import { TeamDetailError } from '../../../components/common/TeamDetailError';
 import ConfirmModal from '../../../components/common/ConfirmModal';
+import { teamsApi } from '../../../api/teams';
 import TeamInfoSection from './components/TeamInfoSection';
 import TeamMembersList from './components/TeamMembersList';
 import TeamActionMenu from './components/TeamActionMenu';
@@ -123,6 +124,26 @@ export default function TeamDetailPage() {
     toast('가입 신청 기능은 준비 중입니다', 'error');
   }, []);
 
+  const { updateTeam } = useTeamStore();
+
+  const handleVisibilityToggle = useCallback(async () => {
+    if (!numericTeamId) return;
+
+    const currentIsPrivate = teamInfo?.isPrivate || currentTeam?.isPrivate;
+    const newIsPrivate = !currentIsPrivate;
+
+    try {
+      await teamsApi.updateVisibility(numericTeamId, newIsPrivate);
+      // teams 배열도 업데이트 (캐시 동기화)
+      updateTeam(numericTeamId, { isPrivate: newIsPrivate });
+      toast(newIsPrivate ? '비공개 팀으로 변경되었습니다' : '공개 팀으로 변경되었습니다');
+      fetchTeamDetails(numericTeamId);
+    } catch (error) {
+      console.error('팀 공개 설정 변경 실패:', error);
+      toast('설정 변경에 실패했습니다', 'error');
+    }
+  }, [numericTeamId, teamInfo?.isPrivate, currentTeam?.isPrivate, fetchTeamDetails, updateTeam]);
+
   if (detailLoading) {
     return (
       <div className="px-4 sm:px-6 lg:px-8">
@@ -189,9 +210,11 @@ export default function TeamDetailPage() {
                   <TeamActionMenu
                     isTeamLeader={isTeamLeader}
                     isTeamMember={isTeamMember}
+                    isPrivate={teamInfo?.isPrivate || currentTeam?.isPrivate}
                     onLeaveClick={handleOpenLeaveConfirm}
                     onDeleteClick={handleOpenDeleteConfirm}
                     onJoinClick={handleJoinRequest}
+                    onVisibilityClick={handleVisibilityToggle}
                   />
                 </>
               )}

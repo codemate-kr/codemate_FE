@@ -81,6 +81,7 @@ export interface TodayProblemsResponse {
 export interface UpdateTeamRequest {
   name?: string;
   description?: string;
+  isPrivate?: boolean;
 }
 
 export interface InviteMemberRequest {
@@ -214,5 +215,10 @@ export const teamsApi = {
   getPublicTeams: async (): Promise<PublicTeamResponse[]> => {
     const response = await apiClient.get<ApiResponse<PublicTeamResponse[]>>('/teams/public');
     return response.data.data;
+  },
+
+  // 팀 공개/비공개 설정 변경 (팀장만 가능)
+  updateVisibility: async (teamId: number, isPrivate: boolean): Promise<void> => {
+    await apiClient.patch(`/teams/${teamId}/visibility`, { isPrivate });
   },
 };

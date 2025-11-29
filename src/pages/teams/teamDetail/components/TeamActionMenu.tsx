@@ -1,20 +1,24 @@
 import { useState, useRef, useEffect } from 'react';
-import { MoreVertical, LogOut, Trash2, X, UserPlus } from 'lucide-react';
+import { MoreVertical, LogOut, Trash2, X, UserPlus, Globe, Lock, Sparkles } from 'lucide-react';
 
 interface TeamActionMenuProps {
   isTeamLeader: boolean;
   isTeamMember: boolean;
+  isPrivate?: boolean;
   onLeaveClick: () => void;
   onDeleteClick: () => void;
   onJoinClick: () => void;
+  onVisibilityClick?: () => void;
 }
 
 export default function TeamActionMenu({
   isTeamLeader,
   isTeamMember,
+  isPrivate,
   onLeaveClick,
   onDeleteClick,
   onJoinClick,
+  onVisibilityClick,
 }: TeamActionMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -66,10 +70,17 @@ export default function TeamActionMenu({
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 text-gray-400 hover:text-gray-600 active:bg-gray-200 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation"
+        className="relative p-2 text-gray-400 hover:text-gray-600 active:bg-gray-200 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation"
         aria-label="팀 설정"
       >
         <MoreVertical className="h-5 w-5" />
+        {/* 팀장에게만 NEW 배지 표시 */}
+        {isTeamLeader && onVisibilityClick && (
+          <span className="absolute -top-1 -right-1 flex h-4 w-4">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-4 w-4 bg-purple-500 items-center justify-center text-[8px] text-white font-bold">N</span>
+          </span>
+        )}
       </button>
 
       {isOpen && (
@@ -89,13 +100,39 @@ export default function TeamActionMenu({
                   가입 신청
                 </button>
               ) : isTeamLeader ? (
-                <button
-                  onClick={() => handleMenuItemClick(onDeleteClick)}
-                  className="w-full flex items-center px-4 py-3 text-sm text-red-700 hover:bg-red-50 active:bg-red-100 transition-colors touch-manipulation"
-                >
-                  <Trash2 className="h-4 w-4 mr-3" />
-                  팀 해산
-                </button>
+                <>
+                  {onVisibilityClick && (
+                    <button
+                      onClick={() => handleMenuItemClick(onVisibilityClick)}
+                      className="w-full flex items-center justify-between px-4 py-3 text-sm text-purple-700 bg-purple-50 hover:bg-purple-100 active:bg-purple-200 transition-colors touch-manipulation"
+                    >
+                      <span className="flex items-center">
+                        {isPrivate ? (
+                          <>
+                            <Globe className="h-4 w-4 mr-3" />
+                            공개로 전환
+                          </>
+                        ) : (
+                          <>
+                            <Lock className="h-4 w-4 mr-3" />
+                            비공개로 전환
+                          </>
+                        )}
+                      </span>
+                      <span className="flex items-center gap-1 px-1.5 py-0.5 text-xs font-semibold bg-purple-200 text-purple-800 rounded animate-pulse">
+                        <Sparkles className="h-3 w-3" />
+                        NEW
+                      </span>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleMenuItemClick(onDeleteClick)}
+                    className="w-full flex items-center px-4 py-3 text-sm text-red-700 hover:bg-red-50 active:bg-red-100 transition-colors touch-manipulation"
+                  >
+                    <Trash2 className="h-4 w-4 mr-3" />
+                    팀 해산
+                  </button>
+                </>
               ) : (
                 <button
                   onClick={() => handleMenuItemClick(onLeaveClick)}
@@ -131,13 +168,39 @@ export default function TeamActionMenu({
                     가입 신청
                   </button>
                 ) : isTeamLeader ? (
-                  <button
-                    onClick={() => handleMenuItemClick(onDeleteClick)}
-                    className="w-full flex items-center px-4 py-4 text-base font-medium text-red-700 bg-red-50 hover:bg-red-100 active:bg-red-200 rounded-lg transition-colors touch-manipulation"
-                  >
-                    <Trash2 className="h-5 w-5 mr-3" />
-                    팀 해산
-                  </button>
+                  <>
+                    {onVisibilityClick && (
+                      <button
+                        onClick={() => handleMenuItemClick(onVisibilityClick)}
+                        className="w-full flex items-center justify-between px-4 py-4 text-base font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 active:bg-purple-200 rounded-lg transition-colors touch-manipulation"
+                      >
+                        <span className="flex items-center">
+                          {isPrivate ? (
+                            <>
+                              <Globe className="h-5 w-5 mr-3" />
+                              공개로 전환
+                            </>
+                          ) : (
+                            <>
+                              <Lock className="h-5 w-5 mr-3" />
+                              비공개로 전환
+                            </>
+                          )}
+                        </span>
+                        <span className="flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-purple-200 text-purple-800 rounded animate-pulse">
+                          <Sparkles className="h-3 w-3" />
+                          NEW
+                        </span>
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleMenuItemClick(onDeleteClick)}
+                      className="w-full flex items-center px-4 py-4 text-base font-medium text-red-700 bg-red-50 hover:bg-red-100 active:bg-red-200 rounded-lg transition-colors touch-manipulation"
+                    >
+                      <Trash2 className="h-5 w-5 mr-3" />
+                      팀 해산
+                    </button>
+                  </>
                 ) : (
                   <button
                     onClick={() => handleMenuItemClick(onLeaveClick)}
