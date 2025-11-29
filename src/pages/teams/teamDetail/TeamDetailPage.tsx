@@ -197,7 +197,7 @@ export default function TeamDetailPage() {
                 </Link>
               ) : (
                 <>
-                  {isTeamLeader && (
+                  {isTeamLeader ? (
                     <button
                       onClick={handleOpenInvite}
                       className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors whitespace-nowrap"
@@ -206,6 +206,15 @@ export default function TeamDetailPage() {
                       <span className="hidden sm:inline">멤버 초대</span>
                       <span className="sm:hidden">초대</span>
                     </button>
+                  ) : !isTeamMember && (
+                    <button
+                      onClick={handleJoinRequest}
+                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors whitespace-nowrap"
+                    >
+                      <UserPlus className="h-4 w-4 mr-1.5" />
+                      <span className="hidden sm:inline">가입 신청</span>
+                      <span className="sm:hidden">가입</span>
+                    </button>
                   )}
                   <TeamActionMenu
                     isTeamLeader={isTeamLeader}
@@ -213,7 +222,6 @@ export default function TeamDetailPage() {
                     isPrivate={teamInfo?.isPrivate || currentTeam?.isPrivate}
                     onLeaveClick={handleOpenLeaveConfirm}
                     onDeleteClick={handleOpenDeleteConfirm}
-                    onJoinClick={handleJoinRequest}
                     onVisibilityClick={handleVisibilityToggle}
                   />
                 </>

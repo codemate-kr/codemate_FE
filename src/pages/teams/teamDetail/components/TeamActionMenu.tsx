@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { MoreVertical, LogOut, Trash2, X, UserPlus, Globe, Lock, Sparkles } from 'lucide-react';
+import { MoreVertical, LogOut, Trash2, X, Globe, Lock, Sparkles } from 'lucide-react';
 
 interface TeamActionMenuProps {
   isTeamLeader: boolean;
@@ -7,7 +7,6 @@ interface TeamActionMenuProps {
   isPrivate?: boolean;
   onLeaveClick: () => void;
   onDeleteClick: () => void;
-  onJoinClick: () => void;
   onVisibilityClick?: () => void;
 }
 
@@ -17,9 +16,12 @@ export default function TeamActionMenu({
   isPrivate,
   onLeaveClick,
   onDeleteClick,
-  onJoinClick,
   onVisibilityClick,
 }: TeamActionMenuProps) {
+  // 팀원이 아니면 액션 메뉴 표시 안함
+  if (!isTeamMember) {
+    return null;
+  }
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -91,15 +93,7 @@ export default function TeamActionMenu({
           {/* 데스크톱: 드롭다운 메뉴 */}
           <div className="hidden md:block absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 animate-in fade-in zoom-in-95 duration-100">
             <div className="py-1">
-              {!isTeamMember ? (
-                <button
-                  onClick={() => handleMenuItemClick(onJoinClick)}
-                  className="w-full flex items-center px-4 py-3 text-sm text-blue-700 hover:bg-blue-50 active:bg-blue-100 transition-colors touch-manipulation"
-                >
-                  <UserPlus className="h-4 w-4 mr-3" />
-                  가입 신청
-                </button>
-              ) : isTeamLeader ? (
+              {isTeamLeader ? (
                 <>
                   {onVisibilityClick && (
                     <button
@@ -159,15 +153,7 @@ export default function TeamActionMenu({
               </div>
 
               <div className="space-y-2">
-                {!isTeamMember ? (
-                  <button
-                    onClick={() => handleMenuItemClick(onJoinClick)}
-                    className="w-full flex items-center px-4 py-4 text-base font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 rounded-lg transition-colors touch-manipulation"
-                  >
-                    <UserPlus className="h-5 w-5 mr-3" />
-                    가입 신청
-                  </button>
-                ) : isTeamLeader ? (
+                {isTeamLeader ? (
                   <>
                     {onVisibilityClick && (
                       <button
