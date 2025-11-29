@@ -73,15 +73,14 @@
         var amplitudeScript = document.createElement('script');
         amplitudeScript.src = 'https://cdn.amplitude.com/script/d29975377e9bf3b327ec17e364227651.js';
         amplitudeScript.onload = function() {
-          // localStorage에서 저장된 사용자 ID 가져오기
-          // Amplitude user_id는 최소 5자 이상이어야 함
+          // localStorage에서 저장된 사용자 이메일 가져오기
           var storedUserId = null;
           try {
             var authStorage = localStorage.getItem('auth-storage');
             if (authStorage) {
               var parsed = JSON.parse(authStorage);
-              if (parsed.state && parsed.state.user && parsed.state.user.id) {
-                storedUserId = 'user_' + String(parsed.state.user.id);
+              if (parsed.state && parsed.state.user && parsed.state.user.email) {
+                storedUserId = parsed.state.user.email;
               }
             }
           } catch (e) {
