@@ -1,6 +1,7 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
+import { useLoginModal } from '../../contexts/LoginModalContext';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -9,11 +10,17 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated, user } = useAuthStore();
   const location = useLocation();
+  const { openLoginModal } = useLoginModal();
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      openLoginModal();
+    }
+  }, [isAuthenticated, openLoginModal]);
+
+  // 비로그인 상태면 현재 페이지에서 모달만 표시 (children은 렌더링하지 않음)
   if (!isAuthenticated) {
-    // 현재 경로를 query parameter로 전달
-    const redirectTo = encodeURIComponent(location.pathname + location.search);
-    return <Navigate to={`/login?redirect=${redirectTo}`} replace />;
+    return null;
   }
 
   // 백준 핸들이 없으면 핸들 등록 페이지로 리다이렉트

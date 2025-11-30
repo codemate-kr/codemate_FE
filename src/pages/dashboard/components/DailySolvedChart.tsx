@@ -1,5 +1,4 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
 import {
   BarChart,
   Bar,
@@ -20,7 +19,7 @@ import {
 
 interface DailySolvedChartProps {
   isAuthenticated: boolean;
-  loginRedirect: string;
+  onLoginClick: () => void;
 }
 
 type PeriodType = 'all' | '1y' | '6m' | '3m' | '30d' | '7d';
@@ -166,7 +165,7 @@ const generateSampleData = (): DailySolvedResponse => {
 
 const SAMPLE_DATA = generateSampleData();
 
-export default function DailySolvedChart({ isAuthenticated, loginRedirect }: DailySolvedChartProps) {
+export default function DailySolvedChart({ isAuthenticated, onLoginClick }: DailySolvedChartProps) {
   const [period, setPeriod] = useState<PeriodType>('7d');
   const [initialData, setInitialData] = useState<DailySolvedResponse | null>(null); // 7일 데이터
   const [fullData, setFullData] = useState<DailySolvedResponse | null>(null); // 전체 데이터
@@ -393,13 +392,13 @@ export default function DailySolvedChart({ isAuthenticated, loginRedirect }: Dai
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 lg:col-span-2 relative">
       {/* 비로그인 오버레이 */}
       {!isAuthenticated && (
-        <Link
-          to={loginRedirect}
+        <button
+          onClick={onLoginClick}
           className="absolute inset-0 z-10 rounded-xl flex flex-col items-center justify-center bg-gray-900/30 cursor-pointer group transition-all hover:bg-gray-900/40"
         >
           <p className="text-xl sm:text-2xl font-bold text-white mb-2">학습 기록을 보려면</p>
           <p className="text-base sm:text-lg text-white/90 group-hover:text-white transition-colors">로그인이 필요해요 →</p>
-        </Link>
+        </button>
       )}
       <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100">
         <div className="flex items-center justify-between sm:flex-row">

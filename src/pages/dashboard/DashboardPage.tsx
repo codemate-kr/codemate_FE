@@ -23,7 +23,7 @@ export default function DashboardPage() {
   const { fetchTeams } = useTeamStore();
   const [todayProblems, setTodayProblems] = useState<TeamProblem[]>([]);
   const [problemsLoading, setProblemsLoading] = useState(false);
-  const loginRedirect = useLoginRedirect();
+  const openLoginModal = useLoginRedirect();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -95,7 +95,7 @@ export default function DashboardPage() {
         {/* Stats Cards - 모바일에서 숨김 */}
         <StatsCards
           isAuthenticated={isAuthenticated}
-          loginRedirect={loginRedirect}
+          onLoginClick={openLoginModal}
           teamCount={isAuthenticated ? teams.length : 3}
           problemCount={isAuthenticated ? todayProblems.length : 5}
           solvedCount={isAuthenticated ? (user?.solvedCount ?? 0) : 127}
@@ -106,14 +106,14 @@ export default function DashboardPage() {
           {/* 내 스터디 팀 */}
           <MyTeamsSection
             isAuthenticated={isAuthenticated}
-            loginRedirect={loginRedirect}
+            onLoginClick={openLoginModal}
             teams={teams}
           />
 
           {/* 오늘의 할 일 */}
           <TodayTodoSection
             isAuthenticated={isAuthenticated}
-            loginRedirect={loginRedirect}
+            onLoginClick={openLoginModal}
             problems={todayProblems}
             loading={problemsLoading}
             onProblemVerified={(problemId) => {
@@ -126,7 +126,7 @@ export default function DashboardPage() {
           {/* 최근 활동 차트 */}
           <DailySolvedChart
             isAuthenticated={isAuthenticated}
-            loginRedirect={loginRedirect}
+            onLoginClick={openLoginModal}
           />
         </div>
       </div>

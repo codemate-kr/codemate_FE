@@ -5,7 +5,7 @@ import type { MyTeamResponse } from '../../../api/teams';
 
 interface MyTeamsSectionProps {
   isAuthenticated: boolean;
-  loginRedirect: string;
+  onLoginClick: () => void;
   teams: MyTeamResponse[];
 }
 
@@ -15,19 +15,19 @@ const SAMPLE_TEAMS = [
   { teamId: 3, teamName: 'PS 연습', memberCount: 3, myRole: 'MEMBER' as const, isRecommendationActive: false },
 ];
 
-export default function MyTeamsSection({ isAuthenticated, loginRedirect, teams }: MyTeamsSectionProps) {
+export default function MyTeamsSection({ isAuthenticated, onLoginClick, teams }: MyTeamsSectionProps) {
   const displayTeams = isAuthenticated ? teams : SAMPLE_TEAMS;
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 relative">
       {!isAuthenticated && (
-        <Link
-          to={loginRedirect}
+        <button
+          onClick={onLoginClick}
           className="absolute inset-0 z-10 rounded-xl flex flex-col items-center justify-center bg-gray-900/30 cursor-pointer group transition-all hover:bg-gray-900/40"
         >
           <p className="text-2xl font-bold text-white mb-2">참여 팀을 보려면</p>
           <p className="text-lg text-white/90 group-hover:text-white transition-colors">로그인이 필요해요 →</p>
-        </Link>
+        </button>
       )}
       <div className="px-6 py-4 border-b border-gray-100">
         <div className="flex items-center justify-between">

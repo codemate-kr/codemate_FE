@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Plus, Users } from 'lucide-react';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 import { useLoginRedirect } from '../../hooks/useLoginRedirect';
@@ -21,7 +21,7 @@ export default function TeamsPage() {
   useDocumentTitle('팀 관리');
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
-  const loginRedirect = useLoginRedirect();
+  const openLoginModal = useLoginRedirect();
 
   // Selector hooks 사용 (필요한 상태만 구독)
   const teams = useTeams();
@@ -97,12 +97,12 @@ export default function TeamsPage() {
               새 팀 만들기
             </button>
           ) : (
-            <Link
-              to={loginRedirect}
+            <button
+              onClick={openLoginModal}
               className="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-auto"
             >
               로그인하기
-            </Link>
+            </button>
           )}
           </div>
         </div>
@@ -110,13 +110,13 @@ export default function TeamsPage() {
 
       <div className="relative">
         {!isAuthenticated && (
-          <Link
-            to={loginRedirect}
+          <button
+            onClick={openLoginModal}
             className="absolute inset-0 z-10 rounded-xl flex flex-col items-center justify-center bg-gray-900/30 cursor-pointer group transition-all hover:bg-gray-900/40"
           >
             <p className="text-2xl font-bold text-white mb-2">팀 목록을 보려면</p>
             <p className="text-lg text-white/90 group-hover:text-white transition-colors">로그인이 필요해요 →</p>
-          </Link>
+          </button>
         )}
         {(isAuthenticated && teamsLoading) ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

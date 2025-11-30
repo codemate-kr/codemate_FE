@@ -1,10 +1,13 @@
-import { useLocation } from 'react-router-dom';
+import { useCallback } from 'react';
+import { useLoginModal } from '../contexts/LoginModalContext';
 
 /**
- * 현재 페이지 경로를 포함한 로그인 리다이렉트 URL을 반환하는 훅
- * 로그인 후 원래 페이지로 돌아올 수 있도록 redirect 파라미터를 포함
+ * 로그인 모달을 여는 함수를 반환하는 훅
+ * 비로그인 상태에서 로그인이 필요한 액션 시 사용
  */
-export function useLoginRedirect(): string {
-  const location = useLocation();
-  return `/login?redirect=${encodeURIComponent(location.pathname + location.search)}`;
+export function useLoginRedirect(): () => void {
+  const { openLoginModal } = useLoginModal();
+  return useCallback(() => {
+    openLoginModal();
+  }, [openLoginModal]);
 }

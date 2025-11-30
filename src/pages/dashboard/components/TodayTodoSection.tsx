@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { BookOpen, CheckCircle, ExternalLink, Loader2 } from 'lucide-react';
 import type { TodayProblem } from '../../../api/teams';
 import { verifyProblemSolved, type VerifyErrorType } from '../../../utils/problemVerify';
 
 interface TodayTodoSectionProps {
   isAuthenticated: boolean;
-  loginRedirect: string;
+  onLoginClick: () => void;
   problems: Array<TodayProblem & { teamId: number; teamName: string }>;
   loading: boolean;
   onProblemVerified?: (problemId: number) => void;
@@ -20,7 +19,7 @@ const SAMPLE_PROBLEMS = [
 
 export default function TodayTodoSection({
   isAuthenticated,
-  loginRedirect,
+  onLoginClick,
   problems,
   loading,
   onProblemVerified,
@@ -72,13 +71,13 @@ export default function TodayTodoSection({
           <div className="absolute inset-0 bg-red-500/20 z-10 pointer-events-none animate-pulse" />
         )}
       {!isAuthenticated && (
-        <Link
-          to={loginRedirect}
+        <button
+          onClick={onLoginClick}
           className="absolute inset-0 z-10 rounded-xl flex flex-col items-center justify-center bg-gray-900/30 cursor-pointer group transition-all hover:bg-gray-900/40"
         >
           <p className="text-2xl font-bold text-white mb-2">오늘의 할 일을 보려면</p>
           <p className="text-lg text-white/90 group-hover:text-white transition-colors">로그인이 필요해요 →</p>
-        </Link>
+        </button>
       )}
       <div className="px-6 py-4 bg-blue-50 border-b border-blue-100">
         <div className="flex items-center justify-between">

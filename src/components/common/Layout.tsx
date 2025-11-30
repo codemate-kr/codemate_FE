@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LogOut, User, Users, BarChart3, Globe } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { useLoginModal } from '../../contexts/LoginModalContext';
 import Footer from './Footer';
 
 interface LayoutProps {
@@ -10,6 +11,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const { isAuthenticated, user, logout } = useAuthStore();
+  const { openLoginModal } = useLoginModal();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -72,12 +74,12 @@ export default function Layout({ children }: LayoutProps) {
                   </button>
                 </div>
               ) : (
-                <Link
-                  to="/login"
+                <button
+                  onClick={openLoginModal}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-6 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors ml-1 sm:ml-3"
                 >
                   로그인
-                </Link>
+                </button>
               )}
             </div>
           </div>

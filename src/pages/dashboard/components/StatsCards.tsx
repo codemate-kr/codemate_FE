@@ -1,9 +1,8 @@
-import { Link } from 'react-router-dom';
 import { Users, BookOpen, Target, TrendingUp } from 'lucide-react';
 
 interface StatsCardsProps {
   isAuthenticated: boolean;
-  loginRedirect: string;
+  onLoginClick: () => void;
   teamCount: number;
   problemCount: number;
   solvedCount: number;
@@ -11,7 +10,7 @@ interface StatsCardsProps {
 
 export default function StatsCards({
   isAuthenticated,
-  loginRedirect,
+  onLoginClick,
   teamCount,
   problemCount,
   solvedCount,
@@ -19,13 +18,13 @@ export default function StatsCards({
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 mb-8 relative">
       {!isAuthenticated && (
-        <Link
-          to={loginRedirect}
+        <button
+          onClick={onLoginClick}
           className="absolute inset-0 z-10 rounded-xl flex flex-col items-center justify-center bg-gray-900/30 cursor-pointer group transition-all hover:bg-gray-900/40"
         >
           <p className="text-2xl font-bold text-white mb-2">통계를 확인하려면</p>
           <p className="text-lg text-white/90 group-hover:text-white transition-colors">로그인이 필요해요 →</p>
-        </Link>
+        </button>
       )}
 
       <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">

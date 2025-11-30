@@ -5,6 +5,8 @@ import { validateEnv } from './config/env';
 import Layout from './components/common/Layout';
 import AuthHandler from './components/auth/AuthHandler';
 import AuthInitializer from './components/auth/AuthInitializer';
+import { LoginModalProvider } from './contexts/LoginModalContext';
+import LoginModal from './components/auth/LoginModal';
 import HomePage from './pages/home/HomePage';
 import LoginPage from './pages/auth/LoginPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
@@ -35,32 +37,35 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthInitializer>
         <Router>
-          <AuthHandler />
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/verify-email" element={<VerifyEmailPage />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-            <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-            <Route path="/verify-handle" element={<VerifyHandlePage />} />
-            <Route
-              path="/*"
-              element={
-                <Layout>
-                  <Routes>
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/dashboard" element={<DashboardPage />} />
-                    <Route path="/teams" element={<TeamListPage />} />
-                    <Route path="/teams/my" element={<TeamsPage />} />
-                    <Route path="/teams/:teamId" element={<TeamDetailPage />} />
-                    <Route path="/problems" element={<ProblemsPage />} />
-                    <Route path="/mypage" element={<MyProfilePage />} />
-                    {/* 없는 경로는 홈으로 리다이렉트 */}
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </Routes>
-                </Layout>
-              }
-            />
-          </Routes>
+          <LoginModalProvider>
+            <AuthHandler />
+            <LoginModal />
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/verify-email" element={<VerifyEmailPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+              <Route path="/verify-handle" element={<VerifyHandlePage />} />
+              <Route
+                path="/*"
+                element={
+                  <Layout>
+                    <Routes>
+                      <Route path="/login" element={<LoginPage />} />
+                      <Route path="/dashboard" element={<DashboardPage />} />
+                      <Route path="/teams" element={<TeamListPage />} />
+                      <Route path="/teams/my" element={<TeamsPage />} />
+                      <Route path="/teams/:teamId" element={<TeamDetailPage />} />
+                      <Route path="/problems" element={<ProblemsPage />} />
+                      <Route path="/mypage" element={<MyProfilePage />} />
+                      {/* 없는 경로는 홈으로 리다이렉트 */}
+                      <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                  </Layout>
+                }
+              />
+            </Routes>
+          </LoginModalProvider>
         </Router>
         <Toaster position="top-right" />
       </AuthInitializer>
