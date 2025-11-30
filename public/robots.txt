@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /privacy-policy
+Disallow: /terms-of-service
 
 Sitemap: https://codemate.kr/sitemap.xml

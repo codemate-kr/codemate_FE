@@ -1,8 +1,20 @@
+import { useEffect } from 'react';
 import { FileText } from 'lucide-react';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 export default function PrivacyPolicyPage() {
   useDocumentTitle('개인정보처리방침');
+
+  // 검색 엔진 인덱싱 방지
+  useEffect(() => {
+    const meta = document.createElement('meta');
+    meta.name = 'robots';
+    meta.content = 'noindex, nofollow';
+    document.head.appendChild(meta);
+    return () => {
+      document.head.removeChild(meta);
+    };
+  }, []);
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8">
@@ -77,6 +89,12 @@ export default function PrivacyPolicyPage() {
                     <p className="text-xs text-gray-600 mb-1">• 수집 항목: IP 주소, 접속 시간, 서비스 이용 기록</p>
                     <p className="text-xs text-gray-600 mb-1">• 수집 목적: 부정 이용 방지, 서비스 개선</p>
                     <p className="text-xs text-gray-600">• 보유 기간: 3개월</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 mb-1">서비스 개선 분석</p>
+                    <p className="text-xs text-gray-600 mb-1">• 수집 항목: 익명화된 사용자 식별자, 페이지 방문 기록, 버튼 클릭 등 이용 패턴, Session Replay</p>
+                    <p className="text-xs text-gray-600 mb-1">• 수집 목적: 서비스 품질 개선 및 사용자 경험 향상</p>
+                    <p className="text-xs text-gray-600">• 분석 도구: Amplitude (개인 식별 불가능한 형태로 처리)</p>
                   </div>
                 </div>
               </div>
@@ -189,8 +207,8 @@ export default function PrivacyPolicyPage() {
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                  <p className="text-sm font-medium text-gray-900 mb-1">개인정보 암호화</p>
-                  <p className="text-xs text-gray-600">비밀번호 등 중요 정보 암호화 저장</p>
+                  <p className="text-sm font-medium text-gray-900 mb-1">안전한 인증 방식</p>
+                  <p className="text-xs text-gray-600">Google OAuth 2.0 기반 소셜 로그인</p>
                 </div>
                 <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
                   <p className="text-sm font-medium text-gray-900 mb-1">해킹 대비</p>
