@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { MoreVertical, LogOut, Trash2, X, Globe, Lock, Sparkles } from 'lucide-react';
+import { MoreVertical, LogOut, Trash2, X, Globe, Lock } from 'lucide-react';
+import NewBadge from '../../../../components/common/NewBadge';
 
 interface TeamActionMenuProps {
   isTeamLeader: boolean;
@@ -113,10 +114,7 @@ export default function TeamActionMenu({
                           </>
                         )}
                       </span>
-                      <span className="flex items-center gap-1 px-1.5 py-0.5 text-xs font-semibold bg-purple-200 text-purple-800 rounded animate-pulse">
-                        <Sparkles className="h-3 w-3" />
-                        NEW
-                      </span>
+                      <NewBadge />
                     </button>
                   )}
                   <button
@@ -173,10 +171,7 @@ export default function TeamActionMenu({
                             </>
                           )}
                         </span>
-                        <span className="flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-purple-200 text-purple-800 rounded animate-pulse">
-                          <Sparkles className="h-3 w-3" />
-                          NEW
-                        </span>
+                        <NewBadge />
                       </button>
                     )}
                     <button
