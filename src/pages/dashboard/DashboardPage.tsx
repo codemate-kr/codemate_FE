@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, TrendingUp } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useTeamStore, useTeams } from '../../store/teamStore';
 import { teamsApi, type TodayProblem } from '../../api/teams';
@@ -9,6 +9,7 @@ import { useLoginRedirect } from '../../hooks/useLoginRedirect';
 import StatsCards from './components/StatsCards';
 import MyTeamsSection from './components/MyTeamsSection';
 import TodayTodoSection from './components/TodayTodoSection';
+import DailySolvedChart from './components/DailySolvedChart';
 
 interface TeamProblem extends TodayProblem {
   teamId: number;
@@ -122,25 +123,11 @@ export default function DashboardPage() {
             }}
           />
 
-          {/* 최근 성취 */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 lg:col-span-2">
-            <div className="px-6 py-4 border-b border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900">최근 성취</h3>
-            </div>
-            <div className="p-6">
-              <div className="text-center py-16">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
-                  <TrendingUp className="h-10 w-10 text-gray-400" />
-                </div>
-                <p className="text-base text-gray-600 mb-1">
-                  🚧 개발 중입니다
-                </p>
-                <p className="text-sm text-gray-500">
-                  곧 활동 기록을 확인할 수 있습니다
-                </p>
-              </div>
-            </div>
-          </div>
+          {/* 최근 활동 차트 */}
+          <DailySolvedChart
+            isAuthenticated={isAuthenticated}
+            loginRedirect={loginRedirect}
+          />
         </div>
       </div>
     </div>

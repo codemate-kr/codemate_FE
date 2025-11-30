@@ -35,6 +35,23 @@ export interface CheckEmailResponse {
   available: boolean;
 }
 
+export interface DailySolvedProblem {
+  problemId: number;
+  title: string;
+  tier: number;
+}
+
+export interface DailySolved {
+  date: string;
+  count: number;
+  problems: DailySolvedProblem[];
+}
+
+export interface DailySolvedResponse {
+  dailySolved: DailySolved[];
+  totalCount: number;
+}
+
 export const memberApi = {
   /**
    * 내 프로필 조회 - 민감 정보 포함
@@ -115,5 +132,16 @@ export const memberApi = {
    */
   withdraw: async (): Promise<void> => {
     await apiClient.post('/member/me/withdraw');
-  }
+  },
+
+  /**
+   * 일별 문제 풀이 현황 조회
+   * @param days - 조회할 일수 (기본 7일)
+   */
+  getDailySolved: async (days: number = 7): Promise<DailySolvedResponse> => {
+    const response = await apiClient.get<ApiResponse<DailySolvedResponse>>(
+      `/member/me/daily-solved?days=${days}`
+    );
+    return response.data.data;
+  },
 };
