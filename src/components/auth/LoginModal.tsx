@@ -26,7 +26,7 @@ export default function LoginModal() {
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200"
+      className="fixed inset-0 bg-black/20 backdrop-blur-[1px] flex items-center justify-center p-4 z-50 animate-in fade-in duration-200"
       onClick={handleBackdropClick}
     >
       <div
