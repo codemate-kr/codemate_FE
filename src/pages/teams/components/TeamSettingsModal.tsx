@@ -286,12 +286,13 @@ export function TeamSettingsModal({
                         ? 'bg-purple-50 border-purple-200 text-purple-700'
                         : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300 border-dashed'
                     }`}
+                    onClick={() => !isLoading && setShowCustomModal(true)}
                   >
                     <input
                       type="radio"
                       name="difficulty"
                       checked={selectedPreset === 'CUSTOM'}
-                      onChange={() => handlePresetSelect('CUSTOM')}
+                      onChange={() => {}}
                       className="sr-only"
                       disabled={isLoading}
                     />
