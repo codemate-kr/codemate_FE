@@ -113,7 +113,7 @@ export default function HomePage() {
                     이메일 알림
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                    매일 아침 9시, 미션 문제를 이메일로 받아보세요.
+                    매일 아침 9시<span className="text-[10px] text-gray-400 ml-0.5">KST</span>, 미션 문제를 이메일로 받아보세요.
                   </p>
                 </div>
               </div>
