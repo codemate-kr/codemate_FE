@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import { memberApi } from '../../api/member';
@@ -10,7 +10,12 @@ export default function VerifyHandlePage() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [showEmailConfirm, setShowEmailConfirm] = useState(false);
   const navigate = useNavigate();
-  const { updateUser, user } = useAuthStore();
+  const { updateUser, user, isAuthenticated } = useAuthStore();
+
+  // 비로그인이거나 이미 핸들이 있으면 홈으로 리다이렉트
+  if (!isAuthenticated || user?.handle) {
+    return <Navigate to="/" replace />;
+  }
 
   const verifyMutation = useMutation({
     mutationFn: (handle: string) => memberApi.verifySolvedAc(handle),

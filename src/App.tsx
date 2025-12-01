@@ -5,6 +5,7 @@ import { validateEnv } from './config/env';
 import Layout from './components/common/Layout';
 import AuthHandler from './components/auth/AuthHandler';
 import AuthInitializer from './components/auth/AuthInitializer';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 import { LoginModalProvider } from './contexts/LoginModalContext';
 import LoginModal from './components/auth/LoginModal';
 import HomePage from './pages/home/HomePage';
@@ -57,7 +58,7 @@ function App() {
                       <Route path="/teams/my" element={<TeamsPage />} />
                       <Route path="/teams/:teamId" element={<TeamDetailPage />} />
                       <Route path="/problems" element={<ProblemsPage />} />
-                      <Route path="/mypage" element={<MyProfilePage />} />
+                      <Route path="/mypage" element={<ProtectedRoute><MyProfilePage /></ProtectedRoute>} />
                       {/* 없는 경로는 홈으로 리다이렉트 */}
                       <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
