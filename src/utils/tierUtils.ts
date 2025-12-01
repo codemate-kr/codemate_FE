@@ -16,6 +16,19 @@ export const getTierName = (level: number): string => {
 };
 
 /**
+ * solved.ac 티어 레벨을 축약형 티어 이름으로 변환 (한글 첫글자 + 로마숫자)
+ * @param level - 티어 레벨 (1-30)
+ * @returns 축약형 티어 이름 (예: "브Ⅴ", "실Ⅲ", "골Ⅰ", "플Ⅱ", "다Ⅰ", "루Ⅰ")
+ */
+export const getTierShortName = (level: number): string => {
+  const tierIndex = Math.floor((level - 1) / 5);
+  const tierNumber = 5 - ((level - 1) % 5);
+  const tierPrefixes = ['브', '실', '골', '플', '다', '루'];
+  const romanNumerals = ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ'];
+  return `${tierPrefixes[tierIndex] || '?'}${romanNumerals[tierNumber - 1] || '?'}`;
+};
+
+/**
  * solved.ac 티어 레벨을 Tailwind CSS 색상 클래스로 변환
  * @param level - 티어 레벨 (1-30)
  * @returns Tailwind CSS 클래스 문자열
