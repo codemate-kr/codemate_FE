@@ -1,5 +1,6 @@
 import { Mail, Calendar, User, Check, X, UserX } from 'lucide-react';
 import type { MyProfileResponse } from '../../../api/member';
+import Tooltip from '../../../components/common/Tooltip';
 
 interface ProfileInfoProps {
   profile: MyProfileResponse;
@@ -53,10 +54,12 @@ export default function ProfileInfo({ profile, onEmailChange, onDeleteAccount }:
                   인증됨
                 </span>
               ) : (
-                <span className="flex items-center gap-1 text-xs text-gray-500 flex-shrink-0">
-                  <X className="h-4 w-4" />
-                  미인증
-                </span>
+                <Tooltip text="본인 확인용 인증 기능이며, 현재 개발 중입니다.">
+                  <span className="flex items-center gap-1 text-xs text-gray-500 flex-shrink-0 cursor-help">
+                    <X className="h-4 w-4" />
+                    미인증
+                  </span>
+                </Tooltip>
               )}
             </div>
           </div>
