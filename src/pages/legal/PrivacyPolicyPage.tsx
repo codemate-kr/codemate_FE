@@ -30,7 +30,7 @@ export default function PrivacyPolicyPage() {
                 개인정보처리방침
               </h1>
               <p className="text-sm text-gray-500 mt-1">
-                최종 변경일: 2025년 1월 23일
+                최종 변경일: 2025년 11월 30일
               </p>
             </div>
           </div>
@@ -254,7 +254,7 @@ export default function PrivacyPolicyPage() {
 
         {/* 푸터 정보 */}
         <div className="mt-6 text-center text-sm text-gray-500">
-          <p>본 개인정보처리방침은 2025년 1월 23일에 최종 변경되었습니다.</p>
+          <p>본 개인정보처리방침은 2025년 11월 30일에 최종 변경되었습니다.</p>
         </div>
       </div>
     </div>
