@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { MoreVertical, LogOut, Trash2, X, Globe, Lock } from 'lucide-react';
-import NewBadge from '../../../../components/common/NewBadge';
 
 interface TeamActionMenuProps {
   isTeamLeader: boolean;
@@ -77,13 +76,6 @@ export default function TeamActionMenu({
         aria-label="팀 설정"
       >
         <MoreVertical className="h-5 w-5" />
-        {/* 팀장에게만 NEW 배지 표시 */}
-        {isTeamLeader && onVisibilityClick && (
-          <span className="absolute -top-1 -right-1 flex h-4 w-4">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-4 w-4 bg-purple-500 items-center justify-center text-[8px] text-white font-bold">N</span>
-          </span>
-        )}
       </button>
 
       {isOpen && (
@@ -99,7 +91,7 @@ export default function TeamActionMenu({
                   {onVisibilityClick && (
                     <button
                       onClick={() => handleMenuItemClick(onVisibilityClick)}
-                      className="w-full flex items-center justify-between px-4 py-3 text-sm text-purple-700 bg-purple-50 hover:bg-purple-100 active:bg-purple-200 transition-colors touch-manipulation"
+                      className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation"
                     >
                       <span className="flex items-center">
                         {isPrivate ? (
@@ -114,7 +106,6 @@ export default function TeamActionMenu({
                           </>
                         )}
                       </span>
-                      <NewBadge />
                     </button>
                   )}
                   <button
@@ -156,7 +147,7 @@ export default function TeamActionMenu({
                     {onVisibilityClick && (
                       <button
                         onClick={() => handleMenuItemClick(onVisibilityClick)}
-                        className="w-full flex items-center justify-between px-4 py-4 text-base font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 active:bg-purple-200 rounded-lg transition-colors touch-manipulation"
+                        className="w-full flex items-center justify-between px-4 py-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 rounded-lg transition-colors touch-manipulation"
                       >
                         <span className="flex items-center">
                           {isPrivate ? (
@@ -171,7 +162,6 @@ export default function TeamActionMenu({
                             </>
                           )}
                         </span>
-                        <NewBadge />
                       </button>
                     )}
                     <button
