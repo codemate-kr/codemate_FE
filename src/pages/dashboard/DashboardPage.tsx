@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Plus } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useTeamStore, useTeams } from '../../store/teamStore';
 import { teamsApi, type TodayProblem } from '../../api/teams';
@@ -24,7 +22,6 @@ export default function DashboardPage() {
   const [todayProblems, setTodayProblems] = useState<TeamProblem[]>([]);
   const [problemsLoading, setProblemsLoading] = useState(false);
   const openLoginModal = useLoginRedirect();
-
   useEffect(() => {
     if (isAuthenticated) {
       // store의 fetchTeams 사용 (자동 캐싱)
@@ -78,17 +75,6 @@ export default function DashboardPage() {
                 {isAuthenticated ? '오늘도 알고리즘 문제를 풀어보세요.' : '로그인하고 알고리즘 학습을 시작하세요.'}
               </p>
             </div>
-            {isAuthenticated && (
-              <div className="mt-3 sm:mt-0 sm:ml-16 sm:flex-none w-full sm:w-auto">
-                <Link
-                  to="/teams/my?action=create"
-                  className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg bg-blue-600 px-4 sm:px-5 py-2 sm:py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                >
-                  <Plus className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                  스터디 팀 만들기
-                </Link>
-              </div>
-            )}
           </div>
         </div>
 

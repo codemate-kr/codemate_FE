@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Plus, Users } from 'lucide-react';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 import { useLoginRedirect } from '../../hooks/useLoginRedirect';
@@ -20,6 +20,7 @@ const DEMO_TEAMS: MyTeamResponse[] = [
 export default function TeamsPage() {
   useDocumentTitle('팀 관리');
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { isAuthenticated } = useAuthStore();
   const openLoginModal = useLoginRedirect();
 
@@ -36,6 +37,16 @@ export default function TeamsPage() {
       fetchTeams();
     }
   }, [isAuthenticated, fetchTeams]);
+
+  // URL에서 action=create 감지하여 모달 열기
+  useEffect(() => {
+    if (searchParams.get('action') === 'create' && isAuthenticated) {
+      setShowCreateModal(true);
+      // URL에서 action 파라미터 제거
+      searchParams.delete('action');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams, isAuthenticated]);
 
   // 팀장으로 있는 팀의 개수 계산 (메모이제이션)
   const canCreateTeam = useMemo(

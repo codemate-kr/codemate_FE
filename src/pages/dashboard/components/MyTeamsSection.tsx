@@ -42,12 +42,15 @@ export default function MyTeamsSection({ isAuthenticated, onLoginClick, teams }:
       </div>
       <div className="p-6">
         {isAuthenticated && teams.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-              <Users className="h-8 w-8 text-gray-400" />
+          <div className="text-center py-6">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-3">
+              <Users className="h-6 w-6 text-blue-500" />
             </div>
-            <p className="text-sm text-gray-600 mb-4">
-              아직 참여한 스터디 팀이 없습니다
+            <p className="text-sm font-medium text-gray-900 mb-1">
+              아직 참여한 팀이 없어요
+            </p>
+            <p className="text-xs text-gray-500 mb-4">
+              팀을 만들고 문제 추천을 받아보세요
             </p>
             <Link
               to="/teams/my?action=create"

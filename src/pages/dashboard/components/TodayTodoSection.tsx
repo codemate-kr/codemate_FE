@@ -114,15 +114,15 @@ export default function TodayTodoSection({
           </div>
         ) : !isAuthenticated || totalCount === 0 ? (
           isAuthenticated ? (
-            <div className="text-center py-12">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-                <BookOpen className="h-8 w-8 text-gray-400" />
+            <div className="text-center py-6">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-3">
+                <BookOpen className="h-6 w-6 text-green-500" />
               </div>
-              <p className="text-base text-gray-600 mb-1">
-                오늘 풀어야 할 문제가 없습니다
+              <p className="text-sm font-medium text-gray-900 mb-1">
+                아직 추천받은 문제가 없어요
               </p>
-              <p className="text-sm text-gray-500">
-                팀장이 문제를 추천하면 여기에 표시됩니다
+              <p className="text-xs text-gray-500">
+                팀 설정에서 추천을 활성화하면 오전 9시에 문제가 도착해요
               </p>
             </div>
           ) : (
