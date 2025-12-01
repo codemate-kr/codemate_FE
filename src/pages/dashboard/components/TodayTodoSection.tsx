@@ -115,8 +115,8 @@ export default function TodayTodoSection({
         ) : !isAuthenticated || totalCount === 0 ? (
           isAuthenticated ? (
             <div className="text-center py-6">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-3">
-                <BookOpen className="h-6 w-6 text-green-500" />
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                <BookOpen className="h-8 w-8 text-gray-400" />
               </div>
               <p className="text-sm font-medium text-gray-900 mb-1">
                 아직 추천받은 문제가 없어요
