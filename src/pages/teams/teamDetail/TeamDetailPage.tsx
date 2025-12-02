@@ -11,6 +11,7 @@ import { teamsApi } from '../../../api/teams';
 import TeamInfoSection from './components/TeamInfoSection';
 import TeamMembersList from './components/TeamMembersList';
 import TeamActionMenu from './components/TeamActionMenu';
+import TeamActivityBoard from './components/TeamActivityBoard';
 import { useTeamStore, useCurrentTeamDetails, useDetailLoading, useDetailError, useTeams } from '../../../store/teamStore';
 import { useAuthStore } from '../../../store/authStore';
 
@@ -243,21 +244,8 @@ export default function TeamDetailPage() {
               initialTodayProblems={currentTeamDetails?.todayProblem}
             />
 
-            <div className="mt-6 bg-white border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-gray-900">진행률</h3>
-                <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-700">
-                  개발 중
-                </span>
-              </div>
-              <div className="h-48 flex items-center justify-center bg-gray-50 rounded border border-dashed border-gray-300">
-                <div className="text-center">
-                  <svg className="h-12 w-12 text-gray-300 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
-                  </svg>
-                  <p className="text-sm text-gray-400">차트 준비 중</p>
-                </div>
-              </div>
+            <div className="mt-6">
+              <TeamActivityBoard teamId={numericTeamId!} />
             </div>
           </div>
 
