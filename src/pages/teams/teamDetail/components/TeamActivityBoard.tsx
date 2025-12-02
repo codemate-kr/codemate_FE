@@ -93,7 +93,17 @@ export default function TeamActivityBoard({ teamId: _teamId }: TeamActivityBoard
       </div>
 
       {/* 탭 콘텐츠 */}
-      <div className="p-4">
+      <div className="p-4 relative">
+        {/* 개발중 오버레이 */}
+        <div className="absolute inset-0 backdrop-blur-[2px] bg-white/30 z-10 flex flex-col items-center justify-center">
+          <div className="bg-orange-100 border border-orange-200 rounded-lg px-4 py-3 text-center shadow-sm">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <Construction className="h-5 w-5 text-orange-600" />
+              <span className="text-sm font-bold text-orange-700">개발중인 기능입니다</span>
+            </div>
+            <p className="text-xs text-orange-600">아래 데이터는 예시이며, 곧 실제 데이터로 제공됩니다</p>
+          </div>
+        </div>
         {activeTab === 'participation' && <ParticipationTab />}
         {activeTab === 'summary' && <SummaryTab />}
       </div>
