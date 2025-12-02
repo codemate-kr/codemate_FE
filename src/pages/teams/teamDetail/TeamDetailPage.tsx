@@ -20,8 +20,13 @@ export default function TeamDetailPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
 
-  // teamId를 숫자로 변환 (메모이제이션)
-  const numericTeamId = useMemo(() => teamId ? Number(teamId) : null, [teamId]);
+  // teamId를 숫자로 변환 (메모이제이션) - 1 이상의 자연수만 유효
+  const numericTeamId = useMemo(() => {
+    if (!teamId) return null;
+    const parsed = Number(teamId);
+    if (!Number.isInteger(parsed) || parsed < 1) return null;
+    return parsed;
+  }, [teamId]);
 
   // Selector hooks 사용
   const currentTeamDetails = useCurrentTeamDetails();
@@ -144,6 +149,11 @@ export default function TeamDetailPage() {
       toast('설정 변경에 실패했습니다', 'error');
     }
   }, [numericTeamId, teamInfo?.isPrivate, currentTeam?.isPrivate, fetchTeamDetails, updateTeam]);
+
+  // 유효하지 않은 팀 ID
+  if (!numericTeamId) {
+    return <TeamDetailError error={{ type: 'not-found', message: '유효하지 않은 팀 ID입니다.' }} />;
+  }
 
   if (detailLoading) {
     return (
