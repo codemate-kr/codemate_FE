@@ -559,7 +559,7 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
                       position="top"
                       content={({ x, y, width, index }) => {
                         const entry = chartData[index as number];
-                        if (!entry?.isEmpty || period !== '7d') return null;
+                        if (!entry?.isEmpty || (period !== '7d' && period !== '30d')) return null;
                         const labelX = (x as number) + (width as number) / 2;
                         const labelY = (y as number) - 8;
                         return (

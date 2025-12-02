@@ -64,10 +64,10 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 우측 하단 고정 위젯 - 데스크탑에서만 표시 */}
-      <div className="hidden xl:block fixed right-4 bottom-4 w-64 z-10">
+      {/* 우측 하단 고정 위젯 - 데스크탑에서만 표시 (임시 숨김) */}
+      {/* <div className="hidden xl:block fixed right-4 bottom-4 w-64 z-10">
         <GlobalRankingWidget isAuthenticated={isAuthenticated} />
-      </div>
+      </div> */}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -121,10 +121,10 @@ export default function DashboardPage() {
             onLoginClick={openLoginModal}
           />
 
-          {/* 전체 랭킹 - 모바일에서만 표시 */}
-          <div className="xl:hidden">
+          {/* 전체 랭킹 - 모바일에서만 표시 (임시 숨김) */}
+          {/* <div className="xl:hidden">
             <GlobalRankingWidget isAuthenticated={isAuthenticated} />
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

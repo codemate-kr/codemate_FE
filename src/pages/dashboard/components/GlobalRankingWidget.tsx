@@ -58,7 +58,8 @@ export default function GlobalRankingWidget({ isAuthenticated }: GlobalRankingWi
         </div>
       </div>
 
-      <div className="p-4">
+      <div className="p-4 relative">
+        <div className="absolute inset-0 backdrop-blur-sm bg-white/50 z-10 rounded-b-xl" />
         <div className="space-y-1.5">
           {displayRanking.map((user) => (
             <div
