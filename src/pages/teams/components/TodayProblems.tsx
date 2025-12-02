@@ -161,17 +161,34 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
       {/* 컨텐츠 */}
       <div className="px-4 sm:px-6 pb-6 pt-4">
         {problemsLoading ? (
-          <div className="space-y-4">
+          <div className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-2 -mx-4 sm:-mx-6 px-4 sm:px-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="animate-pulse">
-                <div className="flex items-start space-x-4">
-                  <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
-                  <div className="flex-1 space-y-3">
-                    <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-full"></div>
-                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+              <div key={i} className="flex-shrink-0 w-52 sm:w-56 flex flex-col gap-2 animate-pulse">
+                <div className="relative bg-white border border-gray-200 rounded-lg p-3 sm:p-4">
+                  {/* 번호 스켈레톤 */}
+                  <div className="absolute top-2 left-2 w-5 h-5 bg-gray-200 rounded"></div>
+                  <div className="flex flex-col pt-6">
+                    {/* 제목 스켈레톤 */}
+                    <div className="mb-3">
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <div className="w-4 h-4 bg-gray-200 rounded"></div>
+                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                      </div>
+                    </div>
+                    {/* 하단 정보 스켈레톤 */}
+                    <div className="mt-auto pt-3 border-t border-gray-100">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-3 bg-gray-200 rounded"></div>
+                          <div className="w-8 h-3 bg-gray-200 rounded"></div>
+                        </div>
+                        <div className="w-14 h-3 bg-gray-200 rounded"></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
+                {/* 버튼 스켈레톤 */}
+                <div className="w-full h-10 bg-gray-200 rounded-lg"></div>
               </div>
             ))}
           </div>
