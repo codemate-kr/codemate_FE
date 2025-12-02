@@ -6,6 +6,7 @@ import {
   YAxis,
   ResponsiveContainer,
   Cell,
+  LabelList,
 } from 'recharts';
 import { Loader2, X, ExternalLink } from 'lucide-react';
 import NewBadge from '../../../components/common/NewBadge';
@@ -118,10 +119,12 @@ const groupDataByPeriod = (data: DailySolved[], period: PeriodType): DailySolved
 interface ChartDataItem {
   date: string;
   count: number;
+  displayCount: number; // 실제 표시용 (오늘 0이면 1로 표시)
   problems: DailySolvedProblem[];
   label: string;
   dayName: string;
   isToday: boolean;
+  isEmpty: boolean; // 오늘인데 0문제인 경우
 }
 
 interface PopoverData {
@@ -283,12 +286,18 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
   }, [data, period]);
 
   const chartData: ChartDataItem[] = useMemo(() => {
-    return groupedData.map((item) => ({
-      ...item,
-      label: formatLabel(item.date, period),
-      dayName: getDayName(item.date),
-      isToday: isToday(item.date),
-    }));
+    return groupedData.map((item) => {
+      const isTodayItem = isToday(item.date);
+      const isEmpty = isTodayItem && item.count === 0;
+      return {
+        ...item,
+        displayCount: isEmpty ? 1 : item.count,
+        label: formatLabel(item.date, period),
+        dayName: getDayName(item.date),
+        isToday: isTodayItem,
+        isEmpty,
+      };
+    });
   }, [groupedData, period]);
 
   const maxCount = useMemo(() => {
@@ -299,6 +308,8 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
 
   const handleBarHover = (data: ChartDataItem, event: React.MouseEvent) => {
     if (!chartContainerRef.current) return;
+    // 오늘 빈 막대는 클릭/호버 무시
+    if (data.isEmpty) return;
 
     const rect = chartContainerRef.current.getBoundingClientRect();
     const x = event.clientX - rect.left;
@@ -511,8 +522,13 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
                     tick={{ fontSize: isMobile ? 10 : 12, fill: '#6B7280' }}
                     width={isMobile ? 20 : 25}
                   />
+                  <defs>
+                    <pattern id="dashedPattern" patternUnits="userSpaceOnUse" width="4" height="4">
+                      <path d="M0,0 L4,4" stroke="#93C5FD" strokeWidth="1.5" />
+                    </pattern>
+                  </defs>
                   <Bar
-                    dataKey="count"
+                    dataKey="displayCount"
                     radius={[4, 4, 0, 0]}
                     barSize={
                       isMobile
@@ -531,9 +547,35 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
                     {chartData.map((entry, index) => (
                       <Cell
                         key={`cell-${index}`}
-                        fill={entry.isToday ? '#93C5FD' : '#3B82F6'}
+                        fill={entry.isEmpty ? 'url(#dashedPattern)' : entry.isToday ? '#93C5FD' : '#3B82F6'}
+                        stroke={entry.isEmpty ? '#93C5FD' : 'none'}
+                        strokeWidth={entry.isEmpty ? 1.5 : 0}
+                        strokeDasharray={entry.isEmpty ? '4 2' : 'none'}
+                        cursor={entry.isEmpty ? 'default' : 'pointer'}
                       />
                     ))}
+                    <LabelList
+                      dataKey="displayCount"
+                      position="top"
+                      content={({ x, y, width, index }) => {
+                        const entry = chartData[index as number];
+                        if (!entry?.isEmpty || period !== '7d') return null;
+                        const labelX = (x as number) + (width as number) / 2;
+                        const labelY = (y as number) - 8;
+                        return (
+                          <text
+                            x={labelX}
+                            y={labelY}
+                            textAnchor="middle"
+                            fill="#3B82F6"
+                            fontSize={isMobile ? 9 : 11}
+                            fontWeight={600}
+                          >
+                            도전!
+                          </text>
+                        );
+                      }}
+                    />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
