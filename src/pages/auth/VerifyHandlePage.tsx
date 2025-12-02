@@ -13,7 +13,8 @@ export default function VerifyHandlePage() {
   const { updateUser, user, isAuthenticated } = useAuthStore();
 
   // 비로그인이거나 이미 핸들이 있으면 홈으로 리다이렉트
-  if (!isAuthenticated || user?.handle) {
+  // 단, 이메일 확인 모달이 열려있을 때는 리다이렉트하지 않음
+  if (!isAuthenticated || (user?.handle && !showEmailConfirm)) {
     return <Navigate to="/" replace />;
   }
 
