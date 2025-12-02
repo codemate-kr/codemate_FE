@@ -1,5 +1,4 @@
 import { Trophy, Medal, Construction } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 interface RankingUser {
   rank: number;
@@ -51,17 +50,11 @@ export default function GlobalRankingWidget({ isAuthenticated }: GlobalRankingWi
           <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
             <Trophy className="h-4 w-4 text-yellow-500" />
             전체 랭킹
-            <span className="flex items-center gap-0.5 text-[10px] font-medium text-orange-600 bg-orange-100 px-1.5 py-0.5 rounded-full">
-              <Construction className="h-3 w-3" />
-              개발중
-            </span>
           </h3>
-          <Link
-            to="/ranking"
-            className="text-xs text-blue-600 hover:text-blue-700"
-          >
-            더보기 →
-          </Link>
+          <span className="flex items-center gap-0.5 text-[10px] font-medium text-orange-600 bg-orange-100 px-1.5 py-0.5 rounded-full">
+            <Construction className="h-3 w-3" />
+            개발중
+          </span>
         </div>
       </div>
 

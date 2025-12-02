@@ -8,8 +8,6 @@ const DUMMY_MEMBERS = [
   { handle: 'test_user1', isMe: false, streak: 14 },
   { handle: 'test_user2', isMe: true, streak: 4 },
   { handle: 'test_user3', isMe: false, streak: 2 },
-  { handle: 'test_user4', isMe: false, streak: 1 },
-  { handle: 'test_user5', isMe: false, streak: 0 },
 ];
 
 // 날짜별 공통 추천 문제 (모든 멤버가 동일한 문제를 받음)
@@ -37,16 +35,14 @@ const DUMMY_MEMBER_SOLVED: Record<string, Record<number, boolean>> = {
   'test_user1': { 1001: true, 1002: true, 1003: true, 1004: true, 1005: true, 1006: true, 1007: true, 1008: true },
   'test_user2': { 1001: true, 1002: false, 1003: true, 1004: true, 1005: false, 1006: false, 1007: true, 1008: false },
   'test_user3': { 1001: true, 1002: true, 1003: false, 1004: true, 1005: false, 1006: true, 1007: false, 1008: false },
-  'test_user4': { 1001: false, 1002: false, 1003: true, 1004: false, 1005: false, 1006: false, 1007: true, 1008: false },
-  'test_user5': { 1001: true, 1002: false, 1003: false, 1004: false, 1005: false, 1006: false, 1007: false, 1008: false },
 };
 
 const DUMMY_SUMMARY = {
-  totalMembers: 5,
-  activeRecent: 4,
-  participationRate: 80,
-  totalSolvedRecent: 23,
-  averageSolved: 4.6,
+  totalMembers: 3,
+  activeRecent: 3,
+  participationRate: 100,
+  totalSolvedRecent: 18,
+  averageSolved: 6.0,
   mostActiveDay: '화요일',
 };
 
