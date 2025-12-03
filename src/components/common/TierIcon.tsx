@@ -17,7 +17,6 @@ export const getTierIcon = (level: number, size: number = 18) => {
       title={tierName}
       width={size}
       height={size}
-      loading="lazy"
       decoding="async"
       className="inline-block align-middle flex-shrink-0"
       onError={(e) => {
