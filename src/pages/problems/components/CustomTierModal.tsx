@@ -1,28 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, CheckCircle } from 'lucide-react';
 import { type SolvedacTier } from '../../../api/teams';
-import { getTierName } from '../../../utils/tierUtils';
-
-// 미리 생성된 30개 티어 아이콘 풀
-const TIER_ICONS = Array.from({ length: 30 }, (_, i) => i + 1);
-
-// 티어 아이콘 풀에서 특정 레벨만 보이게 표시
-function TierIconPool({ visibleLevel, size }: { visibleLevel: number; size: number }) {
-  return (
-    <span className="relative inline-block" style={{ width: size, height: size }}>
-      {TIER_ICONS.map((level) => (
-        <img
-          key={level}
-          src={`/tier/${level}.svg`}
-          alt={getTierName(level)}
-          width={size}
-          height={size}
-          className={`absolute inset-0 ${level === visibleLevel ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-        />
-      ))}
-    </span>
-  );
-}
+import { getTierIcon } from '../../../components/common/TierIcon';
 
 interface CustomTierModalProps {
   onClose: () => void;
@@ -34,6 +13,19 @@ interface CustomTierModalProps {
 export function CustomTierModal({ onClose, onSelect, currentMinLevel, currentMaxLevel }: CustomTierModalProps) {
   const [minTier, setMinTier] = useState<SolvedacTier>(currentMinLevel as SolvedacTier || 1);
   const [maxTier, setMaxTier] = useState<SolvedacTier>(currentMaxLevel as SolvedacTier || 20);
+
+  // 디바운스된 티어 (아이콘 표시용)
+  const [debouncedMin, setDebouncedMin] = useState(minTier);
+  const [debouncedMax, setDebouncedMax] = useState(maxTier);
+
+  // 슬라이더 멈추면 아이콘 업데이트 (50ms 디바운스)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedMin(minTier);
+      setDebouncedMax(maxTier);
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [minTier, maxTier]);
 
   const handleConfirm = () => {
     if (minTier > maxTier) {
@@ -64,9 +56,9 @@ export function CustomTierModal({ onClose, onSelect, currentMinLevel, currentMax
                   티어 범위 선택
                 </label>
                 <div className="flex items-center gap-2">
-                  <TierIconPool visibleLevel={minTier} size={20} />
+                  {getTierIcon(debouncedMin, 20)}
                   <span className="text-gray-400 text-m">~</span>
-                  <TierIconPool visibleLevel={maxTier} size={20} />
+                  {getTierIcon(debouncedMax, 20)}
                 </div>
               </div>
 
@@ -137,7 +129,7 @@ export function CustomTierModal({ onClose, onSelect, currentMinLevel, currentMax
                       transform: 'translateX(-50%)'
                     }}
                   >
-                    <img src={`/tier/${tier}.svg`} alt={getTierName(tier)} width={12} height={12} />
+                    {getTierIcon(tier, 12)}
                   </div>
                 ))}
               </div>
