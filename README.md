@@ -8,7 +8,7 @@ CodeMate는 개발자들이 알고리즘 문제를 체계적으로 학습하고,
 
 ### 👥 **스터디 팀 관리**
 - **팀 생성 및 참여**: 관심사가 비슷한 사람들과 스터디 팀을 만들어보세요
-- **팀원 초대**: 이메일로 간편하게 팀원을 초대할 수 있어요
+- **팀원 초대**: BOJ 핸들로 간편하게 팀원을 초대할 수 있어요
 - **역할 관리**: 팀장과 팀원 역할을 통한 체계적인 팀 운영
 
 ### 📋 **문제 추천 시스템**
@@ -24,7 +24,7 @@ CodeMate는 개발자들이 알고리즘 문제를 체계적으로 학습하고,
 ### 📊 **학습 현황 관리**
 - **개인 대시보드**: 나의 학습 진도와 성과를 시각적으로 확인하세요
 - **팀 현황**: 팀원들의 학습 현황을 공유하며 서로 동기부여를 받아요
-- **주간 리포트**: 일주일 동안의 학습 성과를 정리해서 보여드려요
+- **일일 풀이 현황**: 최근 문제 풀이 기록을 차트로 확인할 수 있어요
 
 ## 🎯 **이런 분들께 추천해요**
 
@@ -60,9 +60,7 @@ Configure the following variables in your `.env` file:
 ```env
 # API Configuration
 VITE_API_BASE_URL=http://localhost:8080/api
-
-# Google OAuth Configuration
-VITE_GOOGLE_CLIENT_ID=your_google_client_id_here
+VITE_OAUTH_BASE_URL=http://localhost:8080
 
 # Environment Configuration
 VITE_NODE_ENV=development
@@ -77,13 +75,14 @@ VITE_DEBUG_MODE=true
 
 #### 2. Production Environment
 
-For production deployment, create a `.env.production` file based on `.env.production.example`:
+For production deployment, update the environment variables with production values:
 
-```bash
-cp .env.production.example .env.production
+```env
+VITE_API_BASE_URL=https://{YOUR_SERVER_ADDRESS}/api
+VITE_OAUTH_BASE_URL=https://{YOUR_SERVER_ADDRESS}
+VITE_NODE_ENV=production
+VITE_DEBUG_MODE=false
 ```
-
-Update the production values accordingly.
 
 ### Getting Started
 
@@ -113,14 +112,15 @@ npm run preview
 
 ### 🔧 기술 스택
 
-- **Frontend**: React 18 + TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS
-- **State Management**: Zustand
+- **Frontend**: React 19 + TypeScript
+- **Build Tool**: Vite 7
+- **Styling**: Tailwind CSS 3.4
+- **State Management**: Zustand 5
 - **HTTP Client**: Axios
 - **Icons**: Lucide React
 - **Notifications**: React Hot Toast
-- **Data Fetching**: TanStack Query
+- **Data Fetching**: TanStack Query 5
+- **Routing**: React Router 7
 
 ### 📁 프로젝트 구조
 

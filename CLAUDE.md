@@ -158,10 +158,10 @@ src/
 - Validates stored token and fetches user profile
 - Shows loading screen during initialization
 
-**Team Settings Modal** (`pages/teams/components/TeamSettingsModal.tsx` - 386 lines)
+**Team Settings Modal** (`pages/teams/components/TeamSettingsModal.tsx` - 439 lines)
 - Recommendation day selection (weekly schedule)
 - Difficulty preset selection: EASY/NORMAL/HARD/CUSTOM
-- Custom tier range with solved.ac tier levels (1-20)
+- Custom tier range with solved.ac tier levels (1-30)
 - Uses `CustomTierModal` sub-component for tier range UI
 - Integrates with `teamsApi.updateRecommendationSettings()`
 - Calls `onShowToast(message: string)` on save
@@ -174,7 +174,7 @@ src/
 - Shows success/failure counts
 - Handles "already member" errors gracefully
 
-**Today Problems Component** (`pages/teams/components/TodayProblems.tsx` - 215 lines)
+**Today Problems Component** (`pages/teams/components/TodayProblems.tsx` - 354 lines)
 - Displays recommended problems from `/recommendation/team/{teamId}/today-problem`
 - Shows problem metadata: title, tier, solved status, acceptance rate
 - Refresh button (only visible for team leaders)
@@ -393,7 +393,7 @@ useEffect(() => {
 - Used for: User identification, problem solving progress tracking
 
 ### solved.ac API
-- Tier system: 1-20 (Bronze V → Platinum I)
+- Tier system: 1-30 (Bronze V → Ruby I)
 - Utilities: `getTierName(level)`, `getTierColor(level)` in `utils/tierUtils.ts`
 - Used in: Custom tier modal, team recommendations, member profiles
 
