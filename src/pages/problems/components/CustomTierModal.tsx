@@ -1,7 +1,28 @@
 import { useState } from 'react';
 import { X, CheckCircle } from 'lucide-react';
 import { type SolvedacTier } from '../../../api/teams';
-import { getTierIcon } from '../../../components/common/TierIcon';
+import { getTierName } from '../../../utils/tierUtils';
+
+// 미리 생성된 30개 티어 아이콘 풀
+const TIER_ICONS = Array.from({ length: 30 }, (_, i) => i + 1);
+
+// 티어 아이콘 풀에서 특정 레벨만 보이게 표시
+function TierIconPool({ visibleLevel, size }: { visibleLevel: number; size: number }) {
+  return (
+    <span className="relative inline-block" style={{ width: size, height: size }}>
+      {TIER_ICONS.map((level) => (
+        <img
+          key={level}
+          src={`/tier/${level}.svg`}
+          alt={getTierName(level)}
+          width={size}
+          height={size}
+          className={`absolute inset-0 ${level === visibleLevel ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        />
+      ))}
+    </span>
+  );
+}
 
 interface CustomTierModalProps {
   onClose: () => void;
@@ -43,9 +64,9 @@ export function CustomTierModal({ onClose, onSelect, currentMinLevel, currentMax
                   티어 범위 선택
                 </label>
                 <div className="flex items-center gap-2">
-                  {getTierIcon(minTier, 20)}
+                  <TierIconPool visibleLevel={minTier} size={20} />
                   <span className="text-gray-400 text-m">~</span>
-                  {getTierIcon(maxTier, 20)}
+                  <TierIconPool visibleLevel={maxTier} size={20} />
                 </div>
               </div>
 
@@ -116,7 +137,7 @@ export function CustomTierModal({ onClose, onSelect, currentMinLevel, currentMax
                       transform: 'translateX(-50%)'
                     }}
                   >
-                    {getTierIcon(tier, 12)}
+                    <img src={`/tier/${tier}.svg`} alt={getTierName(tier)} width={12} height={12} />
                   </div>
                 ))}
               </div>
