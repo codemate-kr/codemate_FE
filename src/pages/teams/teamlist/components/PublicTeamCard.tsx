@@ -64,7 +64,7 @@ export const PublicTeamCard = memo(function PublicTeamCard({
           <div className="flex items-center flex-wrap gap-x-2 sm:gap-x-3 gap-y-1 mt-1.5 sm:mt-2 text-xs text-gray-500">
             <div className="flex items-center gap-1">
               <Crown className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-yellow-500" />
-              <span className="truncate max-w-[80px] sm:max-w-none">{team.leaderHandle}</span>
+              <span className="truncate max-w-[80px] sm:max-w-none">@{team.leaderHandle}</span>
             </div>
             <div className="flex items-center gap-1">
               <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-400" />
