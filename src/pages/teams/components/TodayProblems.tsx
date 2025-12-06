@@ -1,10 +1,71 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Calendar, RefreshCw, ExternalLink, CheckCircle, Settings, Loader2, Sparkles } from 'lucide-react';
+import { Calendar, RefreshCw, ExternalLink, CheckCircle, Settings, Loader2, Sparkles, Pause, Play, RotateCcw, Clock } from 'lucide-react';
 import NewBadge from '../../../components/common/NewBadge';
 import { teamsApi, type TodayProblemsResponse, type TeamRecommendationSettingsResponse } from '../../../api/teams';
 import { getTierIcon } from '../../../components/common/TierIcon';
 import { verifyProblemSolved, type VerifyErrorType } from '../../../utils/problemVerify';
+import { useTimerStore } from '../../../store/timerStore';
+import { useTimer, formatDuration } from '../../../hooks/useTimer';
+import Tooltip from '../../../components/common/Tooltip';
+
+// 개별 문제의 타이머 표시 컴포넌트 (일시정지/초기화 버튼 포함)
+function ProblemTimerDisplay({ problemId, problemTitle }: { problemId: number; problemTitle: string }) {
+  const { isRunning, isPaused, isCompleted, completedDuration, pause, resume, reset, formattedTime } = useTimer({ problemId, problemTitle });
+
+  if (isCompleted && completedDuration !== null) {
+    // 완료 상태: 걸린 시간 표시
+    return (
+      <div className="flex items-center gap-1 text-xs text-green-600">
+        <CheckCircle className="h-3.5 w-3.5" />
+        <span className="font-medium">{formatDuration(completedDuration)}</span>
+      </div>
+    );
+  }
+
+  if (isRunning) {
+    // 진행 중 또는 일시정지: 경과 시간 + 일시정지/재개 + 초기화 버튼
+    return (
+      <div className="flex items-center gap-0.5">
+        <div className={`flex items-center gap-1 text-xs font-mono font-medium ${isPaused ? 'text-orange-500' : 'text-blue-600'}`}>
+          <Clock className={`h-3.5 w-3.5 ${isPaused ? '' : 'animate-pulse'}`} />
+          <span>{formattedTime}</span>
+        </div>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            isPaused ? resume() : pause();
+          }}
+          className={`p-1 rounded-full transition-colors ${isPaused ? 'text-green-500 hover:bg-green-100' : 'text-orange-400 hover:bg-orange-100'}`}
+          title={isPaused ? '재개' : '일시정지'}
+        >
+          {isPaused ? <Play className="h-3 w-3" /> : <Pause className="h-3 w-3" />}
+        </button>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            reset();
+          }}
+          className="p-1 text-gray-400 hover:text-blue-500 hover:bg-blue-100 rounded-full transition-colors"
+          title="초기화"
+        >
+          <RotateCcw className="h-3 w-3" />
+        </button>
+      </div>
+    );
+  }
+
+  // 시작 전: 재생 버튼 표시 (타이머 기능 인지용)
+  return (
+    <Tooltip text="문제 클릭 시 타이머 시작 (로컬 저장)" position="bottom">
+      <div className="flex items-center gap-1 text-xs text-gray-400 group-hover:text-blue-400 transition-colors">
+        <Clock className="h-3.5 w-3.5" />
+        <span className="font-mono">00:00</span>
+      </div>
+    </Tooltip>
+  );
+}
 
 interface TodayProblemsProps {
   teamId: number;
@@ -79,12 +140,16 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
     }
   };
 
+  const { startTimer, stopTimer } = useTimerStore();
+
   const handleVerifyProblem = async (problemId: number) => {
     setVerifyingProblemId(problemId);
 
     await verifyProblemSolved(problemId, {
       customToast: onShowToast,
       onSuccess: () => {
+        // 타이머가 실행 중이면 자동 정지
+        stopTimer(problemId);
         // 문제 상태 업데이트
         if (todayProblems) {
           setTodayProblems({
@@ -224,10 +289,16 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
                 key={problem.problemId}
                 className="flex-shrink-0 w-52 sm:w-56 flex flex-col gap-2"
               >
-              <Link
-                to={`https://www.acmicpc.net/problem/${problem.problemId}`}
+              <a
+                href={`https://www.acmicpc.net/problem/${problem.problemId}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => {
+                  // 문제 링크 클릭 시 타이머 자동 시작 (아직 시작 안 된 경우만)
+                  if (!problem.isSolved) {
+                    startTimer(problem.problemId, problem.titleKo);
+                  }
+                }}
                 className="group relative bg-white border border-blue-100 rounded-lg p-3 sm:p-4 hover:border-blue-400 hover:shadow-md hover:bg-blue-50 transition-all cursor-pointer"
               >
                 {/* 번호 */}
@@ -271,14 +342,15 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
                     </div>
                   </div>
 
-                  {/* 문제 풀기 버튼 */}
-                  <div className="absolute top-3 right-3">
-                    <div className="flex items-center justify-center text-blue-600 group-hover:text-blue-700 transition-colors">
+                  {/* 우측 상단: 타이머 + 문제 링크 */}
+                  <div className="absolute top-2 right-2 flex items-center gap-1">
+                    <ProblemTimerDisplay problemId={problem.problemId} problemTitle={problem.titleKo} />
+                    <div className="p-1.5 text-blue-600 group-hover:text-blue-700 transition-colors">
                       <ExternalLink className="h-4 w-4" />
                     </div>
                   </div>
                 </div>
-              </Link>
+              </a>
               {problem.isSolved ? (
                 <button
                   disabled

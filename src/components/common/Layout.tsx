@@ -4,6 +4,7 @@ import { LogOut, User, Users, BarChart3, Globe } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useLoginModal } from '../../contexts/LoginModalContext';
 import Footer from './Footer';
+import { FloatingTimerWidget } from './FloatingTimerWidget';
 
 interface LayoutProps {
   children: ReactNode;
@@ -91,6 +92,7 @@ export default function Layout({ children }: LayoutProps) {
       </main>
 
       <Footer />
+      <FloatingTimerWidget />
     </div>
   );
 }
