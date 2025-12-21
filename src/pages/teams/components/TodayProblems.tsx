@@ -73,11 +73,12 @@ interface TodayProblemsProps {
   isTeamMember: boolean;
   onShowToast: (message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
   onOpenSettings?: () => void;
+  onRefreshActivity?: () => void;
   recommendationSettings?: TeamRecommendationSettingsResponse | null;
   initialTodayProblems?: TodayProblemsResponse | null;
 }
 
-export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast, onOpenSettings, recommendationSettings, initialTodayProblems }: TodayProblemsProps) {
+export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast, onOpenSettings, onRefreshActivity, recommendationSettings, initialTodayProblems }: TodayProblemsProps) {
   // 통합 API에서 받아온 초기 데이터 사용 (중복 API 호출 방지)
   const [todayProblems, setTodayProblems] = useState<TodayProblemsResponse | null>(initialTodayProblems ?? null);
   const [problemsLoading, setProblemsLoading] = useState(false);
@@ -108,6 +109,7 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
         createdAt: newProblems.createdAt || missionDate.toISOString(),
       });
       onShowToast('✨ 오늘의 미션이 생성되었습니다!', 'success');
+      onRefreshActivity?.();
     } catch (error: any) {
       console.error('수동 미션 생성 실패:', error);
 
@@ -159,6 +161,8 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
             ),
           });
         }
+        // 팀 활동 현황 갱신
+        onRefreshActivity?.();
       },
       onError: (errorType: VerifyErrorType) => {
         // rate-limit 에러는 빨간 화면 효과 없음

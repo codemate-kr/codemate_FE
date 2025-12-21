@@ -7,11 +7,12 @@ import { MemberInviteModal } from '../components/MemberInviteModal';
 import { TodayProblems } from '../components/TodayProblems';
 import { TeamDetailError } from '../../../components/common/TeamDetailError';
 import ConfirmModal from '../../../components/common/ConfirmModal';
-import { teamsApi } from '../../../api/teams';
+import { teamsApi, type TeamActivityResponse } from '../../../api/teams';
 import TeamInfoSection from './components/TeamInfoSection';
 import TeamMembersList from './components/TeamMembersList';
 import TeamActionMenu from './components/TeamActionMenu';
-import TeamActivityBoard from './components/TeamActivityBoard';
+import TeamActivityBoard, { ProblemDetail } from './components/TeamActivityBoard';
+import type { SelectedCellInfo } from './components/TeamActivityBoard';
 import { useTeamStore, useCurrentTeamDetails, useDetailLoading, useDetailError, useTeams } from '../../../store/teamStore';
 import { useAuthStore } from '../../../store/authStore';
 
@@ -40,6 +41,9 @@ export default function TeamDetailPage() {
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
+  const [selectedCellInfo, setSelectedCellInfo] = useState<SelectedCellInfo | null>(null);
+  const [activityData, setActivityData] = useState<TeamActivityResponse | null>(null);
+  const [activityLoading, setActivityLoading] = useState(false);
 
   // 현재 팀 정보 (메모이제이션)
   const teamInfo = currentTeamDetails?.team ?? null;
@@ -65,10 +69,33 @@ export default function TeamDetailPage() {
     }
   }, [numericTeamId, fetchTeamDetails]);
 
+  // 팀 활동 현황 데이터 로드
+  useEffect(() => {
+    if (numericTeamId) {
+      setActivityLoading(true);
+      teamsApi.getTeamActivity(numericTeamId, 30)
+        .then(setActivityData)
+        .catch((error) => {
+          console.error('팀 활동 현황 로드 실패:', error);
+          setActivityData(null);
+        })
+        .finally(() => setActivityLoading(false));
+    }
+  }, [numericTeamId]);
+
   const handleSettingsUpdate = useCallback(async () => {
     if (!numericTeamId) return;
     await refreshTeamSettings(numericTeamId);
   }, [numericTeamId, refreshTeamSettings]);
+
+  const handleRefreshActivity = useCallback(() => {
+    if (!numericTeamId) return;
+    teamsApi.getTeamActivity(numericTeamId, 30)
+      .then(setActivityData)
+      .catch((error) => {
+        console.error('팀 활동 현황 갱신 실패:', error);
+      });
+  }, [numericTeamId]);
 
   const handleRetry = useCallback(() => {
     if (numericTeamId) {
@@ -250,13 +277,43 @@ export default function TeamDetailPage() {
               isTeamMember={isTeamMember}
               onShowToast={toast}
               onOpenSettings={handleOpenSettings}
+              onRefreshActivity={handleRefreshActivity}
               recommendationSettings={recommendationSettings}
               initialTodayProblems={currentTeamDetails?.todayProblem}
             />
 
             <div className="mt-6">
-              <TeamActivityBoard teamId={numericTeamId!} />
+              <TeamActivityBoard activityData={activityData} loading={activityLoading} onCellSelect={setSelectedCellInfo} />
             </div>
+
+            {/* 셀 선택 시 문제 상세 팝업 - 모바일에서는 TeamActivityBoard 바로 밑에 표시 */}
+            {selectedCellInfo && (
+              <div className="mt-6 lg:hidden bg-white border border-gray-200 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-gray-900">
+                    해결 현황
+                  </h3>
+                  <button
+                    onClick={() => setSelectedCellInfo(null)}
+                    className="text-gray-400 hover:text-gray-600 text-xs"
+                  >
+                    닫기
+                  </button>
+                </div>
+                <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
+                  <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] font-bold">
+                    {selectedCellInfo.handle[0].toUpperCase()}
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">
+                    @{selectedCellInfo.handle}
+                  </span>
+                </div>
+                <ProblemDetail
+                  date={selectedCellInfo.date}
+                  data={selectedCellInfo.data}
+                />
+              </div>
+            )}
           </div>
 
           <div className="space-y-4">
@@ -266,6 +323,35 @@ export default function TeamDetailPage() {
             />
 
             <TeamMembersList members={teamMembers} />
+
+            {/* 셀 선택 시 문제 상세 팝업 - 데스크톱에서는 사이드바에 표시 */}
+            {selectedCellInfo && (
+              <div className="hidden lg:block bg-white border border-gray-200 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-gray-900">
+                    해결 현황
+                  </h3>
+                  <button
+                    onClick={() => setSelectedCellInfo(null)}
+                    className="text-gray-400 hover:text-gray-600 text-xs"
+                  >
+                    닫기
+                  </button>
+                </div>
+                <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
+                  <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] font-bold">
+                    {selectedCellInfo.handle[0].toUpperCase()}
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">
+                    @{selectedCellInfo.handle}
+                  </span>
+                </div>
+                <ProblemDetail
+                  date={selectedCellInfo.date}
+                  data={selectedCellInfo.data}
+                />
+              </div>
+            )}
           </div>
         </div>
 
