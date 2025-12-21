@@ -1,84 +1,485 @@
-import { useState } from 'react';
-import { Users, Calendar, TrendingUp, Flame, CheckCircle, XCircle, Construction } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Users, Calendar, Trophy, ChevronLeft, ChevronRight, CheckCircle, ExternalLink } from 'lucide-react';
+import type { TeamActivityResponse, TeamActivityMember, TeamActivityDailyActivity, TeamActivityProblem } from '../../../../api/teams';
+import { getTierIcon } from '../../../../components/common/TierIcon';
 
-type TabType = 'participation' | 'summary';
+// ============ 타입 정의 ============
+type TabType = 'participation' | 'leaderboard';
 
-// 팀 멤버 목록
-const DUMMY_MEMBERS = [
-  { handle: 'test_user1', isMe: false, streak: 14 },
-  { handle: 'test_user2', isMe: true, streak: 4 },
-  { handle: 'test_user3', isMe: false, streak: 2 },
-];
-
-// 날짜별 공통 추천 문제 (모든 멤버가 동일한 문제를 받음)
-const DUMMY_DAILY_PROBLEMS: Record<string, { id: number; title: string; tier: string }[]> = {
-  '2025-11-26': [
-    { id: 1001, title: '이분탐색', tier: 'Silver II' },
-    { id: 1002, title: 'BFS 기초', tier: 'Silver I' },
-  ],
-  '2025-11-27': [
-    { id: 1003, title: 'DFS 응용', tier: 'Gold V' },
-    { id: 1004, title: '그리디', tier: 'Gold IV' },
-    { id: 1005, title: 'DP 입문', tier: 'Gold III' },
-  ],
-  '2025-11-28': [
-    { id: 1006, title: '문자열', tier: 'Silver III' },
-  ],
-  '2025-12-02': [
-    { id: 1007, title: '투 포인터', tier: 'Gold IV' },
-    { id: 1008, title: '세그먼트 트리', tier: 'Gold II' },
-  ],
-};
-
-// 멤버별 풀이 현황 (problemId -> solved)
-const DUMMY_MEMBER_SOLVED: Record<string, Record<number, boolean>> = {
-  'test_user1': { 1001: true, 1002: true, 1003: true, 1004: true, 1005: true, 1006: true, 1007: true, 1008: true },
-  'test_user2': { 1001: true, 1002: false, 1003: true, 1004: true, 1005: false, 1006: false, 1007: true, 1008: false },
-  'test_user3': { 1001: true, 1002: true, 1003: false, 1004: true, 1005: false, 1006: true, 1007: false, 1008: false },
-};
-
-const DUMMY_SUMMARY = {
-  totalMembers: 3,
-  activeRecent: 3,
-  participationRate: 100,
-  totalSolvedRecent: 18,
-  averageSolved: 6.0,
-  mostActiveDay: '화요일',
-};
-
-interface TeamActivityBoardProps {
-  teamId: number;
+interface DayInfo {
+  dateStr: string;
+  day: number;
+  month: number;
+  weekday: string;
+  isToday: boolean;
+  isWeekend: boolean;
 }
 
-export default function TeamActivityBoard({ teamId: _teamId }: TeamActivityBoardProps) {
+export interface MemberDayStats {
+  solvedCount: number;
+  totalCount: number;
+  problems: TeamActivityProblem[];
+  memberSolved: Record<string, boolean>;
+}
+
+export interface SelectedCellInfo {
+  handle: string;
+  memberId: number;
+  dateStr: string;
+  dateIndex: number;
+  date: { month: number; day: number; weekday: string };
+  data: MemberDayStats;
+}
+
+// ============ 유틸리티 함수 ============
+const getCellColor = (solvedCount: number, totalCount: number) => {
+  if (totalCount === 0) return 'bg-gray-100 border-gray-200';
+  if (solvedCount === 0) return 'bg-gray-200 border-gray-300';
+  const ratio = solvedCount / totalCount;
+  if (ratio === 1) return 'bg-grass-2 border-grass-3';
+  if (ratio >= 0.5) return 'bg-grass-1 border-grass-2';
+  return 'bg-emerald-100 border-emerald-200';
+};
+
+const truncateHandle = (handle: string, maxLen = 12) =>
+  handle.length > maxLen ? handle.slice(0, maxLen) + '..' : handle;
+
+const getRecentDays = (days: number): DayInfo[] => {
+  const result: DayInfo[] = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    result.push({
+      dateStr: date.toISOString().split('T')[0],
+      day: date.getDate(),
+      month: date.getMonth() + 1,
+      weekday: ['일', '월', '화', '수', '목', '금', '토'][date.getDay()],
+      isToday: i === 0,
+      isWeekend: date.getDay() === 0 || date.getDay() === 6,
+    });
+  }
+  return result;
+};
+
+// API 데이터에서 멤버별 일별 통계 추출
+const getMemberDayStatsFromApi = (
+  memberId: number,
+  dateStr: string,
+  dailyActivities: TeamActivityDailyActivity[]
+): MemberDayStats => {
+  const dayActivity = dailyActivities.find(d => d.date === dateStr);
+  if (!dayActivity) {
+    return { solvedCount: 0, totalCount: 0, problems: [], memberSolved: {} };
+  }
+
+  const memberSolvedInfo = dayActivity.memberSolved.find(m => m.memberId === memberId);
+  const memberSolved = memberSolvedInfo?.solved || {};
+
+  const solvedCount = Object.values(memberSolved).filter(Boolean).length;
+
+  return {
+    solvedCount,
+    totalCount: dayActivity.problems.length,
+    problems: dayActivity.problems,
+    memberSolved,
+  };
+};
+
+// ============ 공통 컴포넌트 ============
+function DayRangeToggle({ dayRange, onChange }: { dayRange: 7 | 30; onChange: (range: 7 | 30) => void }) {
+  return (
+    <div className="w-40 flex-shrink-0 flex items-center gap-2 pr-2">
+      <span className="text-xs text-gray-500">최근</span>
+      <div className="flex bg-gray-100 rounded-md p-0.5">
+        <button
+          onClick={() => onChange(7)}
+          className={`px-2 py-1 text-xs font-medium rounded ${
+            dayRange === 7 ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          7일
+        </button>
+        <button
+          onClick={() => onChange(30)}
+          className={`px-2 py-1 text-xs font-medium rounded ${
+            dayRange === 30 ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          30일
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function MemberAvatar({ handle, isMe, size = 'sm' }: { handle: string; isMe: boolean; size?: 'sm' | 'md' }) {
+  const sizeClass = size === 'sm' ? 'w-6 h-6 text-[10px]' : 'w-7 h-7 text-xs';
+  return (
+    <div className={`${sizeClass} rounded-full flex items-center justify-center text-white font-bold ${
+      isMe ? 'bg-blue-600' : 'bg-gray-400'
+    }`}>
+      {handle[0].toUpperCase()}
+    </div>
+  );
+}
+
+function Legend() {
+  return (
+    <div className="flex items-center gap-3 text-[10px] text-gray-500 pt-2">
+      <div className="flex items-center gap-1">
+        <span>Less</span>
+        <div className="flex gap-0.5">
+          <div className="w-3 h-3 rounded-sm bg-gray-200 border border-gray-300" />
+          <div className="w-3 h-3 rounded-sm bg-emerald-100 border border-emerald-200" />
+          <div className="w-3 h-3 rounded-sm bg-grass-1 border border-grass-2" />
+          <div className="w-3 h-3 rounded-sm bg-grass-2 border border-grass-3" />
+        </div>
+        <span>More</span>
+      </div>
+      |
+      <div className="flex items-center gap-1">
+        <div className="w-3 h-3 rounded-sm bg-gray-100 border border-gray-200 flex items-center justify-center text-[8px] text-gray-400">-</div>
+        <span>추천없음</span>
+      </div>
+    </div>
+  );
+}
+
+export function ProblemDetail({ date, data }: { date: { month: number; day: number; weekday: string }; data: MemberDayStats }) {
+  return (
+    <div className="space-y-2 text-sm">
+      <div className="flex justify-between">
+        <span className="text-gray-500">날짜</span>
+        <span className="font-medium">{date.month}/{date.day} ({date.weekday})</span>
+      </div>
+      <div className="flex justify-between">
+        <span className="text-gray-500">진행률</span>
+        <span className={data.solvedCount === data.totalCount ? 'text-green-600 font-medium' : 'font-medium'}>
+          {data.solvedCount}/{data.totalCount} 완료
+        </span>
+      </div>
+
+      <div className="pt-2 border-t border-gray-100 space-y-1.5">
+        {data.problems.map((problem) => {
+          const isSolved = data.memberSolved[String(problem.problemId)] || false;
+          const bojUrl = `https://www.acmicpc.net/problem/${problem.problemId}`;
+
+          return (
+            <a
+              key={problem.problemId}
+              href={bojUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`flex items-center gap-2 p-2 rounded cursor-pointer hover:bg-blue-100 transition-colors ${isSolved ? 'bg-blue-50' : ''}`}
+            >
+              <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
+                isSolved ? 'bg-green-500 text-white' : 'bg-gray-200'
+              }`}>
+                {isSolved && <CheckCircle className="w-2.5 h-2.5" />}
+              </div>
+              {getTierIcon(problem.tier, 16)}
+              <span className="flex-1 min-w-0 text-xs font-medium text-gray-700 truncate">
+                {problem.title}
+              </span>
+              <span className="text-[10px] text-gray-400 flex-shrink-0">
+                #{problem.problemId}
+              </span>
+              <ExternalLink className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ============ 참여 현황 탭 ============
+interface ParticipationTabProps {
+  members: TeamActivityMember[];
+  dailyActivities: TeamActivityDailyActivity[];
+  currentMemberId: number;
+  selectedCellInfo: SelectedCellInfo | null;
+  onCellSelect: (info: SelectedCellInfo | null) => void;
+}
+
+function ParticipationTab({ members, dailyActivities, currentMemberId, selectedCellInfo, onCellSelect }: ParticipationTabProps) {
+  const [dayRange, setDayRange] = useState<7 | 30>(7);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const recentDays = getRecentDays(dayRange);
+
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollLeft = scrollContainerRef.current.scrollWidth;
+    }
+  }, [dayRange]);
+
+  const scrollBy = useCallback((direction: 'left' | 'right') => {
+    scrollContainerRef.current?.scrollBy({ left: direction === 'left' ? -200 : 200, behavior: 'smooth' });
+  }, []);
+
+  const handleCellClick = (member: TeamActivityMember, dateStr: string, dateIndex: number, date: DayInfo) => {
+    const isAlreadySelected = selectedCellInfo?.memberId === member.memberId && selectedCellInfo?.dateStr === dateStr;
+    if (isAlreadySelected) {
+      onCellSelect(null);
+    } else {
+      const data = getMemberDayStatsFromApi(member.memberId, dateStr, dailyActivities);
+      onCellSelect({
+        handle: member.handle,
+        memberId: member.memberId,
+        dateStr,
+        dateIndex,
+        date: { month: date.month, day: date.day, weekday: date.weekday },
+        data,
+      });
+    }
+  };
+
+  const handleDayRangeChange = (range: 7 | 30) => {
+    setDayRange(range);
+    onCellSelect(null);
+  };
+
+  const getDateHeaderClass = (date: DayInfo) =>
+    `text-center text-[10px] ${date.isWeekend ? 'text-red-400' : 'text-gray-400'} ${date.isToday ? 'font-bold' : ''}`;
+
+  const getCellClass = (solvedCount: number, totalCount: number) => {
+    const base = `rounded border flex items-center justify-center text-[10px] font-bold transition-all ${getCellColor(solvedCount, totalCount)}`;
+    const interactive = totalCount === 0
+      ? 'text-gray-400 cursor-default'
+      : solvedCount === totalCount
+        ? 'text-white cursor-pointer hover:scale-105'
+        : 'text-gray-600 cursor-pointer hover:scale-105';
+    return `${base} ${interactive}`;
+  };
+
+  // 7일 모드
+  if (dayRange === 7) {
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center h-10">
+          <DayRangeToggle dayRange={dayRange} onChange={handleDayRangeChange} />
+          <div className="flex-1 flex gap-1 justify-between">
+            {recentDays.map((date) => (
+              <div key={date.dateStr} className={`flex-1 ${getDateHeaderClass(date)}`}>
+                <div>{date.day}</div>
+                <div>{date.isToday ? '(오늘)' : date.weekday}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {members.map((member) => {
+          const isMe = member.memberId === currentMemberId;
+          return (
+            <div key={member.memberId} className="flex items-center h-10">
+              <div className={`w-40 flex-shrink-0 flex items-center gap-2 pr-2 h-10 rounded-l ${isMe ? 'bg-blue-50' : ''}`}>
+                <MemberAvatar handle={member.handle} isMe={isMe} />
+                <p className="text-xs font-medium text-gray-700 truncate">{truncateHandle(member.handle)}</p>
+              </div>
+              <div className="flex-1 flex gap-1 justify-between h-10 items-center">
+                {recentDays.map((date, dateIndex) => {
+                  const { solvedCount, totalCount } = getMemberDayStatsFromApi(member.memberId, date.dateStr, dailyActivities);
+                  return (
+                    <button
+                      key={date.dateStr}
+                      onClick={() => totalCount > 0 && handleCellClick(member, date.dateStr, dateIndex, date)}
+                      disabled={totalCount === 0}
+                      className={`flex-1 h-9 ${getCellClass(solvedCount, totalCount)}`}
+                    >
+                      {totalCount === 0 ? '-' : `${solvedCount}/${totalCount}`}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+        <Legend />
+      </div>
+    );
+  }
+
+  // 30일 모드
+  return (
+    <div className="space-y-2">
+      <div className="flex">
+        <div className="flex-shrink-0 w-40 space-y-2">
+          <div className="h-10 flex items-center">
+            <DayRangeToggle dayRange={dayRange} onChange={handleDayRangeChange} />
+          </div>
+          {members.map((member) => {
+            const isMe = member.memberId === currentMemberId;
+            return (
+              <div key={member.memberId} className={`flex items-center gap-2 pr-2 h-10 rounded-l ${isMe ? 'bg-blue-50' : ''}`}>
+                <MemberAvatar handle={member.handle} isMe={isMe} />
+                <p className="text-xs font-medium text-gray-700 truncate">{truncateHandle(member.handle)}</p>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="flex-1 overflow-x-auto scrollbar-hide" ref={scrollContainerRef}>
+          <div className="space-y-2" style={{ minWidth: '1200px' }}>
+            <div className="flex gap-1 h-10 items-center">
+              {recentDays.map((date) => (
+                <div key={date.dateStr} className={`w-9 flex-shrink-0 ${getDateHeaderClass(date)}`}>
+                  <div>{date.day}{date.isToday && <span className="text-[8px] block">(오늘)</span>}</div>
+                  {!date.isToday && <div>{date.weekday}</div>}
+                </div>
+              ))}
+            </div>
+
+            {members.map((member) => (
+              <div key={member.memberId} className="flex gap-1 h-10 items-center">
+                {recentDays.map((date, dateIndex) => {
+                  const { solvedCount, totalCount } = getMemberDayStatsFromApi(member.memberId, date.dateStr, dailyActivities);
+                  return (
+                    <button
+                      key={date.dateStr}
+                      onClick={() => totalCount > 0 && handleCellClick(member, date.dateStr, dateIndex, date)}
+                      disabled={totalCount === 0}
+                      className={`w-9 h-9 flex-shrink-0 ${getCellClass(solvedCount, totalCount)}`}
+                    >
+                      {totalCount === 0 ? '-' : `${solvedCount}/${totalCount}`}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-center gap-2 pt-2">
+        <button onClick={() => scrollBy('left')} className="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <button onClick={() => scrollBy('right')} className="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+      <Legend />
+    </div>
+  );
+}
+
+// ============ 리더보드 탭 ============
+interface LeaderboardTabProps {
+  members: TeamActivityMember[];
+  currentMemberId: number;
+}
+
+function LeaderboardTab({ members, currentMemberId }: LeaderboardTabProps) {
+  // members는 이미 rank 순으로 정렬되어 있음
+  const myRank = members.find(m => m.memberId === currentMemberId)?.rank || 0;
+  const myIndex = members.findIndex(m => m.memberId === currentMemberId);
+
+  return (
+    <div className="space-y-3">
+      {/* 기간 안내 */}
+      <div className="text-[11px] text-gray-400 text-right">
+        최근 30일 기준
+      </div>
+      {/* 순위 목록 */}
+      <div className="space-y-1.5">
+        {members.map((member) => {
+          const isMe = member.memberId === currentMemberId;
+          return (
+            <div
+              key={member.memberId}
+              className={`flex items-center gap-3 p-2.5 rounded-lg border ${
+                isMe ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200'
+              }`}
+            >
+              <div className="w-6 text-center text-sm font-bold text-gray-500">
+                {member.rank}
+              </div>
+              <MemberAvatar handle={member.handle} isMe={isMe} size="md" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-700 truncate">
+                  @{member.handle}
+                  {isMe && <span className="text-blue-600 ml-1">(나)</span>}
+                </p>
+              </div>
+              <span className="text-sm font-medium text-gray-600">{member.totalSolved}문제</span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* 동기부여 메시지 */}
+      {myRank > 1 && myIndex > 0 && (
+        <div className="text-center text-xs text-gray-500 pt-2 border-t border-gray-100">
+          {members[myIndex - 1].totalSolved - members[myIndex].totalSolved}문제만 더 풀면 {myRank - 1}위!
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============ 메인 컴포넌트 ============
+interface TeamActivityBoardProps {
+  activityData: TeamActivityResponse | null;
+  loading?: boolean;
+  onCellSelect?: (info: SelectedCellInfo | null) => void;
+}
+
+export default function TeamActivityBoard({ activityData, loading = false, onCellSelect }: TeamActivityBoardProps) {
   const [activeTab, setActiveTab] = useState<TabType>('participation');
+  const [selectedCellInfo, setSelectedCellInfo] = useState<SelectedCellInfo | null>(null);
 
   const tabs = [
     { id: 'participation' as TabType, label: '참여 현황', icon: Calendar },
-    { id: 'summary' as TabType, label: '팀 요약', icon: TrendingUp },
+    { id: 'leaderboard' as TabType, label: '리더보드', icon: Trophy },
   ];
+
+  const handleCellSelect = (info: SelectedCellInfo | null) => {
+    setSelectedCellInfo(info);
+    onCellSelect?.(info);
+  };
+
+  const handleTabChange = (tabId: TabType) => {
+    setActiveTab(tabId);
+    handleCellSelect(null);
+  };
+
+  // 로딩 상태
+  if (loading) {
+    return (
+      <div className="bg-white border border-gray-200 rounded-lg p-8">
+        <div className="flex items-center justify-center gap-2 text-gray-500">
+          <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
+          <span className="text-sm">팀 활동 현황을 불러오는 중...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // 데이터 없음
+  if (!activityData) {
+    return (
+      <div className="bg-white border border-gray-200 rounded-lg p-8">
+        <div className="text-center text-gray-500">
+          <p className="text-sm">팀 활동 현황을 불러올 수 없습니다.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg">
-      {/* 헤더 + 탭 */}
       <div className="border-b border-gray-200 px-4 pt-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Users className="h-5 w-5 text-blue-600" />
             <h3 className="text-sm font-semibold text-gray-900">팀 활동</h3>
           </div>
-          <span className="flex items-center gap-1 text-xs font-medium text-orange-600 bg-orange-100 px-2 py-1 rounded-full">
-            <Construction className="h-3.5 w-3.5" />
-            개발중
-          </span>
         </div>
-
-        {/* 탭 버튼 */}
         <div className="flex gap-1">
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => handleTabChange(tab.id)}
               className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-t-lg transition-colors ${
                 activeTab === tab.id
                   ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-600'
@@ -91,268 +492,22 @@ export default function TeamActivityBoard({ teamId: _teamId }: TeamActivityBoard
           ))}
         </div>
       </div>
-
-      {/* 탭 콘텐츠 */}
-      <div className="p-4 relative">
-        {/* 개발중 오버레이 */}
-        <div className="absolute inset-0 backdrop-blur-[2px] bg-white/30 z-10 flex flex-col items-center justify-center">
-          <div className="bg-orange-100 border border-orange-200 rounded-lg px-4 py-3 text-center shadow-sm">
-            <div className="flex items-center justify-center gap-2 mb-1">
-              <Construction className="h-5 w-5 text-orange-600" />
-              <span className="text-sm font-bold text-orange-700">개발중인 기능입니다</span>
-            </div>
-            <p className="text-xs text-orange-600">아래 데이터는 예시이며, 곧 실제 데이터로 제공됩니다</p>
-          </div>
-        </div>
-        {activeTab === 'participation' && <ParticipationTab />}
-        {activeTab === 'summary' && <SummaryTab />}
-      </div>
-    </div>
-  );
-}
-
-// 참여 현황 탭 - 멤버별 날짜별 문제 풀이 현황
-function ParticipationTab() {
-  const [expandedCell, setExpandedCell] = useState<string | null>(null);
-
-  // 최근 7일 날짜 생성
-  const getRecentDays = () => {
-    const days = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
-      days.push({
-        dateStr,
-        day: date.getDate(),
-        weekday: ['일', '월', '화', '수', '목', '금', '토'][date.getDay()],
-        isToday: i === 0,
-      });
-    }
-    return days;
-  };
-
-  const recentDays = getRecentDays();
-
-  // 해당 날짜의 추천 문제 가져오기
-  const getProblemsForDate = (dateStr: string) => {
-    return DUMMY_DAILY_PROBLEMS[dateStr] || [];
-  };
-
-  // 멤버의 특정 날짜 풀이 현황
-  const getMemberDayStats = (handle: string, dateStr: string) => {
-    const problems = getProblemsForDate(dateStr);
-    const memberSolved = DUMMY_MEMBER_SOLVED[handle] || {};
-    const solvedCount = problems.filter(p => memberSolved[p.id]).length;
-    return { solvedCount, totalCount: problems.length };
-  };
-
-  // 멤버의 전체 풀이 수
-  const getMemberTotalSolved = (handle: string) => {
-    const memberSolved = DUMMY_MEMBER_SOLVED[handle] || {};
-    return Object.values(memberSolved).filter(Boolean).length;
-  };
-
-  // 셀 클릭 토글
-  const toggleCell = (handle: string, dateStr: string) => {
-    const key = `${handle}:${dateStr}`;
-    setExpandedCell(expandedCell === key ? null : key);
-  };
-
-  return (
-    <div className="space-y-3">
-      {/* 날짜 헤더 */}
-      <div className="flex items-center">
-        <div className="w-32 flex-shrink-0" />
-        <div className="flex-1 flex">
-          {recentDays.map((date) => (
-            <div
-              key={date.dateStr}
-              className={`flex-1 text-center text-xs font-medium ${
-                date.isToday ? 'text-blue-600' : 'text-gray-500'
-              }`}
-            >
-              <div>{date.day}</div>
-              <div className="text-[10px]">{date.weekday}</div>
-            </div>
-          ))}
-        </div>
-        <div className="w-16 flex-shrink-0 text-center text-xs font-medium text-gray-500">
-          연속
-        </div>
-      </div>
-
-      {/* 멤버별 행 */}
-      {DUMMY_MEMBERS.map((member) => {
-        const totalSolved = getMemberTotalSolved(member.handle);
-
-        return (
-          <div key={member.handle} className="space-y-1">
-            {/* 멤버 행 */}
-            <div
-              className={`flex items-center rounded-lg p-2 ${
-                member.isMe ? 'bg-blue-50' : 'bg-gray-50'
-              }`}
-            >
-              {/* 멤버 정보 */}
-              <div className="w-32 flex-shrink-0 flex items-center gap-2">
-                <div className="h-7 w-7 rounded-full bg-gray-400 flex items-center justify-center text-white text-xs font-medium">
-                  {member.handle[0].toUpperCase()}
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs font-medium text-gray-900 truncate">
-                    @{member.handle.slice(0, 8)}
-                    {member.isMe && <span className="text-blue-600 ml-0.5">(나)</span>}
-                  </p>
-                  <p className="text-[10px] text-gray-500">{totalSolved}문제</p>
-                </div>
-              </div>
-
-              {/* 날짜별 셀 */}
-              <div className="flex-1 flex gap-1">
-                {recentDays.map((date) => {
-                  const { solvedCount, totalCount } = getMemberDayStats(member.handle, date.dateStr);
-                  const hasData = totalCount > 0;
-                  const allSolved = hasData && solvedCount === totalCount;
-                  const cellKey = `${member.handle}:${date.dateStr}`;
-                  const isExpanded = expandedCell === cellKey;
-
-                  return (
-                    <button
-                      key={date.dateStr}
-                      onClick={() => hasData && toggleCell(member.handle, date.dateStr)}
-                      disabled={!hasData}
-                      className={`flex-1 h-8 rounded text-xs font-medium transition-all ${
-                        !hasData
-                          ? 'bg-gray-200 text-gray-400 cursor-default'
-                          : allSolved
-                          ? 'bg-green-500 text-white hover:bg-green-600'
-                          : 'bg-yellow-400 text-yellow-900 hover:bg-yellow-500'
-                      } ${isExpanded ? 'ring-2 ring-blue-500' : ''}`}
-                      title={hasData ? `${solvedCount}/${totalCount} 완료` : '추천 없음'}
-                    >
-                      {hasData ? `${solvedCount}/${totalCount}` : '-'}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* 연속 참여일 */}
-              <div className="w-16 flex-shrink-0 flex items-center justify-center gap-1">
-                {member.streak > 0 && <Flame className="h-3.5 w-3.5 text-orange-500" />}
-                <span className={`text-xs font-bold ${member.streak > 0 ? 'text-orange-600' : 'text-gray-400'}`}>
-                  {member.streak}일
-                </span>
-              </div>
-            </div>
-
-            {/* 확장된 문제 상세 - 다른 멤버 풀이 현황도 표시 */}
-            {recentDays.map((date) => {
-              const cellKey = `${member.handle}:${date.dateStr}`;
-              if (expandedCell !== cellKey) return null;
-
-              const problems = getProblemsForDate(date.dateStr);
-              if (problems.length === 0) return null;
-
-              const memberSolved = DUMMY_MEMBER_SOLVED[member.handle] || {};
-
-              return (
-                <div
-                  key={`detail-${cellKey}`}
-                  className="ml-4 bg-white border border-gray-200 rounded-lg p-3 space-y-2"
-                >
-                  <p className="text-xs font-medium text-gray-600">
-                    {date.day}일 ({date.weekday}) 추천 문제
-                  </p>
-                  {problems.map((problem) => {
-                    const isSolved = memberSolved[problem.id] || false;
-
-                    return (
-                      <div
-                        key={problem.id}
-                        className={`flex items-center gap-2 text-sm ${
-                          isSolved ? 'text-gray-700' : 'text-gray-400'
-                        }`}
-                      >
-                        {isSolved ? (
-                          <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
-                        ) : (
-                          <XCircle className="h-4 w-4 text-red-400 flex-shrink-0" />
-                        )}
-                        <span className="truncate font-medium">#{problem.id} {problem.title}</span>
-                        <span className="text-xs text-gray-400 flex-shrink-0">({problem.tier})</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            })}
-          </div>
-        );
-      })}
-
-      {/* 범례 */}
-      <div className="flex items-center gap-4 pt-2 text-xs text-gray-500">
-        <div className="flex items-center gap-1">
-          <div className="w-4 h-4 rounded bg-green-500" />
-          <span>전체 완료</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="w-4 h-4 rounded bg-yellow-400" />
-          <span>일부 완료</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="w-4 h-4 rounded bg-gray-200" />
-          <span>추천 없음</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-
-// 팀 요약 탭
-function SummaryTab() {
-  const data = DUMMY_SUMMARY;
-
-  return (
-    <div className="space-y-4">
-      {/* 참여율 카드 */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs text-blue-600 font-medium">최근 7일 참여율</p>
-            <p className="text-2xl font-bold text-blue-700">{data.participationRate}%</p>
-            <p className="text-xs text-gray-500 mt-1">
-              {data.totalMembers}명 중 {data.activeRecent}명 참여
-            </p>
-          </div>
-          <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
-            <Users className="h-8 w-8 text-blue-600" />
-          </div>
-        </div>
-      </div>
-
-      {/* 통계 그리드 */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-gray-50 rounded-lg p-3">
-          <p className="text-xs text-gray-500">최근 7일 총 풀이</p>
-          <p className="text-xl font-bold text-gray-900">{data.totalSolvedRecent}문제</p>
-        </div>
-        <div className="bg-gray-50 rounded-lg p-3">
-          <p className="text-xs text-gray-500">1인당 평균</p>
-          <p className="text-xl font-bold text-gray-900">{data.averageSolved}문제</p>
-        </div>
-      </div>
-
-      {/* 추가 인사이트 */}
-      <div className="bg-green-50 rounded-lg p-3 border border-green-100">
-        <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-green-600" />
-          <p className="text-sm text-green-700">
-            가장 활발한 요일: <span className="font-bold">{data.mostActiveDay}</span>
-          </p>
-        </div>
+      <div className="p-4">
+        {activeTab === 'participation' && (
+          <ParticipationTab
+            members={activityData.members}
+            dailyActivities={activityData.dailyActivities}
+            currentMemberId={activityData.currentMemberId}
+            selectedCellInfo={selectedCellInfo}
+            onCellSelect={handleCellSelect}
+          />
+        )}
+        {activeTab === 'leaderboard' && (
+          <LeaderboardTab
+            members={activityData.members}
+            currentMemberId={activityData.currentMemberId}
+          />
+        )}
       </div>
     </div>
   );
