@@ -41,8 +41,10 @@ const getCellColor = (solvedCount: number, totalCount: number) => {
   return 'bg-emerald-100 border-emerald-200';
 };
 
-const truncateHandle = (handle: string, maxLen = 12) =>
-  handle.length > maxLen ? handle.slice(0, maxLen) + '..' : handle;
+const truncateHandle = (handle: string | null, maxLen = 12) => {
+  if (!handle) return '(미인증)';
+  return handle.length > maxLen ? handle.slice(0, maxLen) + '..' : handle;
+};
 
 const getRecentDays = (days: number): DayInfo[] => {
   const result: DayInfo[] = [];
@@ -116,13 +118,14 @@ function DayRangeToggle({ dayRange, onChange }: { dayRange: 7 | 30; onChange: (r
   );
 }
 
-function MemberAvatar({ handle, isMe, size = 'sm' }: { handle: string; isMe: boolean; size?: 'sm' | 'md' }) {
+function MemberAvatar({ handle, isMe, size = 'sm' }: { handle: string | null; isMe: boolean; size?: 'sm' | 'md' }) {
   const sizeClass = size === 'sm' ? 'w-6 h-6 text-[10px]' : 'w-7 h-7 text-xs';
+  const initial = handle ? handle[0].toUpperCase() : '?';
   return (
     <div className={`${sizeClass} rounded-full flex items-center justify-center text-white font-bold ${
       isMe ? 'bg-blue-600' : 'bg-gray-400'
     }`}>
-      {handle[0].toUpperCase()}
+      {initial}
     </div>
   );
 }
@@ -401,7 +404,7 @@ function LeaderboardTab({ members, currentMemberId }: LeaderboardTabProps) {
               <MemberAvatar handle={member.handle} isMe={isMe} size="md" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-700 truncate">
-                  @{member.handle}
+                  {member.handle ? `@${member.handle}` : '(미인증)'}
                   {isMe && <span className="text-blue-600 ml-1">(나)</span>}
                 </p>
               </div>
