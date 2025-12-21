@@ -136,6 +136,44 @@ export interface PublicTeamResponse {
   maxProblemLevel: number;
 }
 
+// ============ 팀 활동 현황 API 타입 ============
+export interface TeamActivityPeriod {
+  days: number;
+  startDate: string;
+  endDate: string;
+}
+
+export interface TeamActivityMember {
+  memberId: number;
+  handle: string;
+  rank: number;
+  totalSolved: number;
+}
+
+export interface TeamActivityProblem {
+  problemId: number;
+  title: string;
+  tier: number;
+}
+
+export interface TeamActivityMemberSolved {
+  memberId: number;
+  solved: Record<string, boolean>; // { "1001": true, "1002": false }
+}
+
+export interface TeamActivityDailyActivity {
+  date: string;
+  problems: TeamActivityProblem[];
+  memberSolved: TeamActivityMemberSolved[];
+}
+
+export interface TeamActivityResponse {
+  currentMemberId: number;
+  period: TeamActivityPeriod;
+  members: TeamActivityMember[];
+  dailyActivities: TeamActivityDailyActivity[];
+}
+
 export const teamsApi = {
   create: async (data: CreateTeamRequest): Promise<CreateTeamResponse> => {
     const response = await apiClient.post<ApiResponse<CreateTeamResponse>>('/teams', data);
@@ -222,5 +260,14 @@ export const teamsApi = {
   // 팀 공개/비공개 설정 변경 (팀장만 가능)
   updateVisibility: async (teamId: number, isPrivate: boolean): Promise<void> => {
     await apiClient.patch(`/teams/${teamId}/visibility`, { isPrivate });
+  },
+
+  // 팀 활동 현황 조회 (참여 현황 + 리더보드 통합)
+  getTeamActivity: async (teamId: number, days: number = 30): Promise<TeamActivityResponse> => {
+    const response = await apiClient.get<ApiResponse<TeamActivityResponse>>(
+      `/teams/${teamId}/activity`,
+      { params: { days } }
+    );
+    return response.data.data;
   },
 };
