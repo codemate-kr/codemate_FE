@@ -65,22 +65,26 @@ const getRecentDays = (days: number): DayInfo[] => {
 const getMemberDayStatsFromApi = (
   memberId: number,
   dateStr: string,
-  dailyActivities: TeamActivityDailyActivity[]
+  dailyActivities: TeamActivityDailyActivity[] | null | undefined
 ): MemberDayStats => {
+  if (!dailyActivities || dailyActivities.length === 0) {
+    return { solvedCount: 0, totalCount: 0, problems: [], memberSolved: {} };
+  }
+
   const dayActivity = dailyActivities.find(d => d.date === dateStr);
   if (!dayActivity) {
     return { solvedCount: 0, totalCount: 0, problems: [], memberSolved: {} };
   }
 
-  const memberSolvedInfo = dayActivity.memberSolved.find(m => m.memberId === memberId);
+  const memberSolvedInfo = dayActivity.memberSolved?.find(m => m.memberId === memberId);
   const memberSolved = memberSolvedInfo?.solved || {};
 
   const solvedCount = Object.values(memberSolved).filter(Boolean).length;
 
   return {
     solvedCount,
-    totalCount: dayActivity.problems.length,
-    problems: dayActivity.problems,
+    totalCount: dayActivity.problems?.length || 0,
+    problems: dayActivity.problems || [],
     memberSolved,
   };
 };
