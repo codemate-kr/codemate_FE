@@ -9,7 +9,6 @@ import {
   LabelList,
 } from 'recharts';
 import { Loader2, X, ExternalLink } from 'lucide-react';
-import NewBadge from '../../../components/common/NewBadge';
 import { getTierName } from '../../../utils/tierUtils';
 import {
   memberApi,
@@ -415,7 +414,6 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
         <div className="flex items-center justify-between sm:flex-row">
           <div className="flex items-center gap-2">
             <h3 className="text-base sm:text-lg font-semibold text-gray-900">최근 활동</h3>
-            <NewBadge />
           </div>
           <div className="hidden sm:flex gap-1">
             {PERIOD_OPTIONS.map((option) => (

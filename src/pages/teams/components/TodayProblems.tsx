@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Calendar, RefreshCw, ExternalLink, CheckCircle, Settings, Loader2, Sparkles, Pause, Play, RotateCcw, Clock } from 'lucide-react';
-import NewBadge from '../../../components/common/NewBadge';
 import { teamsApi, type TodayProblemsResponse, type TeamRecommendationSettingsResponse } from '../../../api/teams';
 import { getTierIcon } from '../../../components/common/TierIcon';
 import { verifyProblemSolved, type VerifyErrorType } from '../../../utils/problemVerify';
@@ -212,16 +211,13 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             {isTeamLeader && onOpenSettings && (
-              <>
-                <NewBadge />
-                <button
-                  onClick={onOpenSettings}
-                  className="inline-flex items-center px-2 sm:px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap"
-                >
-                  <Settings className="h-3.5 w-3.5 sm:mr-1.5" />
-                  <span className="hidden sm:inline">문제 추천 설정</span>
-                </button>
-              </>
+              <button
+                onClick={onOpenSettings}
+                className="inline-flex items-center px-2 sm:px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap"
+              >
+                <Settings className="h-3.5 w-3.5 sm:mr-1.5" />
+                <span className="hidden sm:inline">문제 추천 설정</span>
+              </button>
             )}
           </div>
         </div>

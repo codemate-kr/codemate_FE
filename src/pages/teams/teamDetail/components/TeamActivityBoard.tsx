@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Users, Calendar, Trophy, ChevronLeft, ChevronRight, CheckCircle, ExternalLink } from 'lucide-react';
 import type { TeamActivityResponse, TeamActivityMember, TeamActivityDailyActivity, TeamActivityProblem } from '../../../../api/teams';
 import { getTierIcon } from '../../../../components/common/TierIcon';
+import NewBadge from '../../../../components/common/NewBadge';
 
 // ============ 타입 정의 ============
 type TabType = 'participation' | 'leaderboard';
@@ -34,11 +35,11 @@ export interface SelectedCellInfo {
 // ============ 유틸리티 함수 ============
 const getCellColor = (solvedCount: number, totalCount: number) => {
   if (totalCount === 0) return 'bg-gray-100 border-gray-200';
-  if (solvedCount === 0) return 'bg-gray-200 border-gray-300';
+  if (solvedCount === 0) return 'bg-gray-200 border-gray-300 hover:bg-gray-300 hover:border-gray-400';
   const ratio = solvedCount / totalCount;
-  if (ratio === 1) return 'bg-grass-2 border-grass-3';
-  if (ratio >= 0.5) return 'bg-grass-1 border-grass-2';
-  return 'bg-emerald-100 border-emerald-200';
+  if (ratio === 1) return 'bg-grass-2 border-grass-3 hover:bg-grass-3 hover:border-grass-4';
+  if (ratio >= 0.5) return 'bg-grass-1 border-grass-2 hover:bg-grass-2 hover:border-grass-3';
+  return 'bg-emerald-100 border-emerald-200 hover:bg-emerald-200 hover:border-emerald-300';
 };
 
 const truncateHandle = (handle: string | null, maxLen = 12) => {
@@ -250,12 +251,12 @@ function ParticipationTab({ members, dailyActivities, currentMemberId, selectedC
     `text-center text-[10px] ${date.isWeekend ? 'text-red-400' : 'text-gray-400'} ${date.isToday ? 'font-bold' : ''}`;
 
   const getCellClass = (solvedCount: number, totalCount: number) => {
-    const base = `rounded border flex items-center justify-center text-[10px] font-bold transition-all ${getCellColor(solvedCount, totalCount)}`;
+    const base = `rounded border flex items-center justify-center text-[10px] font-bold transition-all duration-150 ${getCellColor(solvedCount, totalCount)}`;
     const interactive = totalCount === 0
       ? 'text-gray-400 cursor-default'
       : solvedCount === totalCount
-        ? 'text-white cursor-pointer hover:scale-105'
-        : 'text-gray-600 cursor-pointer hover:scale-105';
+        ? 'text-white cursor-pointer hover:scale-105 hover:shadow-md'
+        : 'text-gray-600 cursor-pointer hover:scale-105 hover:shadow-md';
     return `${base} ${interactive}`;
   };
 
@@ -480,6 +481,7 @@ export default function TeamActivityBoard({ activityData, loading = false, onCel
           <div className="flex items-center gap-2">
             <Users className="h-5 w-5 text-blue-600" />
             <h3 className="text-sm font-semibold text-gray-900">팀 활동</h3>
+            <NewBadge />
           </div>
         </div>
         <div className="flex gap-1">

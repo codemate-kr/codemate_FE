@@ -3,7 +3,6 @@ import { Settings, X, Mail, Calendar, Target, CheckCircle, Hash } from 'lucide-r
 import { teamsApi, type TeamRecommendationSettingsResponse, type ProblemDifficultyPreset, type RecommendationDayOfWeek } from '../../../api/teams';
 import { CustomTierModal } from '../../problems/components/CustomTierModal';
 import { getTierName, getTierShortName } from '../../../utils/tierUtils';
-import NewBadge from '../../../components/common/NewBadge';
 
 interface TeamSettingsModalProps {
   teamId: number;
@@ -327,7 +326,6 @@ export function TeamSettingsModal({
                   <div className="flex items-center space-x-2">
                     <Hash className="h-4 w-4 text-gray-600" />
                     <h4 className="text-sm font-semibold text-gray-900">문제 수</h4>
-                    <NewBadge />
                   </div>
                   <span className="text-xs text-gray-500">매일 추천받을 문제 수</span>
                 </div>
