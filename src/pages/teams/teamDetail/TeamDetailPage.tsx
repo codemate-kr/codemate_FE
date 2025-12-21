@@ -152,11 +152,6 @@ export default function TeamDetailPage() {
   const handleOpenDeleteConfirm = useCallback(() => setShowDeleteConfirm(true), []);
   const handleCloseDeleteConfirm = useCallback(() => setShowDeleteConfirm(false), []);
 
-  const handleJoinRequest = useCallback(() => {
-    // TODO: 가입 신청 API 연동
-    toast('가입 신청 기능은 준비 중입니다', 'error');
-  }, []);
-
   const { updateTeam } = useTeamStore();
 
   const handleVisibilityToggle = useCallback(async () => {
@@ -246,12 +241,14 @@ export default function TeamDetailPage() {
                     </button>
                   ) : !isTeamMember && (
                     <button
-                      onClick={handleJoinRequest}
-                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors whitespace-nowrap"
+                      disabled
+                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 rounded-md cursor-not-allowed whitespace-nowrap"
+                      title="준비 중인 기능입니다"
                     >
                       <UserPlus className="h-4 w-4 mr-1.5" />
                       <span className="hidden sm:inline">가입 신청</span>
                       <span className="sm:hidden">가입</span>
+                      <span className="ml-1.5 px-1.5 py-0.5 text-[10px] bg-gray-200 text-gray-500 rounded">준비 중</span>
                     </button>
                   )}
                   <TeamActionMenu
