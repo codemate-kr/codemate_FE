@@ -38,8 +38,8 @@ function TimerItem({ problemId, problemTitle, startedAt, accumulatedTime, isPaus
     return () => clearInterval(interval);
   }, [startedAt, accumulatedTime, isPaused]);
 
-  // 30분 초과 여부
-  const isOverTime = elapsed > 30 * 60;
+  // 1시간 초과 여부
+  const isOverTime = elapsed > 60 * 60;
 
   return (
     <div className={`flex items-center justify-between gap-3 p-2.5 rounded-lg transition-colors ${
@@ -62,7 +62,7 @@ function TimerItem({ problemId, problemTitle, startedAt, accumulatedTime, isPaus
           )}
           {isOverTime && !isPaused && (
             <span className="text-[10px] text-red-500 bg-red-100 px-1.5 py-0.5 rounded font-medium">
-              30분 초과
+              1시간 초과
             </span>
           )}
         </div>
@@ -140,8 +140,8 @@ export function FloatingTimerWidget() {
 
   // 일시정지 중인 타이머가 있는지 확인
   const hasAnyPaused = timerEntries.some(t => t.isPaused);
-  // 30분 초과 타이머가 있는지 확인
-  const hasOverTime = primaryElapsed > 30 * 60;
+  // 1시간 초과 타이머가 있는지 확인
+  const hasOverTime = primaryElapsed > 60 * 60;
 
   return (
     <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom-4 fade-in duration-300">
@@ -213,7 +213,7 @@ export function FloatingTimerWidget() {
             {/* 안내 메시지 */}
             <div className="pt-2 border-t border-gray-200/80">
               <p className="text-[11px] text-gray-500 text-center leading-relaxed">
-                <span className="text-blue-600 font-semibold">해결 인증</span> 시 자동 완료 · 30분 내 풀이 목표
+                <span className="text-blue-600 font-semibold">해결 인증</span> 시 자동 완료 · 1시간 내 풀이 목표
               </p>
             </div>
           </div>
