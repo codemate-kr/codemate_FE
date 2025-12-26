@@ -104,6 +104,9 @@ export function LoginModalProvider({ children }: LoginModalProviderProps) {
         } else if (PUBLIC_PAGES.includes(location.pathname)) {
           // 공개 페이지에서 로그인했으면 대시보드로 이동
           navigate('/dashboard', { replace: true });
+        } else {
+          // 보호된 페이지에서 로그인한 경우 현재 페이지 새로고침
+          window.location.reload();
         }
       } else if (event.data.type === 'oauth-error') {
         try {
