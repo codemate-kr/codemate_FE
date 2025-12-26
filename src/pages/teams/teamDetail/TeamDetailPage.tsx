@@ -1,4 +1,4 @@
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { UserPlus, Lock } from 'lucide-react';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { toast } from '../../../components/common/toast';
@@ -15,11 +15,13 @@ import TeamActivityBoard, { ProblemDetail } from './components/TeamActivityBoard
 import type { SelectedCellInfo } from './components/TeamActivityBoard';
 import { useTeamStore, useCurrentTeamDetails, useDetailLoading, useDetailError, useTeams } from '../../../store/teamStore';
 import { useAuthStore } from '../../../store/authStore';
+import { useLoginModal } from '../../../contexts/LoginModalContext';
 
 export default function TeamDetailPage() {
   const { teamId } = useParams<{ teamId: string }>();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
+  const { openLoginModal } = useLoginModal();
 
   // teamId를 숫자로 변환 (메모이제이션) - 1 이상의 자연수만 유효
   const numericTeamId = useMemo(() => {
@@ -221,13 +223,17 @@ export default function TeamDetailPage() {
             </div>
             <div className="mt-4 sm:mt-0 flex items-center justify-end gap-2">
               {!isAuthenticated ? (
-                <Link
-                  to="/login"
-                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors whitespace-nowrap"
+                <button
+                  onClick={openLoginModal}
+                  disabled
+                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 rounded-md cursor-not-allowed whitespace-nowrap"
+                  title="준비 중인 기능입니다"
                 >
-                  <Lock className="h-4 w-4 mr-1.5" />
-                  로그인하여 참여하기
-                </Link>
+                  <UserPlus className="h-4 w-4 mr-1.5" />
+                  <span className="hidden sm:inline">가입 신청</span>
+                  <span className="sm:hidden">가입</span>
+                  <span className="ml-1.5 px-1.5 py-0.5 text-[10px] bg-gray-200 text-gray-500 rounded">준비 중</span>
+                </button>
               ) : (
                 <>
                   {isTeamLeader ? (
