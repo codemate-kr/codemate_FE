@@ -54,7 +54,7 @@ export default function MyTeamsSection({ isAuthenticated, onLoginClick, teams }:
             </p>
             <Link
               to="/teams/my?action=create"
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors animate-glow-pulse"
             >
               <Plus className="h-4 w-4 mr-2" />
               팀 만들기
