@@ -1,17 +1,26 @@
+import { useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import type { TeamMemberResponse } from '../../../../api/teams';
 
 interface TeamMembersListProps {
   members: TeamMemberResponse[];
 }
 
+const DEFAULT_VISIBLE_COUNT = 5;
+
 export default function TeamMembersList({ members }: TeamMembersListProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const visibleMembers = isExpanded ? members : members.slice(0, DEFAULT_VISIBLE_COUNT);
+  const hasMoreMembers = members.length > DEFAULT_VISIBLE_COUNT;
+
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4">
       <h3 className="text-sm font-semibold text-gray-900 mb-3">
         멤버 ({members.length})
       </h3>
       <div className="space-y-2">
-        {members.map((member) => (
+        {visibleMembers.map((member) => (
           <div
             key={member.memberId}
             className={`flex items-center gap-3 p-2 rounded ${
@@ -36,6 +45,25 @@ export default function TeamMembersList({ members }: TeamMembersListProps) {
           </div>
         ))}
       </div>
+
+      {hasMoreMembers && (
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full flex items-center justify-center gap-1 mt-3 py-2 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+        >
+          {isExpanded ? (
+            <>
+              <ChevronUp className="w-4 h-4" />
+              접기
+            </>
+          ) : (
+            <>
+              <ChevronDown className="w-4 h-4" />
+              {members.length - DEFAULT_VISIBLE_COUNT}명 더보기
+            </>
+          )}
+        </button>
+      )}
     </div>
   );
 }
