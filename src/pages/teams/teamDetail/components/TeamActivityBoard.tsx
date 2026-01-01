@@ -282,7 +282,18 @@ function ParticipationTab({ members, dailyActivities, currentMemberId, selectedC
             <div key={member.memberId} className="flex items-center h-10 max-sm:h-8">
               <div className={`w-40 max-sm:w-24 flex-shrink-0 flex items-center gap-2 max-sm:gap-1 pr-2 max-sm:pr-1 h-10 max-sm:h-8 rounded-l ${isMe ? 'bg-blue-50' : ''}`}>
                 <MemberAvatar handle={member.handle} isMe={isMe} />
-                <p className="text-xs max-sm:text-[10px] font-medium text-gray-700 truncate">{truncateHandle(member.handle)}</p>
+                {member.handle ? (
+                  <a
+                    href={`https://www.acmicpc.net/user/${member.handle}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs max-sm:text-[10px] font-medium text-gray-700 truncate hover:text-blue-600 hover:underline transition-colors"
+                  >
+                    {truncateHandle(member.handle)}
+                  </a>
+                ) : (
+                  <p className="text-xs max-sm:text-[10px] font-medium text-gray-700 truncate">(미인증)</p>
+                )}
               </div>
               <div className="flex-1 flex gap-1 max-sm:gap-0.5 justify-between h-10 max-sm:h-8 items-center">
                 {recentDays.map((date, dateIndex) => {
@@ -320,7 +331,18 @@ function ParticipationTab({ members, dailyActivities, currentMemberId, selectedC
             return (
               <div key={member.memberId} className={`flex items-center gap-2 max-sm:gap-1 pr-2 max-sm:pr-1 h-10 max-sm:h-8 rounded-l ${isMe ? 'bg-blue-50' : ''}`}>
                 <MemberAvatar handle={member.handle} isMe={isMe} />
-                <p className="text-xs max-sm:text-[10px] font-medium text-gray-700 truncate">{truncateHandle(member.handle)}</p>
+                {member.handle ? (
+                  <a
+                    href={`https://www.acmicpc.net/user/${member.handle}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs max-sm:text-[10px] font-medium text-gray-700 truncate hover:text-blue-600 hover:underline transition-colors"
+                  >
+                    {truncateHandle(member.handle)}
+                  </a>
+                ) : (
+                  <p className="text-xs max-sm:text-[10px] font-medium text-gray-700 truncate">(미인증)</p>
+                )}
               </div>
             );
           })}
@@ -405,7 +427,18 @@ function LeaderboardTab({ members, currentMemberId }: LeaderboardTabProps) {
               <MemberAvatar handle={member.handle} isMe={isMe} size="md" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm max-sm:text-xs font-medium text-gray-700 truncate">
-                  {member.handle ? `@${member.handle}` : '(미인증)'}
+                  {member.handle ? (
+                    <a
+                      href={`https://www.acmicpc.net/user/${member.handle}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-blue-600 hover:underline transition-colors"
+                    >
+                      @{member.handle}
+                    </a>
+                  ) : (
+                    '(미인증)'
+                  )}
                   {isMe && <span className="text-blue-600 ml-1">(나)</span>}
                 </p>
               </div>

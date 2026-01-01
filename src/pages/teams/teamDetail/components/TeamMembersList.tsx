@@ -34,7 +34,18 @@ export default function TeamMembersList({ members }: TeamMembersListProps) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">
-                @{member.handle || '핸들 없음'}
+                {member.handle ? (
+                  <a
+                    href={`https://www.acmicpc.net/user/${member.handle}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-blue-600 hover:underline transition-colors"
+                  >
+                    @{member.handle}
+                  </a>
+                ) : (
+                  <span>@핸들 없음</span>
+                )}
                 {member.isMe && <span className="ml-1 text-xs text-blue-600">(나)</span>}
               </p>
               <p className="text-xs text-gray-500 truncate">{member.email}</p>
