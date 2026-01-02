@@ -47,11 +47,24 @@ const truncateHandle = (handle: string | null, maxLen = 12) => {
   return handle.length > maxLen ? handle.slice(0, maxLen) + '..' : handle;
 };
 
+// 새벽 6시 기준으로 날짜를 계산하는 함수
+// 예: 1월 3일 새벽 5시 → 1월 2일로 취급
+const getAdjustedDate = (date: Date): Date => {
+  const adjusted = new Date(date);
+  if (adjusted.getHours() < 6) {
+    adjusted.setDate(adjusted.getDate() - 1);
+  }
+  return adjusted;
+};
+
 const getRecentDays = (days: number): DayInfo[] => {
   const result: DayInfo[] = [];
+  const now = new Date();
+  const adjustedToday = getAdjustedDate(now);
+
   for (let i = days - 1; i >= 0; i--) {
-    const date = new Date();
-    date.setDate(date.getDate() - i);
+    const date = new Date(adjustedToday);
+    date.setDate(adjustedToday.getDate() - i);
     result.push({
       dateStr: date.toISOString().split('T')[0],
       day: date.getDate(),
