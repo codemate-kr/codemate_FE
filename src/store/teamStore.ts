@@ -134,8 +134,12 @@ export const useTeamStore = create<TeamStore>()(
         try {
           set({ teamsLoading: true, teamsError: null });
           const teams = await teamsApi.getMyTeams();
+          // 최신 팀이 먼저 나오도록 역순 정렬
+          const sortedTeams = [...teams].sort((a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
           set({
-            teams,
+            teams: sortedTeams,
             teamsError: null,
             teamsLastFetched: Date.now()
           });
