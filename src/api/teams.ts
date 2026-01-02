@@ -259,7 +259,7 @@ export const teamsApi = {
 
   // 팀 정보 수정 (팀장만 가능)
   updateTeam: async (teamId: number, data: UpdateTeamRequest): Promise<void> => {
-    await apiClient.patch(`/teams/${teamId}`, data);
+    await apiClient.post(`/teams/${teamId}/updateInfo`, data);
   },
 
   // 팀 공개/비공개 설정 변경 (팀장만 가능) - deprecated: updateTeam 사용 권장
