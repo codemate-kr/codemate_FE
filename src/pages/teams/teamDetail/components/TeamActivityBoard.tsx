@@ -47,26 +47,35 @@ const truncateHandle = (handle: string | null, maxLen = 12) => {
   return handle.length > maxLen ? handle.slice(0, maxLen) + '..' : handle;
 };
 
-// 새벽 6시 기준으로 날짜를 계산하는 함수
+// 로컬 시간 기준으로 YYYY-MM-DD 형식 문자열 생성
+const formatLocalDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+// 새벽 6시 기준으로 "오늘" 날짜를 계산하는 함수
 // 예: 1월 3일 새벽 5시 → 1월 2일로 취급
-const getAdjustedDate = (date: Date): Date => {
-  const adjusted = new Date(date);
-  if (adjusted.getHours() < 6) {
-    adjusted.setDate(adjusted.getDate() - 1);
+const getAdjustedToday = (): Date => {
+  const now = new Date();
+  if (now.getHours() < 6) {
+    now.setDate(now.getDate() - 1);
   }
-  return adjusted;
+  // 시간을 정오로 설정하여 timezone 문제 방지
+  now.setHours(12, 0, 0, 0);
+  return now;
 };
 
 const getRecentDays = (days: number): DayInfo[] => {
   const result: DayInfo[] = [];
-  const now = new Date();
-  const adjustedToday = getAdjustedDate(now);
+  const adjustedToday = getAdjustedToday();
 
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(adjustedToday);
     date.setDate(adjustedToday.getDate() - i);
     result.push({
-      dateStr: date.toISOString().split('T')[0],
+      dateStr: formatLocalDate(date),
       day: date.getDate(),
       month: date.getMonth() + 1,
       weekday: ['일', '월', '화', '수', '목', '금', '토'][date.getDay()],
