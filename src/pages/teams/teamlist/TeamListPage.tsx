@@ -17,7 +17,9 @@ export default function TeamListPage() {
         setIsLoading(true);
         setError(null);
         const data = await teamsApi.getPublicTeams();
-        setTeams(data);
+        // 최신 팀이 먼저 나오도록 teamId 역순 정렬
+        const sortedData = [...data].sort((a, b) => b.teamId - a.teamId);
+        setTeams(sortedData);
       } catch (err) {
         setError('팀 목록을 불러오는데 실패했습니다');
         console.error('Failed to fetch public teams:', err);
