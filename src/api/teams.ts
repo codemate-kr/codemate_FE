@@ -257,7 +257,12 @@ export const teamsApi = {
     return response.data.data;
   },
 
-  // 팀 공개/비공개 설정 변경 (팀장만 가능)
+  // 팀 정보 수정 (팀장만 가능)
+  updateTeam: async (teamId: number, data: UpdateTeamRequest): Promise<void> => {
+    await apiClient.patch(`/teams/${teamId}`, data);
+  },
+
+  // 팀 공개/비공개 설정 변경 (팀장만 가능) - deprecated: updateTeam 사용 권장
   updateVisibility: async (teamId: number, isPrivate: boolean): Promise<void> => {
     await apiClient.patch(`/teams/${teamId}/visibility`, { isPrivate });
   },

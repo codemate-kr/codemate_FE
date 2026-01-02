@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { toast } from '../../../components/common/toast';
 import { TeamSettingsModal } from '../components/TeamSettingsModal';
 import { MemberInviteModal } from '../components/MemberInviteModal';
+import TeamEditModal from '../components/TeamEditModal';
 import { TodayProblems } from '../components/TodayProblems';
 import { TeamDetailError } from '../../../components/common/TeamDetailError';
 import ConfirmModal from '../../../components/common/ConfirmModal';
@@ -40,6 +41,7 @@ export default function TeamDetailPage() {
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
@@ -149,6 +151,8 @@ export default function TeamDetailPage() {
   const handleCloseSettings = useCallback(() => setShowSettingsModal(false), []);
   const handleOpenInvite = useCallback(() => setShowInviteModal(true), []);
   const handleCloseInvite = useCallback(() => setShowInviteModal(false), []);
+  const handleOpenEditModal = useCallback(() => setShowEditModal(true), []);
+  const handleCloseEditModal = useCallback(() => setShowEditModal(false), []);
   const handleOpenLeaveConfirm = useCallback(() => setShowLeaveConfirm(true), []);
   const handleCloseLeaveConfirm = useCallback(() => setShowLeaveConfirm(false), []);
   const handleOpenDeleteConfirm = useCallback(() => setShowDeleteConfirm(true), []);
@@ -156,23 +160,35 @@ export default function TeamDetailPage() {
 
   const { updateTeam } = useTeamStore();
 
-  const handleVisibilityToggle = useCallback(async () => {
+  const [isEditLoading, setIsEditLoading] = useState(false);
+
+  const handleEditSubmit = useCallback(async (data: { name: string; description: string; isPrivate: boolean }) => {
     if (!numericTeamId) return;
 
-    const currentIsPrivate = teamInfo?.isPrivate || currentTeam?.isPrivate;
-    const newIsPrivate = !currentIsPrivate;
-
+    setIsEditLoading(true);
     try {
-      await teamsApi.updateVisibility(numericTeamId, newIsPrivate);
+      await teamsApi.updateTeam(numericTeamId, {
+        name: data.name,
+        description: data.description,
+        isPrivate: data.isPrivate,
+      });
       // teams 배열도 업데이트 (캐시 동기화)
-      updateTeam(numericTeamId, { isPrivate: newIsPrivate });
-      toast(newIsPrivate ? '비공개 팀으로 변경되었습니다' : '공개 팀으로 변경되었습니다');
+      updateTeam(numericTeamId, {
+        teamName: data.name,
+        teamDescription: data.description,
+        isPrivate: data.isPrivate,
+      });
+      toast('팀 정보가 수정되었습니다');
+      setShowEditModal(false);
       fetchTeamDetails(numericTeamId);
-    } catch (error) {
-      console.error('팀 공개 설정 변경 실패:', error);
-      toast('설정 변경에 실패했습니다', 'error');
+    } catch (error: any) {
+      console.error('팀 정보 수정 실패:', error);
+      const errorMessage = error?.response?.data?.message || '팀 정보 수정에 실패했습니다';
+      throw new Error(errorMessage);
+    } finally {
+      setIsEditLoading(false);
     }
-  }, [numericTeamId, teamInfo?.isPrivate, currentTeam?.isPrivate, fetchTeamDetails, updateTeam]);
+  }, [numericTeamId, fetchTeamDetails, updateTeam]);
 
   // 유효하지 않은 팀 ID
   if (!numericTeamId) {
@@ -260,10 +276,9 @@ export default function TeamDetailPage() {
                   <TeamActionMenu
                     isTeamLeader={isTeamLeader}
                     isTeamMember={isTeamMember}
-                    isPrivate={teamInfo?.isPrivate || currentTeam?.isPrivate}
                     onLeaveClick={handleOpenLeaveConfirm}
                     onDeleteClick={handleOpenDeleteConfirm}
-                    onVisibilityClick={handleVisibilityToggle}
+                    onEditClick={handleOpenEditModal}
                   />
                 </>
               )}
@@ -376,6 +391,19 @@ export default function TeamDetailPage() {
             onClose={handleCloseInvite}
             onShowToast={toast}
             onInviteSuccess={handleInviteSuccess}
+          />
+        )}
+
+        {/* 팀 정보 수정 모달 */}
+        {showEditModal && (
+          <TeamEditModal
+            teamId={numericTeamId!}
+            initialName={teamInfo?.teamName || currentTeam?.teamName || ''}
+            initialDescription={teamInfo?.description || currentTeam?.teamDescription || ''}
+            initialIsPrivate={teamInfo?.isPrivate || currentTeam?.isPrivate || false}
+            onClose={handleCloseEditModal}
+            onSubmit={handleEditSubmit}
+            isLoading={isEditLoading}
           />
         )}
 

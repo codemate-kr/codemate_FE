@@ -1,22 +1,21 @@
 import { useState, useRef, useEffect } from 'react';
-import { MoreVertical, LogOut, Trash2, X, Globe, Lock } from 'lucide-react';
+import { MoreVertical, LogOut, Trash2, X, Settings } from 'lucide-react';
+import NewBadge from '../../../../components/common/NewBadge';
 
 interface TeamActionMenuProps {
   isTeamLeader: boolean;
   isTeamMember: boolean;
-  isPrivate?: boolean;
   onLeaveClick: () => void;
   onDeleteClick: () => void;
-  onVisibilityClick?: () => void;
+  onEditClick?: () => void;
 }
 
 export default function TeamActionMenu({
   isTeamLeader,
   isTeamMember,
-  isPrivate,
   onLeaveClick,
   onDeleteClick,
-  onVisibilityClick,
+  onEditClick,
 }: TeamActionMenuProps) {
   // 팀원이 아니면 액션 메뉴 표시 안함
   if (!isTeamMember) {
@@ -76,6 +75,10 @@ export default function TeamActionMenu({
         aria-label="팀 설정"
       >
         <MoreVertical className="h-5 w-5" />
+        {/* 팀장일 때 새 기능 알림 표시 */}
+        {isTeamLeader && onEditClick && (
+          <span className="absolute top-1 right-1 h-2 w-2 bg-purple-500 rounded-full animate-pulse" />
+        )}
       </button>
 
       {isOpen && (
@@ -88,24 +91,16 @@ export default function TeamActionMenu({
             <div className="py-1">
               {isTeamLeader ? (
                 <>
-                  {onVisibilityClick && (
+                  {onEditClick && (
                     <button
-                      onClick={() => handleMenuItemClick(onVisibilityClick)}
+                      onClick={() => handleMenuItemClick(onEditClick)}
                       className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation"
                     >
                       <span className="flex items-center">
-                        {isPrivate ? (
-                          <>
-                            <Globe className="h-4 w-4 mr-3" />
-                            공개로 전환
-                          </>
-                        ) : (
-                          <>
-                            <Lock className="h-4 w-4 mr-3" />
-                            비공개로 전환
-                          </>
-                        )}
+                        <Settings className="h-4 w-4 mr-3" />
+                        팀 정보 수정
                       </span>
+                      <NewBadge />
                     </button>
                   )}
                   <button
@@ -144,24 +139,16 @@ export default function TeamActionMenu({
               <div className="space-y-2">
                 {isTeamLeader ? (
                   <>
-                    {onVisibilityClick && (
+                    {onEditClick && (
                       <button
-                        onClick={() => handleMenuItemClick(onVisibilityClick)}
+                        onClick={() => handleMenuItemClick(onEditClick)}
                         className="w-full flex items-center justify-between px-4 py-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 rounded-lg transition-colors touch-manipulation"
                       >
                         <span className="flex items-center">
-                          {isPrivate ? (
-                            <>
-                              <Globe className="h-5 w-5 mr-3" />
-                              공개로 전환
-                            </>
-                          ) : (
-                            <>
-                              <Lock className="h-5 w-5 mr-3" />
-                              비공개로 전환
-                            </>
-                          )}
+                          <Settings className="h-5 w-5 mr-3" />
+                          팀 정보 수정
                         </span>
+                        <NewBadge />
                       </button>
                     )}
                     <button

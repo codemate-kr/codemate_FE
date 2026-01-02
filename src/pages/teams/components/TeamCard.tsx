@@ -1,19 +1,17 @@
 import { memo } from 'react';
-import { Users, Settings, Crown, ChevronRight, Lock } from 'lucide-react';
+import { Users, Crown, ChevronRight, Lock } from 'lucide-react';
 import Tooltip from '../../../components/common/Tooltip';
 import type { MyTeamResponse } from '../../../api/teams';
 
 interface TeamCardProps {
   team: MyTeamResponse;
   onClick?: () => void;
-  onSettingsClick?: (e: React.MouseEvent) => void;
   isInteractive?: boolean;
 }
 
 export const TeamCard = memo(function TeamCard({
   team,
   onClick,
-  onSettingsClick,
   isInteractive = true,
 }: TeamCardProps) {
   return (
@@ -54,16 +52,6 @@ export const TeamCard = memo(function TeamCard({
               </p>
             </div>
           </div>
-          <Tooltip text="팀 설정">
-            <button
-              onClick={onSettingsClick}
-              className={`flex-shrink-0 ml-2 p-2 text-gray-400 rounded-lg ${
-                isInteractive ? 'hover:text-gray-600 hover:bg-gray-100 transition-colors' : ''
-              }`}
-            >
-              <Settings className="h-4 w-4" />
-            </button>
-          </Tooltip>
         </div>
 
         <div className="mt-5 pt-5 border-t border-gray-100">

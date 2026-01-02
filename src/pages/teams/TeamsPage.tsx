@@ -83,11 +83,6 @@ export default function TeamsPage() {
     navigate(`/teams/${teamId}`);
   }, [navigate]);
 
-  const handleSettingsClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    toast('팀 설정 기능은 개발 중입니다');
-  }, []);
-
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="mb-6 sm:mb-8">
@@ -189,7 +184,6 @@ export default function TeamsPage() {
                 key={team.teamId}
                 team={team}
                 onClick={() => handleTeamClick(team.teamId)}
-                onSettingsClick={handleSettingsClick}
               />
             ))}
           </div>
