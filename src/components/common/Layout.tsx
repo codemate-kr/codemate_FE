@@ -5,6 +5,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useLoginModal } from '../../contexts/LoginModalContext';
 import Footer from './Footer';
 import { FloatingTimerWidget } from './FloatingTimerWidget';
+import RankingSidebar from './RankingSidebar';
 
 interface LayoutProps {
   children: ReactNode;
@@ -93,6 +94,7 @@ export default function Layout({ children }: LayoutProps) {
 
       <Footer />
       <FloatingTimerWidget />
+      <RankingSidebar />
     </div>
   );
 }
