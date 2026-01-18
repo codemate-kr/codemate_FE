@@ -42,9 +42,10 @@ export interface DifficultyRange {
 export interface TeamRecommendationSettingsRequest {
   recommendationDays: RecommendationDayOfWeek[];
   problemDifficultyPreset?: ProblemDifficultyPreset;
-  minProblemLevel?: number;
-  maxProblemLevel?: number;
+  minProblemLevel?: number | null;
+  maxProblemLevel?: number | null;
   problemCount?: number; // 추천 문제 수 (1~10, 기본값 3)
+  includeTags?: string[]; // 알고리즘 태그 키 배열
 }
 
 // 응답 DTO 타입 (백엔드 API 스펙에 맞춤)
@@ -57,6 +58,7 @@ export interface TeamRecommendationSettingsResponse {
   minProblemLevel?: number;
   maxProblemLevel?: number;
   problemCount?: number; // 추천 문제 수 (1~10, 기본값 3)
+  includeTags?: string[]; // 알고리즘 태그 키 배열
 }
 
 // 하위 호환성을 위한 타입 alias

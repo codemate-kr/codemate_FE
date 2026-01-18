@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react';
 import { getTierName, getTierColor } from '../../../../utils/tierUtils';
 import { DayToKorean } from '../../../../utils/dayUtils';
+import { getTagNames } from '../../../../constants/algorithmTags';
 import type { TeamRecommendationSettingsResponse, SolvedacTier } from '../../../../api/teams';
 
 // 상수를 컴포넌트 외부로 추출
@@ -61,6 +62,24 @@ export default memo(function TeamInfoSection({
                 </div>
               </div>
             )}
+            {/* 알고리즘 태그 */}
+            <div className="pt-2 border-t border-gray-100">
+              <p className="text-xs text-gray-500 mb-2">알고리즘 태그</p>
+              {recommendationSettings?.includeTags && recommendationSettings.includeTags.length > 0 ? (
+                <div className="flex flex-wrap gap-1">
+                  {getTagNames(recommendationSettings.includeTags).map((tagName) => (
+                    <span
+                      key={tagName}
+                      className="inline-block px-1.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded"
+                    >
+                      {tagName}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <span className="text-xs text-gray-400">전체</span>
+              )}
+            </div>
             {recommendationSettings?.recommendationDays && recommendationSettings.recommendationDays.length > 0 && (
               <div className="pt-2 border-t border-gray-100">
                 <p className="text-xs text-gray-500 mb-2">추천 요일</p>
