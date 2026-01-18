@@ -1,6 +1,6 @@
 /**
  * 알고리즘 태그 정적 데이터
- * solved.ac API 기준 226개 태그 (isMeta=false)
+ * solved.ac API 기준 229개 태그 (isMeta=false)
  */
 
 export interface AlgorithmTag {
@@ -236,6 +236,9 @@ export const ALGORITHM_TAGS: AlgorithmTag[] = [
   { key: 'hackenbush', nameKo: '하켄부시 게임', nameEn: 'hackenbush' },
   { key: 'majority_vote', nameKo: '보이어–무어 다수결 투표', nameEn: 'boyer–moore majority vote' },
   { key: 'rb_tree', nameKo: '레드-블랙 트리', nameEn: 'red-black tree' },
+  { key: 'a_star', nameKo: 'A*', nameEn: 'a*' },
+  { key: 'discrete_kth_root', nameKo: '이산 k제곱근', nameEn: 'discrete k-th root' },
+  { key: 'treewidth', nameKo: '제한된 트리 너비', nameEn: 'treewidth' },
 ];
 
 /**
