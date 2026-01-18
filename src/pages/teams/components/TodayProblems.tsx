@@ -6,6 +6,7 @@ import { verifyProblemSolved, type VerifyErrorType } from '../../../utils/proble
 import { useTimerStore } from '../../../store/timerStore';
 import { useTimer, formatDuration } from '../../../hooks/useTimer';
 import Tooltip from '../../../components/common/Tooltip';
+import NewBadge from '../../../components/common/NewBadge';
 
 // 개별 문제의 타이머 표시 컴포넌트 (일시정지/초기화 버튼 포함)
 function ProblemTimerDisplay({ problemId, problemTitle }: { problemId: number; problemTitle: string }) {
@@ -211,13 +212,16 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             {isTeamLeader && onOpenSettings && (
-              <button
-                onClick={onOpenSettings}
-                className="inline-flex items-center px-2 sm:px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap"
-              >
-                <Settings className="h-3.5 w-3.5 sm:mr-1.5" />
-                <span className="hidden sm:inline">문제 추천 설정</span>
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={onOpenSettings}
+                  className="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap"
+                >
+                  <Settings className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">문제 추천 설정</span>
+                </button>
+                <NewBadge />
+              </div>
             )}
           </div>
         </div>
@@ -273,13 +277,16 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
                 : '팀장이 문제 추천을 설정하면 이곳에 표시됩니다.'}
             </p>
             {isTeamLeader && onOpenSettings && (
-              <button
-                onClick={onOpenSettings}
-                className="inline-flex items-center px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                문제 추천 설정하기
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={onOpenSettings}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                >
+                  <Settings className="h-4 w-4" />
+                  문제 추천 설정하기
+                </button>
+                <NewBadge />
+              </div>
             )}
           </div>
         ) : todayProblems && todayProblems.problems.length > 0 ? (

@@ -3,6 +3,7 @@ import { getTierName, getTierColor } from '../../../../utils/tierUtils';
 import { DayToKorean } from '../../../../utils/dayUtils';
 import { getTagNames } from '../../../../constants/algorithmTags';
 import type { TeamRecommendationSettingsResponse, SolvedacTier } from '../../../../api/teams';
+import NewBadge from '../../../../components/common/NewBadge';
 
 // 상수를 컴포넌트 외부로 추출
 const ALL_DAYS = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'] as const;
@@ -64,7 +65,10 @@ export default memo(function TeamInfoSection({
             )}
             {/* 알고리즘 태그 */}
             <div className="pt-2 border-t border-gray-100">
-              <p className="text-xs text-gray-500 mb-2">알고리즘 태그</p>
+              <div className="flex items-center gap-1.5 mb-2">
+                <p className="text-xs text-gray-500">알고리즘 태그</p>
+                <NewBadge />
+              </div>
               {recommendationSettings?.includeTags && recommendationSettings.includeTags.length > 0 ? (
                 <div className="flex flex-wrap gap-1">
                   {getTagNames(recommendationSettings.includeTags).map((tagName) => (

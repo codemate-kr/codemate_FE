@@ -2,7 +2,6 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Users, Calendar, Trophy, ChevronLeft, ChevronRight, CheckCircle, ExternalLink } from 'lucide-react';
 import type { TeamActivityResponse, TeamActivityMember, TeamActivityDailyActivity, TeamActivityProblem } from '../../../../api/teams';
 import { getTierIcon } from '../../../../components/common/TierIcon';
-import NewBadge from '../../../../components/common/NewBadge';
 
 // ============ 타입 정의 ============
 type TabType = 'participation' | 'leaderboard';
@@ -536,7 +535,6 @@ export default function TeamActivityBoard({ activityData, loading = false, onCel
           <div className="flex items-center gap-2 max-sm:gap-1.5">
             <Users className="h-5 w-5 max-sm:h-4 max-sm:w-4 text-blue-600" />
             <h3 className="text-sm max-sm:text-xs font-semibold text-gray-900">팀 활동</h3>
-            <NewBadge />
           </div>
         </div>
         <div className="flex gap-1 max-sm:gap-0.5">

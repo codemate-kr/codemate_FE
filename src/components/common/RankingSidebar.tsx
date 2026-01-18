@@ -75,9 +75,6 @@ export default function RankingSidebar() {
           aria-label="전체 랭킹 보기"
         >
           <Trophy className="h-6 w-6 text-blue-600 group-hover:text-blue-700" />
-          <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[10px] font-bold text-white bg-red-500 rounded-full">
-            N
-          </span>
         </button>
       </div>
 

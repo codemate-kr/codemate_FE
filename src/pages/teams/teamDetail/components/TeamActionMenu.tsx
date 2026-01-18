@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { MoreVertical, LogOut, Trash2, X, Settings } from 'lucide-react';
-import NewBadge from '../../../../components/common/NewBadge';
 
 interface TeamActionMenuProps {
   isTeamLeader: boolean;
@@ -71,14 +70,10 @@ export default function TeamActionMenu({
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-400 hover:text-gray-600 active:bg-gray-200 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation"
+        className="p-2 text-gray-400 hover:text-gray-600 active:bg-gray-200 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation"
         aria-label="팀 설정"
       >
         <MoreVertical className="h-5 w-5" />
-        {/* 팀장일 때 새 기능 알림 표시 */}
-        {isTeamLeader && onEditClick && (
-          <span className="absolute top-1 right-1 h-2 w-2 bg-purple-500 rounded-full animate-pulse" />
-        )}
       </button>
 
       {isOpen && (
@@ -100,7 +95,6 @@ export default function TeamActionMenu({
                         <Settings className="h-4 w-4 mr-3" />
                         팀 정보 수정
                       </span>
-                      <NewBadge />
                     </button>
                   )}
                   <button
@@ -148,7 +142,6 @@ export default function TeamActionMenu({
                           <Settings className="h-5 w-5 mr-3" />
                           팀 정보 수정
                         </span>
-                        <NewBadge />
                       </button>
                     )}
                     <button
