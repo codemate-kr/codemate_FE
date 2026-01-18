@@ -277,16 +277,13 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
                 : '팀장이 문제 추천을 설정하면 이곳에 표시됩니다.'}
             </p>
             {isTeamLeader && onOpenSettings && (
-              <div className="flex items-center gap-1.5">
-                <button
-                  onClick={onOpenSettings}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-                >
-                  <Settings className="h-4 w-4" />
-                  문제 추천 설정하기
-                </button>
-                <NewBadge />
-              </div>
+              <button
+                onClick={onOpenSettings}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+              >
+                <Settings className="h-4 w-4" />
+                문제 추천 설정하기
+              </button>
             )}
           </div>
         ) : todayProblems && todayProblems.problems.length > 0 ? (
