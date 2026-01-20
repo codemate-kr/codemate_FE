@@ -67,8 +67,6 @@ export default function RankingSidebar() {
           hasActiveTimer ? 'right-72 sm:right-80' : 'right-4'
         }`}
       >
-        {/* 후광 효과 */}
-        <div className="absolute inset-0 bg-blue-400 rounded-xl blur-md opacity-50 animate-pulse" />
         <button
           onClick={() => setIsOpen(true)}
           className="relative p-3 bg-white hover:bg-blue-50 active:bg-blue-100 rounded-xl shadow-lg border border-gray-200 transition-all hover:shadow-xl hover:scale-105 active:scale-95 group"
