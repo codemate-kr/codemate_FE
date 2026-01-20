@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Bell, ChevronLeft, ChevronRight, Loader2, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useInvitationStore, useInvitations, useInvitationsLoading } from '../../store/invitationStore';
+import AuroraGlow from './AuroraGlow';
 
 export default function InvitationBanner() {
   const invitations = useInvitations();
@@ -71,19 +72,8 @@ export default function InvitationBanner() {
   const hasMultiple = invitations.length > 1;
 
   return (
-    <div className="relative w-full animate-float">
-      {/* 오로라 글로우 */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-blue-400/30 via-cyan-300/20 to-blue-500/30 rounded-xl blur-md" />
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-4px); }
-        }
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-      `}</style>
-      <div className="relative bg-white rounded-lg border border-gray-200 shadow-sm px-4 py-4 sm:px-5">
+    <AuroraGlow className="w-full" float>
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm px-4 py-4 sm:px-5">
         {/* 데스크톱: 1줄 레이아웃 */}
         <div className="hidden sm:flex items-center gap-4">
           {/* 아이콘 */}
@@ -224,6 +214,6 @@ export default function InvitationBanner() {
           </div>
         </div>
       </div>
-    </div>
+    </AuroraGlow>
   );
 }

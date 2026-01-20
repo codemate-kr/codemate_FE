@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Plus, Users, Crown, ChevronRight } from 'lucide-react';
 import Tooltip from '../../../components/common/Tooltip';
+import AuroraGlow from '../../../components/common/AuroraGlow';
 import type { MyTeamResponse } from '../../../api/teams';
 
 interface MyTeamsSectionProps {
@@ -52,13 +53,15 @@ export default function MyTeamsSection({ isAuthenticated, onLoginClick, teams }:
             <p className="text-xs text-gray-500 mb-4">
               팀을 만들고 문제 추천을 받아보세요
             </p>
-            <Link
-              to="/teams/my?action=create"
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors animate-glow-pulse"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              팀 만들기
-            </Link>
+            <AuroraGlow float>
+              <Link
+                to="/teams/my?action=create"
+                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                팀 만들기
+              </Link>
+            </AuroraGlow>
           </div>
         ) : (
           <div className="space-y-3">
