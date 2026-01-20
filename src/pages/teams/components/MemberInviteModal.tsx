@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Search, UserPlus, Loader2, CheckCircle } from 'lucide-react';
 import { memberApi, type MemberSearchResponse } from '../../../api/member';
-import { teamsApi } from '../../../api/teams';
+import { teamJoinsApi } from '../../../api/teamJoins';
 
 interface MemberInviteModalProps {
   teamId: number;
@@ -115,7 +115,7 @@ export function MemberInviteModal({ teamId, onClose, onShowToast, onInviteSucces
       // 각 멤버를 순차적으로 초대
       const results = await Promise.allSettled(
         selectedMembers.map(member =>
-          teamsApi.inviteMember(teamId, { memberId: member.id })
+          teamJoinsApi.inviteMember({ teamId, targetMemberId: member.id })
             .catch(error => {
               // 에러 메시지 추출
               const errorMessage = error?.response?.data?.message || error?.message || '알 수 없는 오류';

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { MoreVertical, LogOut, Trash2, X, Settings } from 'lucide-react';
+import { MoreVertical, LogOut, Trash2, X, Settings, Send } from 'lucide-react';
 
 interface TeamActionMenuProps {
   isTeamLeader: boolean;
@@ -7,6 +7,7 @@ interface TeamActionMenuProps {
   onLeaveClick: () => void;
   onDeleteClick: () => void;
   onEditClick?: () => void;
+  onSentInvitationsClick?: () => void;
 }
 
 export default function TeamActionMenu({
@@ -15,6 +16,7 @@ export default function TeamActionMenu({
   onLeaveClick,
   onDeleteClick,
   onEditClick,
+  onSentInvitationsClick,
 }: TeamActionMenuProps) {
   // 팀원이 아니면 액션 메뉴 표시 안함
   if (!isTeamMember) {
@@ -97,6 +99,15 @@ export default function TeamActionMenu({
                       </span>
                     </button>
                   )}
+                  {onSentInvitationsClick && (
+                    <button
+                      onClick={() => handleMenuItemClick(onSentInvitationsClick)}
+                      className="w-full flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation"
+                    >
+                      <Send className="h-4 w-4 mr-3" />
+                      초대 현황
+                    </button>
+                  )}
                   <button
                     onClick={() => handleMenuItemClick(onDeleteClick)}
                     className="w-full flex items-center px-4 py-3 text-sm text-red-700 hover:bg-red-50 active:bg-red-100 transition-colors touch-manipulation"
@@ -142,6 +153,15 @@ export default function TeamActionMenu({
                           <Settings className="h-5 w-5 mr-3" />
                           팀 정보 수정
                         </span>
+                      </button>
+                    )}
+                    {onSentInvitationsClick && (
+                      <button
+                        onClick={() => handleMenuItemClick(onSentInvitationsClick)}
+                        className="w-full flex items-center px-4 py-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 rounded-lg transition-colors touch-manipulation"
+                      >
+                        <Send className="h-5 w-5 mr-3" />
+                        초대 현황
                       </button>
                     )}
                     <button

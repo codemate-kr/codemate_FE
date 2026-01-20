@@ -8,6 +8,7 @@ import { useAuthStore } from '../../store/authStore';
 import { toast } from '../../components/common/toast';
 import CreateTeamModal from './components/CreateTeamModal';
 import { TeamCard } from './components/TeamCard';
+import InvitationBanner from '../../components/common/InvitationBanner';
 import type { CreateTeamRequest, MyTeamResponse } from '../../api/teams';
 
 // 비로그인 시 보여줄 데모 팀 데이터
@@ -113,6 +114,13 @@ export default function TeamsPage() {
           </div>
         </div>
       </div>
+
+      {/* 팀 초대 알림 배너 */}
+      {isAuthenticated && (
+        <div className="mb-6 lg:w-[calc(50%-12px)]">
+          <InvitationBanner />
+        </div>
+      )}
 
       <div className="relative">
         {!isAuthenticated && (

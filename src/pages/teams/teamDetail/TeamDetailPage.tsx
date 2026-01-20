@@ -13,6 +13,7 @@ import TeamInfoSection from './components/TeamInfoSection';
 import TeamMembersList from './components/TeamMembersList';
 import TeamActionMenu from './components/TeamActionMenu';
 import TeamActivityBoard, { ProblemDetail } from './components/TeamActivityBoard';
+import SentInvitationsModal from './components/SentInvitationsModal';
 import type { SelectedCellInfo } from './components/TeamActivityBoard';
 import { useTeamStore, useCurrentTeamDetails, useDetailLoading, useDetailError, useTeams } from '../../../store/teamStore';
 import { useAuthStore } from '../../../store/authStore';
@@ -44,6 +45,7 @@ export default function TeamDetailPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showSentInvitationsModal, setShowSentInvitationsModal] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [selectedCellInfo, setSelectedCellInfo] = useState<SelectedCellInfo | null>(null);
   const [activityData, setActivityData] = useState<TeamActivityResponse | null>(null);
@@ -157,6 +159,8 @@ export default function TeamDetailPage() {
   const handleCloseLeaveConfirm = useCallback(() => setShowLeaveConfirm(false), []);
   const handleOpenDeleteConfirm = useCallback(() => setShowDeleteConfirm(true), []);
   const handleCloseDeleteConfirm = useCallback(() => setShowDeleteConfirm(false), []);
+  const handleOpenSentInvitations = useCallback(() => setShowSentInvitationsModal(true), []);
+  const handleCloseSentInvitations = useCallback(() => setShowSentInvitationsModal(false), []);
 
   const { updateTeam } = useTeamStore();
 
@@ -279,6 +283,7 @@ export default function TeamDetailPage() {
                     onLeaveClick={handleOpenLeaveConfirm}
                     onDeleteClick={handleOpenDeleteConfirm}
                     onEditClick={handleOpenEditModal}
+                    onSentInvitationsClick={handleOpenSentInvitations}
                   />
                 </>
               )}
@@ -432,6 +437,15 @@ export default function TeamDetailPage() {
           onCancel={handleCloseDeleteConfirm}
           isLoading={isActionLoading}
         />
+
+        {/* 초대 현황 모달 */}
+        {showSentInvitationsModal && (
+          <SentInvitationsModal
+            teamId={numericTeamId!}
+            onClose={handleCloseSentInvitations}
+            onShowToast={toast}
+          />
+        )}
       </div>
     </div>
   );

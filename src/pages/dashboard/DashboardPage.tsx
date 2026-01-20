@@ -8,6 +8,7 @@ import StatsCards from './components/StatsCards';
 import MyTeamsSection from './components/MyTeamsSection';
 import TodayTodoSection from './components/TodayTodoSection';
 import DailySolvedChart from './components/DailySolvedChart';
+import InvitationBanner from '../../components/common/InvitationBanner';
 
 interface TeamProblem extends TodayProblem {
   teamId: number;
@@ -64,10 +65,10 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+        {/* Header + 팀 초대 알림 배너 */}
         <div className="mb-6 sm:mb-8">
-          <div className="sm:flex sm:items-center sm:justify-between">
-            <div className="sm:flex-auto">
+          <div className="lg:flex lg:items-center lg:justify-between lg:gap-6">
+            <div className="lg:flex-1">
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 break-words">
                 안녕하세요, {isAuthenticated ? (user?.handle || '백준 미인증') : '게스트'}님!
               </h1>
@@ -75,6 +76,11 @@ export default function DashboardPage() {
                 {isAuthenticated ? '오늘도 알고리즘 문제를 풀어보세요.' : '로그인하고 알고리즘 학습을 시작하세요.'}
               </p>
             </div>
+            {isAuthenticated && (
+              <div className="mt-4 lg:mt-0 lg:flex-1">
+                <InvitationBanner />
+              </div>
+            )}
           </div>
         </div>
 
