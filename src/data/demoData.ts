@@ -2,8 +2,7 @@
 // URL에 ?demo=true 붙이면 이 데이터로 렌더링됨
 
 import type { TodayProblem } from '../api/recommendation';
-import type { Team } from '../store/teamStore';
-import type { TeamActivityResponse, TodayProblemsResponse, TeamRecommendationSettingsResponse, TeamMemberResponse, TeamDetailResponse } from '../api/teams';
+import type { MyTeamResponse, TeamActivityResponse, TodayProblemsResponse, TeamRecommendationSettingsResponse, TeamMemberResponse, TeamDetailResponse } from '../api/teams';
 
 // ============ 대시보드용 데이터 ============
 
@@ -15,14 +14,16 @@ export const demoUser = {
   tier: 15, // Gold I
 };
 
-export const demoTeams: Team[] = [
+export const demoTeams: MyTeamResponse[] = [
   {
     teamId: 1,
     teamName: '알고리즘 마스터즈',
     teamDescription: '매일 백준 문제 3개씩 풀기',
     memberCount: 4,
     isPrivate: false,
-    isLeader: true,
+    myRole: 'LEADER',
+    isRecommendationActive: true,
+    createdAt: new Date().toISOString(),
   },
 ];
 
@@ -78,19 +79,19 @@ export const demoTodayProblems: DemoTeamProblem[] = [
 // ============ 팀 상세 페이지용 데이터 ============
 
 export const demoTeamMembers: TeamMemberResponse[] = [
-  { memberId: 1, handle: 'ryu_eclipse', email: 'algo@test.com', role: 'LEADER', isMe: true, solvedCount: 847, tier: 15 },
-  { memberId: 2, handle: 'code_ninja', email: 'ninja@test.com', role: 'MEMBER', isMe: false, solvedCount: 623, tier: 14 },
-  { memberId: 3, handle: 'dev_rookie', email: 'rookie@test.com', role: 'MEMBER', isMe: false, solvedCount: 234, tier: 10 },
-  { memberId: 4, handle: 'ps_lover', email: 'lover@test.com', role: 'MEMBER', isMe: false, solvedCount: 156, tier: 8 },
+  { memberId: 1, handle: 'ryu_eclipse', email: 'algo@test.com', role: 'LEADER', isMe: true },
+  { memberId: 2, handle: 'code_ninja', email: 'ninja@test.com', role: 'MEMBER', isMe: false },
+  { memberId: 3, handle: 'dev_rookie', email: 'rookie@test.com', role: 'MEMBER', isMe: false },
+  { memberId: 4, handle: 'ps_lover', email: 'lover@test.com', role: 'MEMBER', isMe: false },
 ];
 
 export const demoRecommendationSettings: TeamRecommendationSettingsResponse = {
   teamId: 1,
+  teamName: '알고리즘 마스터즈',
   problemCount: 3,
-  minDifficulty: 11, // Gold V
-  maxDifficulty: 14, // Gold II
-  includedTags: ['dp', 'graphs', 'greedy'],
-  excludedTags: [],
+  minProblemLevel: 11, // Gold V
+  maxProblemLevel: 14, // Gold II
+  includeTags: ['dp', 'graphs', 'greedy'],
   recommendationDays: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY'],
   isActive: true,
 };
@@ -140,9 +141,10 @@ export const demoTeamDetails: TeamDetailResponse = {
     teamName: '알고리즘 마스터즈',
     description: '매일 백준 문제 3개씩 풀기',
     isPrivate: false,
+    memberCount: 4,
   },
   members: demoTeamMembers,
-  settings: demoRecommendationSettings,
+  recommendationSettings: demoRecommendationSettings,
   todayProblem: demoTodayProblemsResponse,
 };
 
@@ -164,8 +166,12 @@ const getRecentDates = (days: number): string[] => {
 const recentDates = getRecentDates(30);
 
 export const demoActivityData: TeamActivityResponse = {
-  teamId: 1,
   currentMemberId: 1,
+  period: {
+    days: 30,
+    startDate: getRecentDates(30)[0],
+    endDate: getRecentDates(30)[29],
+  },
   members: [
     { memberId: 1, handle: 'ryu_eclipse', rank: 1, totalSolved: 28 },
     { memberId: 2, handle: 'code_ninja', rank: 2, totalSolved: 24 },

@@ -65,7 +65,9 @@ export default function TeamDetailPage() {
   // 현재 팀 정보 (메모이제이션)
   const teamInfo = currentTeamDetails?.team ?? null;
   const teamMembers = currentTeamDetails?.members ?? [];
-  const recommendationSettings = currentTeamDetails?.settings ?? null;
+  const recommendationSettings = (currentTeamDetails && 'recommendationSettings' in currentTeamDetails
+    ? currentTeamDetails.recommendationSettings
+    : currentTeamDetails?.settings) ?? null;
 
   const currentUserMember = useMemo(
     () => teamMembers.find(member => member.isMe),
