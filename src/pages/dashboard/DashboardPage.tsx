@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useTeamStore, useTeams } from '../../store/teamStore';
-import { teamsApi, type TodayProblem } from '../../api/teams';
+import { recommendationApi, type TodayProblem } from '../../api/recommendation';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 import { useLoginRedirect } from '../../hooks/useLoginRedirect';
 import StatsCards from './components/StatsCards';
@@ -31,30 +31,23 @@ export default function DashboardPage() {
   }, [isAuthenticated, fetchTeams]);
 
   useEffect(() => {
-    if (teams.length > 0) {
+    if (isAuthenticated) {
       loadAllTodayProblems();
     }
-  }, [teams]);
+  }, [isAuthenticated]);
 
   const loadAllTodayProblems = async () => {
     setProblemsLoading(true);
     try {
-      const problemsPromises = teams.map(async (team) => {
-        try {
-          const response = await teamsApi.getTodayProblems(team.teamId);
-          return response.problems.map(problem => ({
-            ...problem,
-            teamId: team.teamId,
-            teamName: team.teamName,
-          }));
-        } catch (error) {
-          console.error(`팀 ${team.teamId}의 문제 로딩 실패:`, error);
-          return [];
-        }
-      });
-
-      const allProblems = await Promise.all(problemsPromises);
-      setTodayProblems(allProblems.flat());
+      const response = await recommendationApi.getMyTodayProblems();
+      const allProblems = response.teams.flatMap(team =>
+        team.problems.map(problem => ({
+          ...problem,
+          teamId: team.teamId,
+          teamName: team.teamName,
+        }))
+      );
+      setTodayProblems(allProblems);
     } catch (error) {
       console.error('오늘의 문제 로딩 실패:', error);
     } finally {
