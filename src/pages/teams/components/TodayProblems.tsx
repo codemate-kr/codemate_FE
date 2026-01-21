@@ -9,8 +9,27 @@ import Tooltip from '../../../components/common/Tooltip';
 import NewBadge from '../../../components/common/NewBadge';
 
 // 개별 문제의 타이머 표시 컴포넌트 (일시정지/초기화 버튼 포함)
-function ProblemTimerDisplay({ problemId, problemTitle }: { problemId: number; problemTitle: string }) {
+function ProblemTimerDisplay({ problemId, problemTitle, isSolved, solvedTime }: { problemId: number; problemTitle: string; isSolved: boolean; solvedTime?: string }) {
   const { isRunning, isPaused, isCompleted, completedDuration, pause, resume, reset, formattedTime } = useTimer({ problemId, problemTitle });
+
+  // 해결된 문제: solvedTime이 있으면 그것을, 없으면 로컬 타이머 사용
+  if (isSolved) {
+    const displayTime = solvedTime || (isCompleted && completedDuration !== null ? formatDuration(completedDuration) : null);
+    if (displayTime) {
+      return (
+        <div className="flex items-center gap-1 text-xs text-green-600">
+          <CheckCircle className="h-3.5 w-3.5" />
+          <span className="font-medium">{displayTime}</span>
+        </div>
+      );
+    }
+    // 해결됐지만 시간 정보 없음
+    return (
+      <div className="flex items-center gap-1 text-xs text-green-600">
+        <CheckCircle className="h-3.5 w-3.5" />
+      </div>
+    );
+  }
 
   if (isCompleted && completedDuration !== null) {
     // 완료 상태: 걸린 시간 표시
@@ -348,7 +367,7 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
 
                   {/* 우측 상단: 타이머 + 문제 링크 */}
                   <div className="absolute top-2 right-2 flex items-center gap-1">
-                    <ProblemTimerDisplay problemId={problem.problemId} problemTitle={problem.titleKo} />
+                    <ProblemTimerDisplay problemId={problem.problemId} problemTitle={problem.titleKo} isSolved={problem.isSolved} solvedTime={problem.solvedTime} />
                     <div className="p-1.5 text-blue-600 group-hover:text-blue-700 transition-colors">
                       <ExternalLink className="h-4 w-4" />
                     </div>
