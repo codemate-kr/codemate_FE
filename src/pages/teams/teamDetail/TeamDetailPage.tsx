@@ -18,12 +18,17 @@ import type { SelectedCellInfo } from './components/TeamActivityBoard';
 import { useTeamStore, useCurrentTeamDetails, useDetailLoading, useDetailError, useTeams } from '../../../store/teamStore';
 import { useAuthStore } from '../../../store/authStore';
 import { useLoginModal } from '../../../contexts/LoginModalContext';
+import { isDemoMode, demoTeamDetails, demoActivityData, demoTeams } from '../../../data/demoData';
 
 export default function TeamDetailPage() {
   const { teamId } = useParams<{ teamId: string }>();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated: realIsAuthenticated } = useAuthStore();
   const { openLoginModal } = useLoginModal();
+
+  // 데모 모드 체크
+  const isDemo = isDemoMode();
+  const isAuthenticated = isDemo ? true : realIsAuthenticated;
 
   // teamId를 숫자로 변환 (메모이제이션) - 1 이상의 자연수만 유효
   const numericTeamId = useMemo(() => {
@@ -34,11 +39,17 @@ export default function TeamDetailPage() {
   }, [teamId]);
 
   // Selector hooks 사용
-  const currentTeamDetails = useCurrentTeamDetails();
-  const detailLoading = useDetailLoading();
-  const detailError = useDetailError();
-  const teams = useTeams();
+  const realCurrentTeamDetails = useCurrentTeamDetails();
+  const realDetailLoading = useDetailLoading();
+  const realDetailError = useDetailError();
+  const realTeams = useTeams();
   const { fetchTeamDetails, refreshTeamSettings, leaveTeam, deleteTeam } = useTeamStore();
+
+  // 데모 모드일 때는 더미 데이터 사용
+  const currentTeamDetails = isDemo ? demoTeamDetails : realCurrentTeamDetails;
+  const detailLoading = isDemo ? false : realDetailLoading;
+  const detailError = isDemo ? null : realDetailError;
+  const teams = isDemo ? demoTeams : realTeams;
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -48,7 +59,7 @@ export default function TeamDetailPage() {
   const [showSentInvitationsModal, setShowSentInvitationsModal] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [selectedCellInfo, setSelectedCellInfo] = useState<SelectedCellInfo | null>(null);
-  const [activityData, setActivityData] = useState<TeamActivityResponse | null>(null);
+  const [activityData, setActivityData] = useState<TeamActivityResponse | null>(isDemo ? demoActivityData : null);
   const [activityLoading, setActivityLoading] = useState(false);
 
   // 현재 팀 정보 (메모이제이션)
@@ -70,13 +81,15 @@ export default function TeamDetailPage() {
   );
 
   useEffect(() => {
+    if (isDemo) return;
     if (numericTeamId) {
       fetchTeamDetails(numericTeamId);
     }
-  }, [numericTeamId, fetchTeamDetails]);
+  }, [isDemo, numericTeamId, fetchTeamDetails]);
 
   // 팀 활동 현황 데이터 로드
   useEffect(() => {
+    if (isDemo) return;
     if (numericTeamId) {
       setActivityLoading(true);
       teamsApi.getTeamActivity(numericTeamId, 30)
@@ -87,7 +100,7 @@ export default function TeamDetailPage() {
         })
         .finally(() => setActivityLoading(false));
     }
-  }, [numericTeamId]);
+  }, [isDemo, numericTeamId]);
 
   const handleSettingsUpdate = useCallback(async () => {
     if (!numericTeamId) return;

@@ -9,6 +9,7 @@ import MyTeamsSection from './components/MyTeamsSection';
 import TodayTodoSection from './components/TodayTodoSection';
 import DailySolvedChart from './components/DailySolvedChart';
 import InvitationBanner from '../../components/common/InvitationBanner';
+import { isDemoMode, demoUser, demoTeams, demoTodayProblems } from '../../data/demoData';
 
 interface TeamProblem extends TodayProblem {
   teamId: number;
@@ -17,24 +18,35 @@ interface TeamProblem extends TodayProblem {
 
 export default function DashboardPage() {
   useDocumentTitle('내 학습');
-  const { isAuthenticated, user } = useAuthStore();
-  const teams = useTeams();
+  const { isAuthenticated: realIsAuthenticated, user: realUser } = useAuthStore();
+  const realTeams = useTeams();
   const { fetchTeams } = useTeamStore();
   const [todayProblems, setTodayProblems] = useState<TeamProblem[]>([]);
   const [problemsLoading, setProblemsLoading] = useState(false);
   const openLoginModal = useLoginRedirect();
-  useEffect(() => {
-    if (isAuthenticated) {
-      // store의 fetchTeams 사용 (자동 캐싱)
-      fetchTeams();
-    }
-  }, [isAuthenticated, fetchTeams]);
+
+  // 데모 모드 체크
+  const isDemo = isDemoMode();
+  const isAuthenticated = isDemo ? true : realIsAuthenticated;
+  const user = isDemo ? demoUser : realUser;
+  const teams = isDemo ? demoTeams : realTeams;
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isDemo) {
+      setTodayProblems(demoTodayProblems);
+      return;
+    }
+    if (realIsAuthenticated) {
+      fetchTeams();
+    }
+  }, [isDemo, realIsAuthenticated, fetchTeams]);
+
+  useEffect(() => {
+    if (isDemo) return;
+    if (realIsAuthenticated) {
       loadAllTodayProblems();
     }
-  }, [isAuthenticated]);
+  }, [isDemo, realIsAuthenticated]);
 
   const loadAllTodayProblems = async () => {
     setProblemsLoading(true);

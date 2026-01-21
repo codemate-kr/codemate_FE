@@ -16,6 +16,7 @@ import {
   type DailySolvedProblem,
   type DailySolvedResponse,
 } from '../../../api/member';
+import { isDemoMode, demoDailySolvedData } from '../../../data/demoData';
 
 interface DailySolvedChartProps {
   isAuthenticated: boolean;
@@ -178,6 +179,9 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
 
+  // 데모 모드 체크
+  const isDemo = isDemoMode();
+
   // 모바일 감지
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 640);
@@ -190,7 +194,7 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
 
   // 초기 7일 데이터 로드
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || isDemo) return;
 
     const fetchInitialData = async () => {
       setLoading(true);
@@ -207,11 +211,11 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
     };
 
     fetchInitialData();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isDemo]);
 
   // 7일 외 다른 기간 선택 시 전체 데이터 로드
   useEffect(() => {
-    if (!isAuthenticated || period === '7d' || fullData) return;
+    if (!isAuthenticated || isDemo || period === '7d' || fullData) return;
 
     const fetchFullData = async () => {
       setLoading(true);
@@ -228,13 +232,18 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
     };
 
     fetchFullData();
-  }, [isAuthenticated, period, fullData]);
+  }, [isAuthenticated, isDemo, period, fullData]);
 
   // 현재 기간에 맞는 데이터 필터링
   const data = useMemo(() => {
     // 비로그인 시 샘플 데이터 사용
     if (!isAuthenticated) {
       return SAMPLE_DATA;
+    }
+
+    // 데모 모드일 때 더미 데이터 사용
+    if (isDemo) {
+      return demoDailySolvedData as DailySolvedResponse;
     }
 
     if (period === '7d') {
@@ -255,7 +264,7 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
       dailySolved: filteredSolved,
       totalCount,
     };
-  }, [isAuthenticated, period, periodConfig.days, initialData, fullData]);
+  }, [isAuthenticated, isDemo, period, periodConfig.days, initialData, fullData]);
 
   // 외부 클릭 시 팝오버 닫기
   useEffect(() => {
