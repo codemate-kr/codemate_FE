@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { ArrowRight, Users, Target, Bell, ChevronDown } from 'lucide-react';
+import { ArrowRight, Users, SlidersHorizontal, Mail, BarChart3, ChevronDown } from 'lucide-react';
 import TodayProblemsPreview from './TodayProblemsPreview';
 
 const faqs = [
@@ -17,20 +17,20 @@ export default function HeroSection() {
   return (
     <div className="bg-gray-50">
       {/* Hero */}
-      <div className="flex flex-col items-center justify-center px-6 pt-20 pb-16">
-        <p className="text-sm font-medium text-blue-500 tracking-widest uppercase mb-2">CodeMate</p>
-        <h1 className="font-bold text-center mb-6">
-          <span className="block text-4xl sm:text-5xl md:text-6xl text-blue-600">알고리즘 스터디</span>
-          <span className="block text-3xl sm:text-4xl md:text-5xl text-gray-900 mt-2">매일 문제가 도착합니다</span>
+      <div className="flex flex-col items-center justify-center px-4 sm:px-6 pt-16 sm:pt-20 pb-12 sm:pb-16">
+        <p className="text-sm sm:text-lg font-medium text-blue-500 tracking-widest uppercase mb-2 sm:mb-3">CodeMate</p>
+        <h1 className="font-bold text-center mb-6 sm:mb-8">
+          <span className="block text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-blue-600">알고리즘 스터디</span>
+          <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-gray-900 mt-2 sm:mt-3">매일 문제가 도착합니다</span>
         </h1>
 
-        <p className="text-gray-500 text-lg sm:text-xl mb-12">
+        <p className="text-gray-500 text-base sm:text-lg md:text-xl mb-8 sm:mb-12 px-4">
           스터디원들과 매일 같은 문제를 풀어보세요
         </p>
 
         <Link
           to="/dashboard"
-          className="group inline-flex items-center px-8 py-4 text-lg font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+          className="group inline-flex items-center px-7 sm:px-8 py-3.5 sm:py-4 text-lg sm:text-lg font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 transition-colors"
         >
           시작하기
           <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
@@ -38,30 +38,46 @@ export default function HeroSection() {
       </div>
 
       {/* 핵심 기능 */}
-      <div className="flex justify-center gap-12 sm:gap-16 px-6 py-12 border-t border-gray-200">
-        <div className="flex items-center gap-2 text-gray-600">
-          <Users className="h-5 w-5 text-blue-500" />
-          <span>팀 스터디</span>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 px-4 sm:px-6 py-8 sm:py-12 border-t border-gray-200 max-w-5xl mx-auto">
+        <div className="flex flex-col items-center text-center gap-2 sm:gap-3 p-3 sm:p-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
+            <Users className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+          </div>
+          <h3 className="font-semibold text-gray-900 text-base sm:text-lg">팀 스터디</h3>
+          <p className="text-sm sm:text-base text-gray-500">팀원 모두가 안 푼 문제만 추천받아 함께 풀어요</p>
         </div>
-        <div className="flex items-center gap-2 text-gray-600">
-          <Target className="h-5 w-5 text-blue-500" />
-          <span>난이도 맞춤</span>
+        <div className="flex flex-col items-center text-center gap-2 sm:gap-3 p-3 sm:p-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
+            <SlidersHorizontal className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+          </div>
+          <h3 className="font-semibold text-gray-900 text-base sm:text-lg">맞춤 추천</h3>
+          <p className="text-sm sm:text-base text-gray-500">난이도, 알고리즘 태그, 문제 수, 요일을 직접 설정해요</p>
         </div>
-        <div className="flex items-center gap-2 text-gray-600">
-          <Bell className="h-5 w-5 text-blue-500" />
-          <span>매일 알림</span>
+        <div className="flex flex-col items-center text-center gap-2 sm:gap-3 p-3 sm:p-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
+            <Mail className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+          </div>
+          <h3 className="font-semibold text-gray-900 text-base sm:text-lg">이메일 알림</h3>
+          <p className="text-sm sm:text-base text-gray-500">매일 오전 9시<span className="text-xs text-gray-400 ml-0.5">KST</span>, 오늘의 문제가 이메일로 도착해요</p>
+        </div>
+        <div className="flex flex-col items-center text-center gap-2 sm:gap-3 p-3 sm:p-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
+            <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+          </div>
+          <h3 className="font-semibold text-gray-900 text-base sm:text-lg">진행률 확인</h3>
+          <p className="text-sm sm:text-base text-gray-500">팀원들의 문제 해결 현황을 한눈에 확인해요</p>
         </div>
       </div>
 
       {/* 미리보기 - 실제 TodayProblems와 동일한 UI */}
-      <div className="px-6 py-12">
-        <div className="max-w-6xl mx-auto">
+      <div className="px-2 sm:px-4 md:px-6 py-8 sm:py-12">
+        <div className="max-w-7xl mx-auto">
           <TodayProblemsPreview />
         </div>
       </div>
 
       {/* FAQ 아코디언 */}
-      <div className="px-6 py-12">
+      <div className="px-4 sm:px-6 py-8 sm:py-12">
         <div className="max-w-xl mx-auto space-y-2">
           {faqs.map((faq, i) => (
             <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
@@ -69,7 +85,7 @@ export default function HeroSection() {
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
                 className="w-full px-4 py-3 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors"
               >
-                <span className="font-medium text-gray-900">{faq.q}</span>
+                <span className="font-medium text-gray-900 text-base">{faq.q}</span>
                 <ChevronDown
                   className={`h-4 w-4 text-gray-400 transition-transform ${openFaq === i ? 'rotate-180' : ''}`}
                 />
@@ -79,7 +95,7 @@ export default function HeroSection() {
                   openFaq === i ? 'max-h-24' : 'max-h-0'
                 }`}
               >
-                <div className="px-4 pb-3 text-gray-600 text-sm">{faq.a}</div>
+                <div className="px-4 pb-3 text-gray-600 text-base">{faq.a}</div>
               </div>
             </div>
           ))}

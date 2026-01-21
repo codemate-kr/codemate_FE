@@ -65,7 +65,7 @@ export const demoTodayProblems: DemoTeamProblem[] = [
     problemId: 11725,
     title: 'Finding the Parent of a Tree',
     titleKo: '트리의 부모 찾기',
-    level: 8, // Silver II
+    level: 9, // Silver II
     url: 'https://www.acmicpc.net/problem/11725',
     acceptedUserCount: 54892,
     averageTries: 1.89,
@@ -89,8 +89,9 @@ export const demoRecommendationSettings: TeamRecommendationSettingsResponse = {
   teamId: 1,
   teamName: '알고리즘 마스터즈',
   problemCount: 3,
-  minProblemLevel: 11, // Gold V
-  maxProblemLevel: 14, // Gold II
+  problemDifficultyPreset: 'NORMAL',
+  minProblemLevel: 9, // Silver II
+  maxProblemLevel: 12, // Gold IV
   includeTags: ['dp', 'graphs', 'greedy'],
   recommendationDays: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY'],
   isActive: true,
@@ -126,7 +127,7 @@ export const demoTodayProblemsResponse: TodayProblemsResponse = {
       problemId: 11725,
       title: 'Finding the Parent of a Tree',
       titleKo: '트리의 부모 찾기',
-      level: 8,
+      level: 9,
       url: 'https://www.acmicpc.net/problem/11725',
       acceptedUserCount: 54892,
       averageTries: 1.89,
@@ -224,7 +225,7 @@ const generateDemoDailySolved = (): DemoDailySolvedResponse => {
     [
       { problemId: 1753, title: '최단경로', tier: 12 },
       { problemId: 1260, title: 'DFS와 BFS', tier: 9 },
-      { problemId: 11725, title: '트리의 부모 찾기', tier: 8 },
+      { problemId: 11725, title: '트리의 부모 찾기', tier: 9 },
     ],
     [
       { problemId: 2178, title: '미로 탐색', tier: 10 },

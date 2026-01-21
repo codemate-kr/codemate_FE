@@ -6,12 +6,12 @@ function BrowserFrame({ children }: { children: React.ReactNode }) {
   return (
     <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200 bg-white">
       {/* 브라우저 상단바 */}
-      <div className="bg-gray-100 border-b border-gray-200 px-4 py-3 flex items-center">
+      <div className="bg-gray-100 border-b border-gray-200 px-3 sm:px-4 py-2 sm:py-3 flex items-center">
         {/* 트래픽 라이트 버튼 */}
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[#FF5F57]" />
-          <div className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
-          <div className="w-3 h-3 rounded-full bg-[#28C840]" />
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FF5F57]" />
+          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FEBC2E]" />
+          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#28C840]" />
         </div>
       </div>
       {/* 브라우저 콘텐츠 */}
@@ -24,16 +24,17 @@ function BrowserFrame({ children }: { children: React.ReactNode }) {
 
 // 모든 이미지를 플랫하게 펼침
 const allImages = [
-  { src: '/screenshots/dashboard-1.png', caption: '가입한 팀 목록', tabId: 'dashboard' },
-  { src: '/screenshots/dashboard-2.png', caption: '오늘의 문제', tabId: 'dashboard' },
+  { src: '/screenshots/dashboard-1.png', caption: '내 학습', tabId: 'dashboard' },
+  { src: '/screenshots/dashboard-2.png', caption: '내 학습 : 최근 활동', tabId: 'dashboard' },
   { src: '/screenshots/team-1.png', caption: '오늘의 팀 미션', tabId: 'team' },
+  { src: '/screenshots/team-2.png', caption: '미션 문제 맞춤 설정', tabId: 'team' },
   { src: '/screenshots/email.png', caption: '오늘의 미션 알림', tabId: 'email' },
 ];
 
 const tabs = [
   { id: 'dashboard', title: '내 학습', startIndex: 0 },
   { id: 'team', title: '팀 페이지', startIndex: 2 },
-  { id: 'email', title: '이메일', startIndex: 3 },
+  { id: 'email', title: '이메일', startIndex: 4 },
 ];
 
 export default function TodayProblemsPreview() {
@@ -63,43 +64,47 @@ export default function TodayProblemsPreview() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded">예시</span>
-        <span className="text-sm text-gray-500">실제 사용 화면</span>
-      </div>
+      {/* 라벨 + 탭 */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 sm:relative">
+        {/* 라벨 */}
+        <div className="flex items-center gap-2">
+          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded">예시</span>
+          <span className="text-sm text-gray-500">실제 사용 화면</span>
+        </div>
 
-      {/* 탭 */}
-      <div className="flex justify-center gap-2">
-        {tabs.map((tab, i) => (
-          <button
-            key={tab.id}
-            onClick={() => handleTabChange(i)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              i === activeTabIndex
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-            }`}
-          >
-            {tab.title}
-          </button>
-        ))}
+        {/* 탭: 모바일에서는 라벨 아래, 데스크탑에서는 중앙 */}
+        <div className="flex gap-2 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
+          {tabs.map((tab, i) => (
+            <button
+              key={tab.id}
+              onClick={() => handleTabChange(i)}
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
+                i === activeTabIndex
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+              }`}
+            >
+              {tab.title}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* 이미지 */}
       <div className="relative">
         <button
           onClick={goToPrev}
-          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-white transition-colors"
+          className="absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-white transition-colors"
           aria-label="이전"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
         <button
           onClick={goToNext}
-          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-white transition-colors"
+          className="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-white transition-colors"
           aria-label="다음"
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
 
         <BrowserFrame>
