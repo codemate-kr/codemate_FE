@@ -68,8 +68,8 @@ export default function TodayProblemsPreview() {
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 sm:relative">
         {/* 라벨 */}
         <div className="flex items-center gap-2">
-          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded">예시</span>
-          <span className="text-sm text-gray-500">실제 사용 화면</span>
+          <span className="px-2 py-0.5 bg-blue-500 text-white text-xs font-medium rounded">예시</span>
+          <span className="text-sm text-gray-400">실제 사용 화면</span>
         </div>
 
         {/* 탭: 모바일에서는 라벨 아래, 데스크탑에서는 중앙 */}
@@ -81,7 +81,7 @@ export default function TodayProblemsPreview() {
               className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                 i === activeTabIndex
                   ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600 border border-gray-600'
               }`}
             >
               {tab.title}
@@ -136,7 +136,7 @@ export default function TodayProblemsPreview() {
         </BrowserFrame>
 
         {/* 캡션 */}
-        <p className="text-center text-sm text-gray-500 mt-3">{currentImage.caption}</p>
+        <p className="text-center text-sm text-gray-400 mt-3">{currentImage.caption}</p>
       </div>
 
       {/* 인디케이터 (이미지가 여러 개일 때만) */}
@@ -147,7 +147,7 @@ export default function TodayProblemsPreview() {
               key={i}
               onClick={() => setCurrentIndex(currentTab.startIndex + i)}
               className={`h-2 rounded-full transition-all ${
-                i === indexInTab ? 'bg-blue-600 w-6' : 'bg-gray-300 w-2'
+                i === indexInTab ? 'bg-blue-500 w-6' : 'bg-gray-600 w-2'
               }`}
               aria-label={`${i + 1}번 스크린샷`}
             />
