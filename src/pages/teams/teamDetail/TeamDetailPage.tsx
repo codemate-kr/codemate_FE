@@ -29,6 +29,7 @@ export default function TeamDetailPage() {
   // 데모 모드 체크
   const isDemo = isDemoMode();
   const isAuthenticated = isDemo ? true : realIsAuthenticated;
+  const isReadOnly = isDemo; // 데모 모드에서는 읽기 전용
 
   // teamId를 숫자로 변환 (메모이제이션) - 1 이상의 자연수만 유효
   const numericTeamId = useMemo(() => {
@@ -105,18 +106,18 @@ export default function TeamDetailPage() {
   }, [isDemo, numericTeamId]);
 
   const handleSettingsUpdate = useCallback(async () => {
-    if (!numericTeamId) return;
+    if (isReadOnly || !numericTeamId) return;
     await refreshTeamSettings(numericTeamId);
-  }, [numericTeamId, refreshTeamSettings]);
+  }, [isReadOnly, numericTeamId, refreshTeamSettings]);
 
   const handleRefreshActivity = useCallback(() => {
-    if (!numericTeamId) return;
+    if (isReadOnly || !numericTeamId) return;
     teamsApi.getTeamActivity(numericTeamId, 30)
       .then(setActivityData)
       .catch((error) => {
         console.error('팀 활동 현황 갱신 실패:', error);
       });
-  }, [numericTeamId]);
+  }, [isReadOnly, numericTeamId]);
 
   const handleRetry = useCallback(() => {
     if (numericTeamId) {
@@ -125,7 +126,7 @@ export default function TeamDetailPage() {
   }, [numericTeamId, fetchTeamDetails]);
 
   const handleLeaveTeam = useCallback(async () => {
-    if (!numericTeamId) return;
+    if (isReadOnly || !numericTeamId) return;
 
     setIsActionLoading(true);
     try {
@@ -139,10 +140,10 @@ export default function TeamDetailPage() {
     } finally {
       setIsActionLoading(false);
     }
-  }, [numericTeamId, leaveTeam, navigate]);
+  }, [isReadOnly, numericTeamId, leaveTeam, navigate]);
 
   const handleDeleteTeam = useCallback(async () => {
-    if (!numericTeamId) return;
+    if (isReadOnly || !numericTeamId) return;
 
     setIsActionLoading(true);
     try {
@@ -156,7 +157,7 @@ export default function TeamDetailPage() {
     } finally {
       setIsActionLoading(false);
     }
-  }, [numericTeamId, deleteTeam, navigate]);
+  }, [isReadOnly, numericTeamId, deleteTeam, navigate]);
 
   const handleInviteSuccess = useCallback(() => {
     if (numericTeamId) {
@@ -182,7 +183,7 @@ export default function TeamDetailPage() {
   const [isEditLoading, setIsEditLoading] = useState(false);
 
   const handleEditSubmit = useCallback(async (data: { name: string; description: string; isPrivate: boolean }) => {
-    if (!numericTeamId) return;
+    if (isReadOnly || !numericTeamId) return;
 
     setIsEditLoading(true);
     try {
@@ -207,7 +208,7 @@ export default function TeamDetailPage() {
     } finally {
       setIsEditLoading(false);
     }
-  }, [numericTeamId, fetchTeamDetails, updateTeam]);
+  }, [isReadOnly, numericTeamId, fetchTeamDetails, updateTeam]);
 
   // 유효하지 않은 팀 ID
   if (!numericTeamId) {
@@ -271,7 +272,7 @@ export default function TeamDetailPage() {
                 </button>
               ) : (
                 <>
-                  {isTeamLeader ? (
+                  {!isReadOnly && isTeamLeader ? (
                     <button
                       onClick={handleOpenInvite}
                       className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors whitespace-nowrap"
@@ -280,7 +281,7 @@ export default function TeamDetailPage() {
                       <span className="hidden sm:inline">멤버 초대</span>
                       <span className="sm:hidden">초대</span>
                     </button>
-                  ) : !isTeamMember && (
+                  ) : !isReadOnly && !isTeamMember && (
                     <button
                       disabled
                       className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 rounded-md cursor-not-allowed whitespace-nowrap"
@@ -292,14 +293,16 @@ export default function TeamDetailPage() {
                       <span className="ml-1.5 px-1.5 py-0.5 text-[10px] bg-gray-200 text-gray-500 rounded">준비 중</span>
                     </button>
                   )}
-                  <TeamActionMenu
-                    isTeamLeader={isTeamLeader}
-                    isTeamMember={isTeamMember}
-                    onLeaveClick={handleOpenLeaveConfirm}
-                    onDeleteClick={handleOpenDeleteConfirm}
-                    onEditClick={handleOpenEditModal}
-                    onSentInvitationsClick={handleOpenSentInvitations}
-                  />
+                  {!isReadOnly && (
+                    <TeamActionMenu
+                      isTeamLeader={isTeamLeader}
+                      isTeamMember={isTeamMember}
+                      onLeaveClick={handleOpenLeaveConfirm}
+                      onDeleteClick={handleOpenDeleteConfirm}
+                      onEditClick={handleOpenEditModal}
+                      onSentInvitationsClick={handleOpenSentInvitations}
+                    />
+                  )}
                 </>
               )}
             </div>
