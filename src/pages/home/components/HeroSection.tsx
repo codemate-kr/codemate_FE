@@ -44,28 +44,28 @@ export default function HeroSection() {
               <Users className="h-4 w-4 sm:h-6 sm:w-6 text-blue-600" />
             </div>
             <h3 className="font-semibold text-gray-900 text-sm sm:text-lg">팀 스터디</h3>
-            <p className="text-xs sm:text-base text-gray-500 leading-relaxed">팀원 모두가 안 푼 문제만 추천받아 함께 풀어요</p>
+            <p className="text-xs sm:text-base text-gray-500 leading-relaxed">팀원 모두가 안 푼 문제만<br />추천받아 함께 풀어요</p>
           </div>
           <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
             <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
               <SlidersHorizontal className="h-4 w-4 sm:h-6 sm:w-6 text-blue-600" />
             </div>
             <h3 className="font-semibold text-gray-900 text-sm sm:text-lg">맞춤 추천</h3>
-            <p className="text-xs sm:text-base text-gray-500 leading-relaxed">난이도, 알고리즘 태그, 문제 수, 요일을 직접 설정해요</p>
+            <p className="text-xs sm:text-base text-gray-500 leading-relaxed">난이도, 알고리즘 분류,<br />문제 수, 요일을 선택해요</p>
           </div>
           <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
             <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
               <Mail className="h-4 w-4 sm:h-6 sm:w-6 text-blue-600" />
             </div>
             <h3 className="font-semibold text-gray-900 text-sm sm:text-lg">이메일 알림</h3>
-            <p className="text-xs sm:text-base text-gray-500 leading-relaxed">매일 오전 9시KST, 오늘의 문제가 이메일로 도착해요</p>
+            <p className="text-xs sm:text-base text-gray-500 leading-relaxed">오전 9시, 오늘의 문제가<br />이메일로 도착해요</p>
           </div>
           <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
             <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
               <BarChart3 className="h-4 w-4 sm:h-6 sm:w-6 text-blue-600" />
             </div>
             <h3 className="font-semibold text-gray-900 text-sm sm:text-lg">진행률 확인</h3>
-            <p className="text-xs sm:text-base text-gray-500 leading-relaxed">팀원들의 문제 해결 현황을 한눈에 확인해요</p>
+            <p className="text-xs sm:text-base text-gray-500 leading-relaxed">팀원들의 문제 해결 현황을<br />한눈에 확인해요</p>
           </div>
         </div>
       </div>
