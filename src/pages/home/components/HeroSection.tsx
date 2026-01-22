@@ -4,7 +4,6 @@ import { ArrowRight, Users, SlidersHorizontal, Mail, BarChart3, ChevronDown, Git
 import TodayProblemsPreview from './TodayProblemsPreview';
 
 const faqs = [
-  { q: '완전 무료인가요?', a: '네, 모든 기능이 무료입니다. 앞으로도 그럴 예정이에요.' },
   { q: '문제는 어떻게 추천되나요?', a: '팀원 모두가 아직 안 푼 문제 중에서, 설정한 난이도와 태그에 맞는 문제를 추천해드려요.' },
   { q: '이미 푼 문제가 나오나요?', a: '아니요, solved.ac 기준으로 팀원 중 한 명이라도 푼 문제는 제외됩니다.' },
   { q: '알림은 언제 오나요?', a: '매일 오전 9시에 이메일로 오늘의 문제가 발송됩니다. 문제는 오전 6시에 갱신돼요.' },
