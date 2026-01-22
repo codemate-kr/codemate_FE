@@ -29,7 +29,7 @@ export default function HeroSection() {
 
         <Link
           to="/dashboard"
-          className="group inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 transition-colors"
+          className="group inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 hover:scale-105 active:bg-blue-800 active:scale-100 transition-all duration-200 ease-out"
         >
           시작하기
           <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
@@ -39,28 +39,28 @@ export default function HeroSection() {
       {/* 핵심 기능 */}
       <div className="bg-gray-50 py-8 sm:py-20">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 px-4 sm:px-6 max-w-5xl mx-auto">
-          <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white rounded-xl border border-gray-200 ">
             <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
               <Users className="h-4 w-4 sm:h-6 sm:w-6 text-blue-600" />
             </div>
             <h3 className="font-semibold text-gray-900 text-sm sm:text-lg">팀 스터디</h3>
             <p className="text-xs sm:text-base text-gray-500 leading-relaxed">팀원 모두가 안 푼 문제만<br />추천받아 함께 풀어요</p>
           </div>
-          <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white rounded-xl border border-gray-200 ">
             <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
               <SlidersHorizontal className="h-4 w-4 sm:h-6 sm:w-6 text-blue-600" />
             </div>
             <h3 className="font-semibold text-gray-900 text-sm sm:text-lg">맞춤 추천</h3>
             <p className="text-xs sm:text-base text-gray-500 leading-relaxed">난이도, 알고리즘 분류,<br />문제 수, 요일을 선택해요</p>
           </div>
-          <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white rounded-xl border border-gray-200 ">
             <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
               <Mail className="h-4 w-4 sm:h-6 sm:w-6 text-blue-600" />
             </div>
             <h3 className="font-semibold text-gray-900 text-sm sm:text-lg">이메일 알림</h3>
             <p className="text-xs sm:text-base text-gray-500 leading-relaxed">오전 9시, 오늘의 문제가<br />이메일로 도착해요</p>
           </div>
-          <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white rounded-xl border border-gray-200 ">
             <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
               <BarChart3 className="h-4 w-4 sm:h-6 sm:w-6 text-blue-600" />
             </div>
