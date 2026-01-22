@@ -74,6 +74,7 @@ export interface TodayProblem {
   acceptedUserCount: number;
   averageTries: number;
   isSolved: boolean; // 로그인 사용자의 해결 여부
+  solvedTime?: string; // 해결 시간 (mm:ss 형식)
 }
 
 export interface TodayProblemsResponse {

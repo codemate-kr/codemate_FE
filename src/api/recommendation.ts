@@ -17,6 +17,7 @@ export interface TodayProblem {
   acceptedUserCount: number;
   averageTries: number;
   isSolved: boolean;
+  solvedTime?: string; // 해결 시간 (mm:ss 형식)
   tags: ProblemTag[];
 }
 

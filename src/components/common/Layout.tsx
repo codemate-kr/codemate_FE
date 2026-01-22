@@ -9,9 +9,11 @@ import RankingSidebar from './RankingSidebar';
 
 interface LayoutProps {
   children: ReactNode;
+  showFooter?: boolean;
+  fullWidth?: boolean;
 }
 
-export default function Layout({ children }: LayoutProps) {
+export default function Layout({ children, showFooter = true, fullWidth = false }: LayoutProps) {
   const { isAuthenticated, user, logout } = useAuthStore();
   const { openLoginModal } = useLoginModal();
   const navigate = useNavigate();
@@ -88,11 +90,11 @@ export default function Layout({ children }: LayoutProps) {
         </div>
       </nav>
 
-      <main className="flex-1 max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 w-full">
+      <main className={fullWidth ? "flex-1" : "flex-1 max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 w-full"}>
         {children}
       </main>
 
-      <Footer />
+      {showFooter && <Footer />}
       <FloatingTimerWidget />
       <RankingSidebar />
     </div>

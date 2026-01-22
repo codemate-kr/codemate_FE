@@ -18,12 +18,18 @@ import type { SelectedCellInfo } from './components/TeamActivityBoard';
 import { useTeamStore, useCurrentTeamDetails, useDetailLoading, useDetailError, useTeams } from '../../../store/teamStore';
 import { useAuthStore } from '../../../store/authStore';
 import { useLoginModal } from '../../../contexts/LoginModalContext';
+import { isDemoMode, demoTeamDetails, demoActivityData, demoTeams } from '../../../data/demoData';
 
 export default function TeamDetailPage() {
   const { teamId } = useParams<{ teamId: string }>();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated: realIsAuthenticated } = useAuthStore();
   const { openLoginModal } = useLoginModal();
+
+  // 데모 모드 체크
+  const isDemo = isDemoMode();
+  const isAuthenticated = isDemo ? true : realIsAuthenticated;
+  const isReadOnly = isDemo; // 데모 모드에서는 읽기 전용
 
   // teamId를 숫자로 변환 (메모이제이션) - 1 이상의 자연수만 유효
   const numericTeamId = useMemo(() => {
@@ -34,11 +40,17 @@ export default function TeamDetailPage() {
   }, [teamId]);
 
   // Selector hooks 사용
-  const currentTeamDetails = useCurrentTeamDetails();
-  const detailLoading = useDetailLoading();
-  const detailError = useDetailError();
-  const teams = useTeams();
+  const realCurrentTeamDetails = useCurrentTeamDetails();
+  const realDetailLoading = useDetailLoading();
+  const realDetailError = useDetailError();
+  const realTeams = useTeams();
   const { fetchTeamDetails, refreshTeamSettings, leaveTeam, deleteTeam } = useTeamStore();
+
+  // 데모 모드일 때는 더미 데이터 사용
+  const currentTeamDetails = isDemo ? demoTeamDetails : realCurrentTeamDetails;
+  const detailLoading = isDemo ? false : realDetailLoading;
+  const detailError = isDemo ? null : realDetailError;
+  const teams = isDemo ? demoTeams : realTeams;
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -48,13 +60,15 @@ export default function TeamDetailPage() {
   const [showSentInvitationsModal, setShowSentInvitationsModal] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [selectedCellInfo, setSelectedCellInfo] = useState<SelectedCellInfo | null>(null);
-  const [activityData, setActivityData] = useState<TeamActivityResponse | null>(null);
+  const [activityData, setActivityData] = useState<TeamActivityResponse | null>(isDemo ? demoActivityData : null);
   const [activityLoading, setActivityLoading] = useState(false);
 
   // 현재 팀 정보 (메모이제이션)
   const teamInfo = currentTeamDetails?.team ?? null;
   const teamMembers = currentTeamDetails?.members ?? [];
-  const recommendationSettings = currentTeamDetails?.settings ?? null;
+  const recommendationSettings = (currentTeamDetails && 'recommendationSettings' in currentTeamDetails
+    ? currentTeamDetails.recommendationSettings
+    : currentTeamDetails?.settings) ?? null;
 
   const currentUserMember = useMemo(
     () => teamMembers.find(member => member.isMe),
@@ -70,13 +84,15 @@ export default function TeamDetailPage() {
   );
 
   useEffect(() => {
+    if (isDemo) return;
     if (numericTeamId) {
       fetchTeamDetails(numericTeamId);
     }
-  }, [numericTeamId, fetchTeamDetails]);
+  }, [isDemo, numericTeamId, fetchTeamDetails]);
 
   // 팀 활동 현황 데이터 로드
   useEffect(() => {
+    if (isDemo) return;
     if (numericTeamId) {
       setActivityLoading(true);
       teamsApi.getTeamActivity(numericTeamId, 30)
@@ -87,21 +103,21 @@ export default function TeamDetailPage() {
         })
         .finally(() => setActivityLoading(false));
     }
-  }, [numericTeamId]);
+  }, [isDemo, numericTeamId]);
 
   const handleSettingsUpdate = useCallback(async () => {
-    if (!numericTeamId) return;
+    if (isReadOnly || !numericTeamId) return;
     await refreshTeamSettings(numericTeamId);
-  }, [numericTeamId, refreshTeamSettings]);
+  }, [isReadOnly, numericTeamId, refreshTeamSettings]);
 
   const handleRefreshActivity = useCallback(() => {
-    if (!numericTeamId) return;
+    if (isReadOnly || !numericTeamId) return;
     teamsApi.getTeamActivity(numericTeamId, 30)
       .then(setActivityData)
       .catch((error) => {
         console.error('팀 활동 현황 갱신 실패:', error);
       });
-  }, [numericTeamId]);
+  }, [isReadOnly, numericTeamId]);
 
   const handleRetry = useCallback(() => {
     if (numericTeamId) {
@@ -110,7 +126,7 @@ export default function TeamDetailPage() {
   }, [numericTeamId, fetchTeamDetails]);
 
   const handleLeaveTeam = useCallback(async () => {
-    if (!numericTeamId) return;
+    if (isReadOnly || !numericTeamId) return;
 
     setIsActionLoading(true);
     try {
@@ -124,10 +140,10 @@ export default function TeamDetailPage() {
     } finally {
       setIsActionLoading(false);
     }
-  }, [numericTeamId, leaveTeam, navigate]);
+  }, [isReadOnly, numericTeamId, leaveTeam, navigate]);
 
   const handleDeleteTeam = useCallback(async () => {
-    if (!numericTeamId) return;
+    if (isReadOnly || !numericTeamId) return;
 
     setIsActionLoading(true);
     try {
@@ -141,7 +157,7 @@ export default function TeamDetailPage() {
     } finally {
       setIsActionLoading(false);
     }
-  }, [numericTeamId, deleteTeam, navigate]);
+  }, [isReadOnly, numericTeamId, deleteTeam, navigate]);
 
   const handleInviteSuccess = useCallback(() => {
     if (numericTeamId) {
@@ -167,7 +183,7 @@ export default function TeamDetailPage() {
   const [isEditLoading, setIsEditLoading] = useState(false);
 
   const handleEditSubmit = useCallback(async (data: { name: string; description: string; isPrivate: boolean }) => {
-    if (!numericTeamId) return;
+    if (isReadOnly || !numericTeamId) return;
 
     setIsEditLoading(true);
     try {
@@ -192,7 +208,7 @@ export default function TeamDetailPage() {
     } finally {
       setIsEditLoading(false);
     }
-  }, [numericTeamId, fetchTeamDetails, updateTeam]);
+  }, [isReadOnly, numericTeamId, fetchTeamDetails, updateTeam]);
 
   // 유효하지 않은 팀 ID
   if (!numericTeamId) {
@@ -256,7 +272,7 @@ export default function TeamDetailPage() {
                 </button>
               ) : (
                 <>
-                  {isTeamLeader ? (
+                  {!isReadOnly && isTeamLeader ? (
                     <button
                       onClick={handleOpenInvite}
                       className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors whitespace-nowrap"
@@ -265,7 +281,7 @@ export default function TeamDetailPage() {
                       <span className="hidden sm:inline">멤버 초대</span>
                       <span className="sm:hidden">초대</span>
                     </button>
-                  ) : !isTeamMember && (
+                  ) : !isReadOnly && !isTeamMember && (
                     <button
                       disabled
                       className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 rounded-md cursor-not-allowed whitespace-nowrap"
@@ -277,14 +293,16 @@ export default function TeamDetailPage() {
                       <span className="ml-1.5 px-1.5 py-0.5 text-[10px] bg-gray-200 text-gray-500 rounded">준비 중</span>
                     </button>
                   )}
-                  <TeamActionMenu
-                    isTeamLeader={isTeamLeader}
-                    isTeamMember={isTeamMember}
-                    onLeaveClick={handleOpenLeaveConfirm}
-                    onDeleteClick={handleOpenDeleteConfirm}
-                    onEditClick={handleOpenEditModal}
-                    onSentInvitationsClick={handleOpenSentInvitations}
-                  />
+                  {!isReadOnly && (
+                    <TeamActionMenu
+                      isTeamLeader={isTeamLeader}
+                      isTeamMember={isTeamMember}
+                      onLeaveClick={handleOpenLeaveConfirm}
+                      onDeleteClick={handleOpenDeleteConfirm}
+                      onEditClick={handleOpenEditModal}
+                      onSentInvitationsClick={handleOpenSentInvitations}
+                    />
+                  )}
                 </>
               )}
             </div>
