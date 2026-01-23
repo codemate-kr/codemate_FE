@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { ArrowRight, Users, SlidersHorizontal, Mail, BarChart3, ChevronDown, Github, Star } from 'lucide-react';
-import TodayProblemsPreview from './TodayProblemsPreview';
+import ScreenshotGallery from './ScreenshotGallery';
 
 const faqs = [
   { q: '문제는 어떻게 추천되나요?', a: '팀원 모두가 아직 안 푼 문제 중에서, 설정한 난이도와 태그에 맞는 문제를 추천해드려요.' },
@@ -73,7 +73,7 @@ export default function HeroSection() {
       {/* 미리보기 - 실제 TodayProblems와 동일한 UI */}
       <div className="px-3 sm:px-4 md:px-6 py-10 sm:py-28 bg-gray-800 sm:min-h-screen sm:flex sm:items-center">
         <div className="max-w-5xl mx-auto">
-          <TodayProblemsPreview />
+          <ScreenshotGallery />
         </div>
       </div>
 
