@@ -1,5 +1,8 @@
 // 데모 모드용 더미 데이터
 // URL에 ?demo=true 붙이면 이 데이터로 렌더링됨
+//
+// === 데모 모드 단축키 ===
+// Cmd+Shift+F (Mac) / Ctrl+Shift+F (Windows): 해결인증 성공/실패 모드 토글
 
 import type { TodayProblem } from '../api/recommendation';
 import type { MyTeamResponse, TeamActivityResponse, TodayProblemsResponse, TeamRecommendationSettingsResponse, TeamMemberResponse, TeamDetailResponse } from '../api/teams';

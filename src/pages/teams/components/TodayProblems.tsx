@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Calendar, RefreshCw, ExternalLink, CheckCircle, Settings, Loader2, Sparkles, Pause, Play, RotateCcw, Clock } from 'lucide-react';
 import { teamsApi, type TodayProblemsResponse, type TeamRecommendationSettingsResponse } from '../../../api/teams';
 import { getTierIcon } from '../../../components/common/TierIcon';
-import { verifyProblemSolved, type VerifyErrorType } from '../../../utils/problemVerify';
+import { verifyProblemSolved, triggerSuccessConfetti, type VerifyErrorType } from '../../../utils/problemVerify';
 import { useTimerStore } from '../../../store/timerStore';
 import { useTimer, formatDuration } from '../../../hooks/useTimer';
 import Tooltip from '../../../components/common/Tooltip';
@@ -95,14 +95,29 @@ interface TodayProblemsProps {
   onRefreshActivity?: () => void;
   recommendationSettings?: TeamRecommendationSettingsResponse | null;
   initialTodayProblems?: TodayProblemsResponse | null;
+  isDemo?: boolean;
 }
 
-export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast, onOpenSettings, onRefreshActivity, recommendationSettings, initialTodayProblems }: TodayProblemsProps) {
+export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast, onOpenSettings, onRefreshActivity, recommendationSettings, initialTodayProblems, isDemo = false }: TodayProblemsProps) {
   // 통합 API에서 받아온 초기 데이터 사용 (중복 API 호출 방지)
   const [todayProblems, setTodayProblems] = useState<TodayProblemsResponse | null>(initialTodayProblems ?? null);
   const [problemsLoading, setProblemsLoading] = useState(false);
   const [verifyingProblemId, setVerifyingProblemId] = useState<number | null>(null);
   const [showErrorFlash, setShowErrorFlash] = useState(false);
+  const [demoFailMode, setDemoFailMode] = useState(false);
+
+  // 데모 모드: Cmd+Shift+F (Mac) 또는 Ctrl+Shift+F (Windows)로 실패 모드 토글
+  useEffect(() => {
+    if (!isDemo) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.code === 'KeyF') {
+        e.preventDefault();
+        setDemoFailMode(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDemo]);
 
   // initialTodayProblems가 변경되면 상태 동기화
   useEffect(() => {
@@ -161,10 +176,48 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
     }
   };
 
-  const { startTimer, stopTimer } = useTimerStore();
+  const { startTimer, stopTimer, activeTimers, cancelTimer } = useTimerStore();
 
   const handleVerifyProblem = async (problemId: number) => {
     setVerifyingProblemId(problemId);
+
+    // 데모 모드: API 호출 없이 성공/실패 시뮬레이션 (Ctrl+Shift+F로 실패 모드 토글)
+    if (isDemo) {
+      await new Promise(resolve => setTimeout(resolve, 200));
+      if (demoFailMode) {
+        // 실패 시뮬레이션
+        setShowErrorFlash(true);
+        setTimeout(() => setShowErrorFlash(false), 500);
+        onShowToast('아직 해결되지 않은 문제입니다.', 'error');
+      } else {
+        // 성공 시뮬레이션
+        triggerSuccessConfetti();
+
+        // 타이머 경과 시간 계산
+        const timer = activeTimers[problemId];
+        let solvedTime: string | undefined;
+        if (timer) {
+          const elapsedMs = timer.isPaused
+            ? timer.accumulatedTime
+            : timer.accumulatedTime + (Date.now() - timer.startedAt);
+          const elapsedSeconds = Math.floor(elapsedMs / 1000);
+          solvedTime = formatDuration(elapsedSeconds);
+          cancelTimer(problemId); // localStorage에서 삭제 (새로고침 시 초기화)
+        }
+
+        if (todayProblems) {
+          setTodayProblems({
+            ...todayProblems,
+            problems: todayProblems.problems.map(p =>
+              p.problemId === problemId ? { ...p, isSolved: true, solvedTime } : p
+            ),
+          });
+        }
+        onShowToast('문제 해결을 축하합니다!');
+      }
+      setVerifyingProblemId(null);
+      return;
+    }
 
     await verifyProblemSolved(problemId, {
       customToast: onShowToast,

@@ -19,6 +19,7 @@ import { useTeamStore, useCurrentTeamDetails, useDetailLoading, useDetailError, 
 import { useAuthStore } from '../../../store/authStore';
 import { useLoginModal } from '../../../contexts/LoginModalContext';
 import { isDemoMode, demoTeamDetails, demoActivityData, demoTeams } from '../../../data/demoData';
+import { useTimerStore } from '../../../store/timerStore';
 
 export default function TeamDetailPage() {
   const { teamId } = useParams<{ teamId: string }>();
@@ -82,6 +83,14 @@ export default function TeamDetailPage() {
     () => teams.find(team => team.teamId === numericTeamId),
     [teams, numericTeamId]
   );
+
+  // 데모 모드 진입 시 타이머 초기화
+  const { clearAllTimers } = useTimerStore();
+  useEffect(() => {
+    if (isDemo) {
+      clearAllTimers();
+    }
+  }, [isDemo, clearAllTimers]);
 
   useEffect(() => {
     if (isDemo) return;
@@ -321,6 +330,7 @@ export default function TeamDetailPage() {
               onRefreshActivity={handleRefreshActivity}
               recommendationSettings={recommendationSettings}
               initialTodayProblems={currentTeamDetails?.todayProblem}
+              isDemo={isDemo}
             />
 
             <div className="mt-6">
