@@ -45,32 +45,75 @@ const tabs = [
 ];
 
 const AUTO_SLIDE_INTERVAL = 4000; // 4초마다 자동 전환
+const PROGRESS_UPDATE_INTERVAL = 50; // 50ms마다 프로그레스 업데이트
 
-export default function TodayProblemsPreview() {
+export default function ScreenshotGallery() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const currentImage = allImages[currentIndex];
   const activeTabIndex = tabs.findIndex(tab => tab.id === currentImage.tabId);
 
-  const goToNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
-    setProgress(0);
+  // 타이머 정리 함수
+  const clearTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
   }, []);
 
-  const goToPrev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
-    setProgress(0);
-  };
+  // 타이머 시작 함수 (프로그레스 + 자동 슬라이드 통합)
+  const startTimer = useCallback((resetProgress = false) => {
+    clearTimer();
+    if (resetProgress) {
+      setProgress(0);
+    }
 
-  const handleTabChange = (tabIndex: number) => {
+    const step = (PROGRESS_UPDATE_INTERVAL / AUTO_SLIDE_INTERVAL) * 100;
+
+    timerRef.current = setInterval(() => {
+      setProgress((prev) => {
+        const next = prev + step;
+        if (next >= 100) {
+          setCurrentIndex((prevIdx) => (prevIdx === allImages.length - 1 ? 0 : prevIdx + 1));
+          return 0;
+        }
+        return next;
+      });
+    }, PROGRESS_UPDATE_INTERVAL);
+  }, [clearTimer]);
+
+  const goToNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
+    if (!isPaused && isVisible) {
+      startTimer(true);
+    } else {
+      setProgress(0);
+    }
+  }, [isPaused, isVisible, startTimer]);
+
+  const goToPrev = useCallback(() => {
+    setCurrentIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
+    if (!isPaused && isVisible) {
+      startTimer(true);
+    } else {
+      setProgress(0);
+    }
+  }, [isPaused, isVisible, startTimer]);
+
+  const handleTabChange = useCallback((tabIndex: number) => {
     setCurrentIndex(tabs[tabIndex].startIndex);
-    setProgress(0);
-  };
+    if (!isPaused && isVisible) {
+      startTimer(true);
+    } else {
+      setProgress(0);
+    }
+  }, [isPaused, isVisible, startTimer]);
 
   // 화면에 보이는지 감지
   useEffect(() => {
@@ -88,27 +131,16 @@ export default function TodayProblemsPreview() {
     return () => observer.disconnect();
   }, []);
 
-  // 자동 슬라이드
+  // isPaused 또는 isVisible 변경 시 타이머 제어
   useEffect(() => {
-    if (isPaused || !isVisible) return;
+    if (isPaused || !isVisible) {
+      clearTimer();
+    } else {
+      startTimer();
+    }
 
-    const timer = setInterval(goToNext, AUTO_SLIDE_INTERVAL);
-    return () => clearInterval(timer);
-  }, [isPaused, isVisible, goToNext]);
-
-  // 프로그레스 바 애니메이션
-  useEffect(() => {
-    if (isPaused || !isVisible) return;
-
-    const interval = 50; // 50ms마다 업데이트
-    const step = (interval / AUTO_SLIDE_INTERVAL) * 100;
-
-    const timer = setInterval(() => {
-      setProgress((prev) => Math.min(prev + step, 100));
-    }, interval);
-
-    return () => clearInterval(timer);
-  }, [isPaused, isVisible, currentIndex]);
+    return () => clearTimer();
+  }, [isPaused, isVisible, clearTimer, startTimer]);
 
   // 현재 탭의 이미지들 중 몇 번째인지 계산
   const currentTab = tabs[activeTabIndex];
@@ -151,14 +183,14 @@ export default function TodayProblemsPreview() {
         onMouseLeave={() => setIsPaused(false)}
       >
         <button
-          onClick={goToPrev}
+          onClick={() => goToPrev()}
           className="absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-white transition-colors"
           aria-label="이전"
         >
           <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
         <button
-          onClick={goToNext}
+          onClick={() => goToNext()}
           className="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-white transition-colors"
           aria-label="다음"
         >
