@@ -6,9 +6,6 @@ export const env = {
 
   OAUTH_BASE_URL: import.meta.env.VITE_OAUTH_BASE_URL || 'http://localhost:8080',
 
-  // Google OAuth Configuration
-  GOOGLE_CLIENT_ID: import.meta.env.VITE_GOOGLE_CLIENT_ID || '',
-
   // Environment Configuration
   NODE_ENV: import.meta.env.VITE_NODE_ENV || 'development',
 
@@ -27,13 +24,6 @@ export const env = {
   get IS_PRODUCTION() {
     return this.NODE_ENV === 'production';
   },
-
-  // OAuth URL (API_BASE_URL에서 /api를 제거한 베이스 URL)
-  // get OAUTH_BASE_URL() {
-  //   return this.API
-  //   return 'https://api.codemate.kr'
-  //   // return this.API_BASE_URL.replace('/api', '');
-  // }
 };
 
 // Validation function to ensure required environment variables are set

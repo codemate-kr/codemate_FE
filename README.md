@@ -121,17 +121,24 @@ npm run preview
 - **Notifications**: React Hot Toast
 - **Data Fetching**: TanStack Query 5
 - **Routing**: React Router 7
+- **Charts**: Recharts
+- **Effects**: canvas-confetti
+- **Analytics**: Vercel Analytics
 
 ### 📁 프로젝트 구조
 
 ```
 src/
 ├── api/           # API 호출 함수들
+├── assets/        # 정적 리소스 (이미지 등)
 ├── components/    # 재사용 가능한 컴포넌트들
 ├── config/        # 환경변수 및 설정
+├── constants/     # 상수 정의
+├── contexts/      # React Context
+├── data/          # 데모/목업 데이터
 ├── hooks/         # 커스텀 훅들
 ├── pages/         # 페이지 컴포넌트들
-├── store/         # 전역 상태 관리
+├── store/         # 전역 상태 관리 (Zustand)
 ├── types/         # TypeScript 타입 정의
 └── utils/         # 유틸리티 함수들
 ```
