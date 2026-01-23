@@ -160,11 +160,15 @@ export function AlgorithmTagSelector({
       </div>
 
       {/* 안내 메시지 */}
-      <p className="text-xs text-gray-500">
-        {selectedTags.length === 0
-          ? '태그를 선택하지 않으면 모든 유형의 문제가 추천됩니다.'
-          : '선택한 태그 중 하나라도 포함된 문제가 추천됩니다.'}
-      </p>
+      {selectedTags.length === 0 ? (
+        <p className="text-xs text-blue-600 font-medium">
+          * 태그를 선택하지 않으면 모든 유형의 문제가 추천됩니다.
+        </p>
+      ) : (
+        <p className="text-xs text-gray-500">
+          선택한 태그 중 하나라도 포함된 문제가 추천됩니다.
+        </p>
+      )}
 
       {/* 태그 목록 */}
       <div ref={listRef} className="max-h-48 overflow-y-auto border border-gray-200 rounded-lg">

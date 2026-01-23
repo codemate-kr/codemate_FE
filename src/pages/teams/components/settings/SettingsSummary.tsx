@@ -1,4 +1,4 @@
-import { Mail, Calendar, Target, Hash, Tag } from 'lucide-react';
+import { Mail, Calendar, Target, Hash, Tag, Users, HelpCircle } from 'lucide-react';
 import type { ProblemDifficultyPreset, RecommendationDayOfWeek } from '../../../../api/teams';
 import { getTierShortName } from '../../../../utils/tierUtils';
 import { getTagNames } from '../../../../constants/algorithmTags';
@@ -104,6 +104,24 @@ export function SettingsSummary({
           <div>
             <p className="text-xs text-gray-500">문제 수</p>
             <p className="text-sm font-medium text-gray-900">{problemCount}문제</p>
+          </div>
+        </div>
+
+        {/* 해결자 수 */}
+        <div className="flex items-start space-x-2">
+          <Users className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+          <div>
+            <div className="flex items-center gap-1">
+              <p className="text-xs text-gray-500">해결자 수</p>
+              <div className="relative group">
+                <HelpCircle className="h-3 w-3 text-gray-400 cursor-help" />
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                  1,000명 이상 해결한 문제 중에서 추천합니다.
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                </div>
+              </div>
+            </div>
+            <p className="text-sm font-medium text-gray-900">1,000명 이상</p>
           </div>
         </div>
 
