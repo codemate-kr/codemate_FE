@@ -1,4 +1,4 @@
-import { Mail, Calendar, Target, Hash, Tag, Users, HelpCircle } from 'lucide-react';
+import { Mail, Calendar, Signal, Hash, Tag, Users, HelpCircle } from 'lucide-react';
 import type { ProblemDifficultyPreset, RecommendationDayOfWeek } from '../../../../api/teams';
 import { getTierShortName } from '../../../../utils/tierUtils';
 import { getTagNames } from '../../../../constants/algorithmTags';
@@ -89,7 +89,7 @@ export function SettingsSummary({
 
         {/* 난이도 */}
         <div className="flex items-start space-x-2">
-          <Target className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+          <Signal className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
           <div>
             <p className="text-xs text-gray-500">난이도</p>
             <p className="text-sm font-medium text-gray-900">

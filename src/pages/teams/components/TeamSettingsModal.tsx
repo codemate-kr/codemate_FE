@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Settings, X, Mail, Calendar, Target, CheckCircle, Hash } from 'lucide-react';
+import { Settings, X, Mail, Calendar, Signal, CheckCircle, Hash } from 'lucide-react';
 import { teamsApi, type TeamRecommendationSettingsResponse, type ProblemDifficultyPreset, type RecommendationDayOfWeek } from '../../../api/teams';
 import { CustomTierModal } from '../../problems/components/CustomTierModal';
 import { getTierName } from '../../../utils/tierUtils';
@@ -194,7 +194,7 @@ export function TeamSettingsModal({
                 <div className="flex items-center justify-center py-4">
                   <div className="text-center max-w-sm">
                     <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-3">
-                      <Target className="h-6 w-6 text-gray-400" />
+                      <Signal className="h-6 w-6 text-gray-400" />
                     </div>
                     <h4 className="text-sm font-semibold text-gray-900 mb-1">
                       문제 추천이 비활성화되어 있습니다
@@ -253,7 +253,7 @@ export function TeamSettingsModal({
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <Target className="h-4 w-4 text-gray-600" />
+                        <Signal className="h-4 w-4 text-gray-600" />
                         <h4 className="text-sm font-semibold text-gray-900">
                           문제 난이도
                           <span className="text-red-500 ml-0.5">*</span>

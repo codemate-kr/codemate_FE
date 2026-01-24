@@ -369,7 +369,6 @@ export default function TeamDetailPage() {
 
           <div className="space-y-4">
             <TeamInfoSection
-              memberCount={teamMembers.length}
               recommendationSettings={recommendationSettings}
             />
 
