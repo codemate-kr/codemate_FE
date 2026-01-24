@@ -31,7 +31,7 @@ export default memo(function TeamInfoSection({
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4">
       <h3 className="text-sm font-semibold text-gray-900 mb-3">문제 추천 정보</h3>
-      <div className="space-y-2.5 text-sm">
+      <div className="space-y-2 text-sm">
         <div className="flex justify-between items-center pb-2 border-b border-gray-100">
           <span className="text-gray-500">문제 추천</span>
           <span className={recommendationSettings?.isActive ? 'text-green-600 font-medium' : 'text-gray-400'}>
@@ -84,7 +84,7 @@ export default memo(function TeamInfoSection({
             </div>
             {/* 알고리즘 태그 */}
             <div>
-              <div className="flex items-center gap-1.5 mb-2">
+              <div className="flex items-center gap-1.5 mb-1.5">
                 <Tag className="h-3.5 w-3.5 text-gray-400" />
                 <span className="text-gray-500">알고리즘 태그</span>
                 <NewBadge />
@@ -106,7 +106,7 @@ export default memo(function TeamInfoSection({
             </div>
             {recommendationSettings?.recommendationDays && recommendationSettings.recommendationDays.length > 0 && (
               <div className="pt-2 border-t border-gray-100">
-                <div className="flex items-center gap-1.5 mb-2">
+                <div className="flex items-center gap-1.5 mb-1.5">
                   <Calendar className="h-3.5 w-3.5 text-gray-400" />
                   <span className="text-gray-500">추천 요일</span>
                 </div>
