@@ -33,7 +33,7 @@ const TABS = [
 
 function BrowserFrame({ children, progress }: { children: React.ReactNode; progress: number }) {
   return (
-    <div className="rounded-xl overflow-hidden shadow-lg bg-white relative">
+    <div className="rounded-lg sm:rounded-xl overflow-hidden shadow-lg bg-white relative">
       <div className="bg-gray-100 border-b border-gray-200 px-3 sm:px-4 py-2 sm:py-3 flex items-center">
         <div className="flex items-center gap-1.5 sm:gap-2">
           <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FF5F57]" />
@@ -160,7 +160,7 @@ export default function ScreenshotGallery() {
   return (
     <div ref={sectionRef} className="space-y-4">
       {/* 헤더 + 탭 */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 sm:relative">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 sm:relative px-3 sm:px-0">
         <div className="flex items-center gap-2 sm:gap-3">
           <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-blue-500 text-white text-xs sm:text-sm font-medium rounded">
             예시

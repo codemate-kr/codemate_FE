@@ -71,8 +71,8 @@ export default function HeroSection() {
       </div>
 
       {/* 미리보기 - 실제 TodayProblems와 동일한 UI */}
-      <div className="px-3 sm:px-4 md:px-6 py-16 sm:py-36 bg-gray-800 sm:min-h-screen sm:flex sm:items-center">
-        <div className="max-w-5xl mx-auto">
+      <div className="sm:px-4 md:px-6 py-16 sm:py-36 bg-gray-800 sm:min-h-screen sm:flex sm:items-center">
+        <div className="max-w-5xl mx-auto w-full">
           <ScreenshotGallery />
         </div>
       </div>
