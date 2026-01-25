@@ -24,7 +24,7 @@ export default function Footer() {
   }, [isLegalMenuOpen]);
 
   return (
-    <footer className="bg-gradient-to-br from-gray-50 to-gray-100 border-t border-gray-200 mt-auto">
+    <footer className="bg-gray-50 border-t border-gray-200 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8">
           {/* 법률 문서 드롭다운 */}
