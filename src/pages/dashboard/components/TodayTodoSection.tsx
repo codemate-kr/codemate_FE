@@ -184,10 +184,10 @@ export default function TodayTodoSection({
                 href={`https://www.acmicpc.net/problem/${problem.problemId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`block border rounded-lg p-4 transition-all group ${
+                className={`block border rounded-lg p-4 transition-colors group ${
                   problem.isSolved
                     ? 'bg-green-50 border-green-200'
-                    : 'bg-white border-gray-200 hover:border-blue-400 hover:shadow-md'
+                    : 'bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
                 <div className="flex items-center justify-between gap-3">

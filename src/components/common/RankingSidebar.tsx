@@ -69,7 +69,7 @@ export default function RankingSidebar() {
       >
         <button
           onClick={() => setIsOpen(true)}
-          className="relative p-3 bg-white hover:bg-blue-50 active:bg-blue-100 rounded-xl shadow-lg border border-gray-200 transition-all hover:shadow-xl hover:scale-105 active:scale-95 group"
+          className="relative p-3 bg-white hover:bg-gray-100 active:bg-gray-200 rounded-xl border border-gray-200 transition-colors group"
           aria-label="전체 랭킹 보기"
         >
           <Trophy className="h-6 w-6 text-blue-600 group-hover:text-blue-700" />
@@ -86,8 +86,8 @@ export default function RankingSidebar() {
 
       {/* 사이드바 */}
       <div
-        className={`fixed top-0 right-0 h-full w-80 bg-gray-50 shadow-2xl z-50 transform transition-transform duration-300 ease-out flex flex-col ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
+        className={`fixed top-0 right-0 h-full w-80 bg-gray-50 z-50 transform transition-transform duration-300 ease-out flex flex-col ${
+          isOpen ? 'translate-x-0 shadow-2xl' : 'translate-x-full'
         }`}
       >
         {/* 헤더 */}

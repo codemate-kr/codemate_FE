@@ -70,8 +70,8 @@ export default function MyTeamsSection({ isAuthenticated, onLoginClick, teams }:
                 key={team.teamId}
                 to={isAuthenticated ? `/teams/${team.teamId}` : '#'}
                 className={`group block bg-white border border-gray-200 rounded-lg p-4 ${
-                  isAuthenticated ? 'hover:border-blue-400 hover:shadow-md' : 'cursor-default'
-                } transition-all`}
+                  isAuthenticated ? 'hover:border-gray-300 hover:bg-gray-50' : 'cursor-default'
+                } transition-colors`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-3 flex-1 min-w-0">
