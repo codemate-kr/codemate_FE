@@ -20,7 +20,7 @@ export default function MyTeamsSection({ isAuthenticated, onLoginClick, teams }:
   const displayTeams = isAuthenticated ? teams : SAMPLE_TEAMS;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 relative">
+    <div className="bg-white rounded-xl border border-gray-200 relative">
       {!isAuthenticated && (
         <button
           onClick={onLoginClick}

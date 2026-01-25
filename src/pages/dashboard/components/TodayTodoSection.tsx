@@ -65,7 +65,7 @@ export default function TodayTodoSection({
           }
         `}
       </style>
-      <div className={`rounded-xl shadow-sm border overflow-hidden relative transition-colors duration-300 ${showErrorFlash ? 'shake border-red-400 bg-red-50' : 'bg-white border-gray-100'}`}>
+      <div className={`rounded-xl border overflow-hidden relative transition-colors duration-300 ${showErrorFlash ? 'shake border-red-400 bg-red-50' : 'bg-white border-gray-200'}`}>
         {/* 에러 플래시 오버레이 - 컴포넌트 전체 덮음 */}
         {showErrorFlash && (
           <div className="absolute inset-0 bg-red-500/20 z-10 pointer-events-none animate-pulse" />

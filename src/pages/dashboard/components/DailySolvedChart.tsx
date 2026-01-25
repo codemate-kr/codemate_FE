@@ -408,7 +408,7 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 lg:col-span-2 relative">
+    <div className="bg-white rounded-xl border border-gray-200 lg:col-span-2 relative">
       {/* 비로그인 오버레이 */}
       {!isAuthenticated && (
         <button

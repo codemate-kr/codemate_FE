@@ -27,7 +27,7 @@ export default function StatsCards({
         </button>
       )}
 
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-xl p-6 border border-gray-200">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-blue-50 rounded-lg">
             <Users className="h-6 w-6 text-blue-600" />
@@ -39,7 +39,7 @@ export default function StatsCards({
         </div>
       </div>
 
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-xl p-6 border border-gray-200">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-green-50 rounded-lg">
             <BookOpen className="h-6 w-6 text-green-600" />
@@ -51,7 +51,7 @@ export default function StatsCards({
         </div>
       </div>
 
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-xl p-6 border border-gray-200">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-purple-50 rounded-lg">
             <Target className="h-6 w-6 text-purple-600" />
