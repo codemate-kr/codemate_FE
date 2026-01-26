@@ -1,16 +1,65 @@
-import { useState, useRef, useEffect } from 'react';
-import { Bell, X } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Bell, X, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { mockNotifications } from './mockData';
+import { notificationsApi, type Notification } from '../../api/notifications';
 import NotificationItem from './NotificationItem';
+
+const RECENT_SIZE = 5;
+const POLLING_INTERVAL = 60 * 1000; // 1분
 
 export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState(mockNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const unreadCount = notifications.filter((n) => !n.readAt).length;
-  const recentNotifications = notifications.slice(0, 5);
+  // 읽지 않은 알림 개수 조회
+  const fetchUnreadCount = useCallback(async () => {
+    try {
+      const count = await notificationsApi.getUnreadCount();
+      setUnreadCount(count);
+    } catch (error) {
+      console.error('Failed to fetch unread count:', error);
+    }
+  }, []);
+
+  // 최근 읽지 않은 알림 조회
+  const fetchRecentNotifications = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await notificationsApi.getUnread({ size: RECENT_SIZE });
+      setNotifications(response.notifications);
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // 초기 로딩 + 폴링 + 포커스 이벤트
+  useEffect(() => {
+    fetchUnreadCount();
+
+    // 폴링: 1분마다 unreadCount 조회
+    const interval = setInterval(fetchUnreadCount, POLLING_INTERVAL);
+
+    // 포커스: 탭 활성화 시 unreadCount 조회
+    const handleFocus = () => fetchUnreadCount();
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [fetchUnreadCount]);
+
+  // 드롭다운 열릴 때 최근 알림 조회
+  useEffect(() => {
+    if (isOpen) {
+      fetchRecentNotifications();
+    }
+  }, [isOpen, fetchRecentNotifications]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -48,18 +97,24 @@ export default function NotificationBell() {
     };
   }, [isOpen]);
 
-  const handleMarkAsRead = (id: number) => {
-    setNotifications((prev) =>
-      prev.map((n) =>
-        n.id === id ? { ...n, readAt: new Date().toISOString() } : n
-      )
-    );
+  const handleMarkAsRead = async (id: number) => {
+    try {
+      await notificationsApi.markAsRead(id);
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error('Failed to mark as read:', error);
+    }
   };
 
-  const handleMarkAllAsRead = () => {
-    setNotifications((prev) =>
-      prev.map((n) => ({ ...n, readAt: n.readAt || new Date().toISOString() }))
-    );
+  const handleMarkAllAsRead = async () => {
+    try {
+      await notificationsApi.markAllAsRead();
+      setNotifications([]);
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('Failed to mark all as read:', error);
+    }
   };
 
   return (
@@ -100,8 +155,13 @@ export default function NotificationBell() {
 
             {/* 알림 목록 */}
             <div className="max-h-[320px] overflow-y-auto divide-y divide-gray-100">
-              {recentNotifications.length > 0 ? (
-                recentNotifications.map((notification) => (
+              {isLoading ? (
+                <div className="py-10 text-center">
+                  <Loader2 className="w-6 h-6 mx-auto mb-2 text-gray-300 animate-spin" />
+                  <p className="text-sm text-gray-500">불러오는 중...</p>
+                </div>
+              ) : notifications.length > 0 ? (
+                notifications.map((notification) => (
                   <NotificationItem
                     key={notification.id}
                     notification={notification}
@@ -118,17 +178,15 @@ export default function NotificationBell() {
             </div>
 
             {/* 푸터 */}
-            {recentNotifications.length > 0 && (
-              <div className="border-t border-gray-100">
-                <Link
-                  to="/notifications"
-                  onClick={() => setIsOpen(false)}
-                  className="block w-full py-3 text-center text-sm font-medium text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors"
-                >
-                  전체 보기
-                </Link>
-              </div>
-            )}
+            <div className="border-t border-gray-100">
+              <Link
+                to="/notifications"
+                onClick={() => setIsOpen(false)}
+                className="block w-full py-3 text-center text-sm font-medium text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+              >
+                전체 보기
+              </Link>
+            </div>
           </div>
 
           {/* 모바일: 바텀 시트 */}
@@ -157,9 +215,14 @@ export default function NotificationBell() {
 
               {/* 알림 목록 */}
               <div className="max-h-[50vh] overflow-y-auto -mx-4">
-                {recentNotifications.length > 0 ? (
+                {isLoading ? (
+                  <div className="py-10 text-center">
+                    <Loader2 className="w-8 h-8 mx-auto mb-2 text-gray-300 animate-spin" />
+                    <p className="text-gray-500">불러오는 중...</p>
+                  </div>
+                ) : notifications.length > 0 ? (
                   <div className="divide-y divide-gray-100">
-                    {recentNotifications.map((notification) => (
+                    {notifications.map((notification) => (
                       <NotificationItem
                         key={notification.id}
                         notification={notification}
@@ -177,15 +240,13 @@ export default function NotificationBell() {
               </div>
 
               {/* 전체 보기 버튼 */}
-              {recentNotifications.length > 0 && (
-                <Link
-                  to="/notifications"
-                  onClick={() => setIsOpen(false)}
-                  className="block w-full mt-4 py-3 text-center text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 rounded-lg transition-colors touch-manipulation"
-                >
-                  전체 보기
-                </Link>
-              )}
+              <Link
+                to="/notifications"
+                onClick={() => setIsOpen(false)}
+                className="block w-full mt-4 py-3 text-center text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 rounded-lg transition-colors touch-manipulation"
+              >
+                전체 보기
+              </Link>
 
               {/* Safe area padding for iOS */}
               <div className="h-safe-bottom" />

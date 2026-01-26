@@ -1,35 +1,108 @@
-import { useState } from 'react';
-import { Bell, CheckCheck } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Bell, CheckCheck, Loader2 } from 'lucide-react';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 import NotificationItem from '../../components/notification/NotificationItem';
-import { mockNotifications } from '../../components/notification/mockData';
+import { notificationsApi, type Notification } from '../../api/notifications';
 
 type TabType = 'unread' | 'all';
+
+const PAGE_SIZE = 10;
 
 export default function NotificationsPage() {
   useDocumentTitle('알림');
   const [activeTab, setActiveTab] = useState<TabType>('unread');
-  const [notifications, setNotifications] = useState(mockNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [nextCursor, setNextCursor] = useState<number | null>(null);
+  const [hasNext, setHasNext] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const filteredNotifications =
-    activeTab === 'unread'
-      ? notifications.filter((n) => !n.readAt)
-      : notifications;
+  // 알림 목록 조회
+  const fetchNotifications = useCallback(async (tab: TabType, cursor?: number | null) => {
+    const isInitial = cursor === undefined;
+    if (isInitial) {
+      setIsLoading(true);
+    } else {
+      setIsLoadingMore(true);
+    }
 
-  const unreadCount = notifications.filter((n) => !n.readAt).length;
+    try {
+      const api = tab === 'unread' ? notificationsApi.getUnread : notificationsApi.getAll;
+      const response = await api({ cursor, size: PAGE_SIZE });
 
-  const handleMarkAsRead = (id: number) => {
-    setNotifications((prev) =>
-      prev.map((n) =>
-        n.id === id ? { ...n, readAt: new Date().toISOString() } : n
-      )
-    );
+      if (isInitial) {
+        setNotifications(response.notifications);
+      } else {
+        setNotifications((prev) => [...prev, ...response.notifications]);
+      }
+      setNextCursor(response.nextCursor);
+      setHasNext(response.hasNext);
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error);
+    } finally {
+      setIsLoading(false);
+      setIsLoadingMore(false);
+    }
+  }, []);
+
+  // 읽지 않은 개수 조회
+  const fetchUnreadCount = useCallback(async () => {
+    try {
+      const count = await notificationsApi.getUnreadCount();
+      setUnreadCount(count);
+    } catch (error) {
+      console.error('Failed to fetch unread count:', error);
+    }
+  }, []);
+
+  // 초기 로딩
+  useEffect(() => {
+    fetchNotifications(activeTab);
+    fetchUnreadCount();
+  }, [activeTab, fetchNotifications, fetchUnreadCount]);
+
+  // 탭 변경
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
+    setNotifications([]);
+    setNextCursor(null);
+    setHasNext(false);
   };
 
-  const handleMarkAllAsRead = () => {
-    setNotifications((prev) =>
-      prev.map((n) => ({ ...n, readAt: n.readAt || new Date().toISOString() }))
-    );
+  // 개별 읽음 처리
+  const handleMarkAsRead = async (id: number) => {
+    try {
+      await notificationsApi.markAsRead(id);
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.id === id ? { ...n, readAt: new Date().toISOString() } : n
+        )
+      );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error('Failed to mark as read:', error);
+    }
+  };
+
+  // 전체 읽음 처리
+  const handleMarkAllAsRead = async () => {
+    try {
+      await notificationsApi.markAllAsRead();
+      setNotifications((prev) =>
+        prev.map((n) => ({ ...n, readAt: n.readAt || new Date().toISOString() }))
+      );
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('Failed to mark all as read:', error);
+    }
+  };
+
+  // 더 보기
+  const handleLoadMore = () => {
+    if (hasNext && !isLoadingMore) {
+      fetchNotifications(activeTab, nextCursor);
+    }
   };
 
   return (
@@ -60,7 +133,7 @@ export default function NotificationsPage() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex gap-1 bg-gray-100 p-1 rounded-xl">
             <button
-              onClick={() => setActiveTab('unread')}
+              onClick={() => handleTabChange('unread')}
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
                 activeTab === 'unread'
                   ? 'bg-white text-gray-900 shadow-sm'
@@ -79,7 +152,7 @@ export default function NotificationsPage() {
               )}
             </button>
             <button
-              onClick={() => setActiveTab('all')}
+              onClick={() => handleTabChange('all')}
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
                 activeTab === 'all'
                   ? 'bg-white text-gray-900 shadow-sm'
@@ -104,8 +177,13 @@ export default function NotificationsPage() {
 
         {/* 알림 목록 */}
         <div className="border border-gray-200 rounded-lg divide-y divide-gray-200">
-          {filteredNotifications.length > 0 ? (
-            filteredNotifications.map((notification) => (
+          {isLoading ? (
+            <div className="py-20 text-center">
+              <Loader2 className="w-8 h-8 mx-auto mb-2 text-gray-400 animate-spin" />
+              <p className="text-sm text-gray-500">알림을 불러오는 중...</p>
+            </div>
+          ) : notifications.length > 0 ? (
+            notifications.map((notification) => (
               <NotificationItem
                 key={notification.id}
                 notification={notification}
@@ -128,13 +206,21 @@ export default function NotificationsPage() {
         </div>
 
         {/* 더 보기 버튼 */}
-        {filteredNotifications.length >= 5 && (
+        {hasNext && (
           <div className="mt-8 text-center">
             <button
-              onClick={() => console.log('더 보기')}
-              className="px-6 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 rounded-xl transition-all"
+              onClick={handleLoadMore}
+              disabled={isLoadingMore}
+              className="px-6 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 rounded-xl transition-all disabled:opacity-50"
             >
-              더 보기
+              {isLoadingMore ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  불러오는 중...
+                </span>
+              ) : (
+                '더 보기'
+              )}
             </button>
           </div>
         )}
