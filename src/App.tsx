@@ -20,6 +20,7 @@ import MyProfilePage from './pages/profile/MyProfilePage';
 import VerifyEmailPage from './pages/auth/VerifyEmailPage';
 import PrivacyPolicyPage from './pages/legal/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/legal/TermsOfServicePage';
+import NotificationsPage from './pages/notifications/NotificationsPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -59,6 +60,7 @@ function App() {
                       <Route path="/teams/:teamId" element={<TeamDetailPage />} />
                       <Route path="/problems" element={<ProblemsPage />} />
                       <Route path="/mypage" element={<ProtectedRoute><MyProfilePage /></ProtectedRoute>} />
+                      <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
                       {/* 없는 경로는 홈으로 리다이렉트 */}
                       <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
