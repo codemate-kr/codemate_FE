@@ -12,7 +12,7 @@ export interface GlobalRankingResponse {
 
 export const rankingApi = {
   getGlobalRanking: async (): Promise<GlobalRankingResponse> => {
-    const response = await apiClient.get<ApiResponse<GlobalRankingResponse>>('/ranking/global');
+    const response = await apiClient.get<ApiResponse<GlobalRankingResponse>>('/solve/ranking/global');
     return response.data.data;
   },
 };

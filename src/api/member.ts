@@ -123,7 +123,7 @@ export const memberApi = {
    * @throws 409 - 이미 인증된 문제
    */
   verifyProblemSolved: async (problemId: number): Promise<void> => {
-    await apiClient.post(`/member/me/problems/${problemId}/verify-solved`);
+    await apiClient.post(`/solve/problems/${problemId}/verify`);
   },
 
   /**
@@ -140,7 +140,7 @@ export const memberApi = {
    */
   getDailySolved: async (days: number = 7): Promise<DailySolvedResponse> => {
     const response = await apiClient.get<ApiResponse<DailySolvedResponse>>(
-      `/member/me/daily-solved?days=${days}`
+      `/solve/daily?days=${days}`
     );
     return response.data.data;
   },
