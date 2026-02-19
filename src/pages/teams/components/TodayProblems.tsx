@@ -6,7 +6,6 @@ import { verifyProblemSolved, triggerSuccessConfetti, type VerifyErrorType } fro
 import { useTimerStore } from '../../../store/timerStore';
 import { useTimer, formatDuration } from '../../../hooks/useTimer';
 import Tooltip from '../../../components/common/Tooltip';
-import NewBadge from '../../../components/common/NewBadge';
 
 // 개별 문제의 타이머 표시 컴포넌트 (일시정지/초기화 버튼 포함)
 function ProblemTimerDisplay({ problemId, problemTitle, isSolved, solvedTime }: { problemId: number; problemTitle: string; isSolved: boolean; solvedTime?: string }) {
@@ -96,9 +95,10 @@ interface TodayProblemsProps {
   recommendationSettings?: TeamRecommendationSettingsResponse | null;
   initialTodayProblems?: TodayProblemsResponse | null;
   isDemo?: boolean;
+  selectedSquadName?: string | null;
 }
 
-export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast, onOpenSettings, onRefreshActivity, recommendationSettings, initialTodayProblems, isDemo = false }: TodayProblemsProps) {
+export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast, onOpenSettings, onRefreshActivity, recommendationSettings, initialTodayProblems, isDemo = false, selectedSquadName }: TodayProblemsProps) {
   // 통합 API에서 받아온 초기 데이터 사용 (중복 API 호출 방지)
   const [todayProblems, setTodayProblems] = useState<TodayProblemsResponse | null>(initialTodayProblems ?? null);
   const [problemsLoading, setProblemsLoading] = useState(false);
@@ -270,13 +270,16 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
           <div className="absolute inset-0 bg-red-500/20 z-10 pointer-events-none animate-pulse" />
         )}
         {/* 헤더 */}
-        <div className="px-4 sm:px-6 py-4 bg-blue-50 border-b border-blue-100">
+        <div className="px-4 sm:px-6 py-3 bg-blue-50 border-b border-blue-100">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <div className="p-1.5 bg-blue-100 rounded-lg flex-shrink-0">
               <Calendar className="h-4 w-4 text-blue-600" />
             </div>
             <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate">오늘의 미션</h3>
+            {selectedSquadName && (
+              <span className="text-xs font-medium text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded flex-shrink-0">{selectedSquadName}</span>
+            )}
             {todayProblems && todayProblems.problems.length > 0 && (
               <span className="text-sm text-blue-600 font-medium flex-shrink-0">· {todayProblems.problems.length}개</span>
             )}
@@ -292,7 +295,6 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
                   <Settings className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">문제 추천 설정</span>
                 </button>
-                <NewBadge />
               </div>
             )}
           </div>
@@ -300,7 +302,7 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
       </div>
 
       {/* 컨텐츠 */}
-      <div className="px-4 sm:px-6 pb-6 pt-4">
+      <div className="px-4 sm:px-6 pb-4 pt-3">
         {problemsLoading ? (
           <div className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-2 -mx-4 sm:-mx-6 px-4 sm:px-6">
             {[1, 2, 3].map((i) => (

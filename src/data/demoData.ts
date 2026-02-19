@@ -6,6 +6,7 @@
 
 import type { TodayProblem } from '../api/recommendation';
 import type { MyTeamResponse, TeamActivityResponse, TodayProblemsResponse, TeamRecommendationSettingsResponse, TeamMemberResponse, TeamDetailResponse } from '../api/teams';
+import type { SquadResponse } from '../api/squads';
 
 // ============ 대시보드용 데이터 ============
 
@@ -272,6 +273,180 @@ const generateDemoDailySolved = (): DemoDailySolvedResponse => {
 };
 
 export const demoDailySolvedData: DemoDailySolvedResponse = generateDemoDailySolved();
+
+export const demoSquads: SquadResponse[] = [
+  {
+    squadId: 1,
+    squadName: '스쿼드A',
+    teamId: 1,
+    isDefault: false,
+    memberCount: 2,
+    members: [demoTeamMembers[0], demoTeamMembers[1]],
+    recommendationSettings: {
+      squadId: 1,
+      squadName: '스쿼드A',
+      isActive: true,
+      recommendationDays: ['MONDAY', 'WEDNESDAY', 'FRIDAY'],
+      problemDifficultyPreset: 'HARD',
+      minProblemLevel: 13,
+      maxProblemLevel: 17,
+      problemCount: 2,
+      includeTags: ['dp', 'graphs'],
+    },
+    todayProblems: {
+      recommendationId: 2,
+      createdAt: new Date().toISOString(),
+      problems: [
+        {
+          problemId: 1753,
+          title: 'Shortest Path',
+          titleKo: '최단경로',
+          level: 12,
+          url: 'https://www.acmicpc.net/problem/1753',
+          acceptedUserCount: 67234,
+          averageTries: 3.21,
+          isSolved: true,
+          solvedTime: '01:11',
+        },
+        {
+          problemId: 1197,
+          title: 'Minimum Spanning Tree',
+          titleKo: '최소 스패닝 트리',
+          level: 12,
+          url: 'https://www.acmicpc.net/problem/1197',
+          acceptedUserCount: 45000,
+          averageTries: 2.5,
+          isSolved: false,
+        },
+      ],
+    },
+  },
+  {
+    squadId: 2,
+    squadName: '스쿼드B',
+    teamId: 1,
+    isDefault: false,
+    memberCount: 2,
+    members: [demoTeamMembers[2], demoTeamMembers[3]],
+    recommendationSettings: {
+      squadId: 2,
+      squadName: '스쿼드B',
+      isActive: true,
+      recommendationDays: ['TUESDAY', 'THURSDAY'],
+      problemDifficultyPreset: 'EASY',
+      minProblemLevel: 7,
+      maxProblemLevel: 10,
+      problemCount: 3,
+      includeTags: [],
+    },
+    todayProblems: {
+      recommendationId: 3,
+      createdAt: new Date().toISOString(),
+      problems: [
+        {
+          problemId: 1260,
+          title: 'DFS and BFS',
+          titleKo: 'DFS와 BFS',
+          level: 9,
+          url: 'https://www.acmicpc.net/problem/1260',
+          acceptedUserCount: 142847,
+          averageTries: 2.73,
+          isSolved: false,
+        },
+        {
+          problemId: 2178,
+          title: 'Maze',
+          titleKo: '미로 탐색',
+          level: 10,
+          url: 'https://www.acmicpc.net/problem/2178',
+          acceptedUserCount: 78000,
+          averageTries: 2.1,
+          isSolved: false,
+        },
+        {
+          problemId: 1927,
+          title: 'Min Heap',
+          titleKo: '최소 힙',
+          level: 9,
+          url: 'https://www.acmicpc.net/problem/1927',
+          acceptedUserCount: 62000,
+          averageTries: 1.8,
+          isSolved: false,
+        },
+      ],
+    },
+  },
+  {
+    squadId: 3,
+    squadName: '스쿼드C',
+    teamId: 1,
+    isDefault: false,
+    memberCount: 1,
+    members: [demoTeamMembers[0]],
+    recommendationSettings: {
+      squadId: 3,
+      squadName: '스쿼드C',
+      isActive: false,
+      recommendationDays: [],
+    },
+    todayProblems: null,
+  },
+  {
+    squadId: 4,
+    squadName: '스쿼드D',
+    teamId: 1,
+    isDefault: false,
+    memberCount: 1,
+    members: [demoTeamMembers[1]],
+    recommendationSettings: {
+      squadId: 4,
+      squadName: '스쿼드D',
+      isActive: true,
+      recommendationDays: ['MONDAY', 'FRIDAY'],
+      problemDifficultyPreset: 'NORMAL',
+      minProblemLevel: 10,
+      maxProblemLevel: 14,
+      problemCount: 2,
+      includeTags: [],
+    },
+    todayProblems: {
+      recommendationId: 4,
+      createdAt: new Date().toISOString(),
+      problems: [
+        {
+          problemId: 2667,
+          title: 'Number the Clusters',
+          titleKo: '단지번호붙이기',
+          level: 10,
+          url: 'https://www.acmicpc.net/problem/2667',
+          acceptedUserCount: 89000,
+          averageTries: 2.3,
+          isSolved: false,
+        },
+      ],
+    },
+  },
+  {
+    squadId: 5,
+    squadName: '스쿼드E',
+    teamId: 1,
+    isDefault: false,
+    memberCount: 1,
+    members: [demoTeamMembers[2]],
+    recommendationSettings: {
+      squadId: 5,
+      squadName: '스쿼드E',
+      isActive: true,
+      recommendationDays: ['WEDNESDAY'],
+      problemDifficultyPreset: 'EASY',
+      minProblemLevel: 5,
+      maxProblemLevel: 8,
+      problemCount: 3,
+      includeTags: ['implementation'],
+    },
+    todayProblems: null,
+  },
+];
 
 // 데모 모드 체크 유틸리티
 export const isDemoMode = (): boolean => {

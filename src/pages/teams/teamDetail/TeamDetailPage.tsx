@@ -18,7 +18,9 @@ import type { SelectedCellInfo } from './components/TeamActivityBoard';
 import { useTeamStore, useCurrentTeamDetails, useDetailLoading, useDetailError, useTeams } from '../../../store/teamStore';
 import { useAuthStore } from '../../../store/authStore';
 import { useLoginModal } from '../../../contexts/LoginModalContext';
-import { isDemoMode, demoTeamDetails, demoActivityData, demoTeams } from '../../../data/demoData';
+import { isDemoMode, demoTeamDetails, demoActivityData, demoTeams, demoSquads } from '../../../data/demoData';
+import type { SquadResponse } from '../../../api/squads';
+import SquadTabBar from './components/SquadTabBar';
 import { useTimerStore } from '../../../store/timerStore';
 
 export default function TeamDetailPage() {
@@ -53,6 +55,10 @@ export default function TeamDetailPage() {
   const detailError = isDemo ? null : realDetailError;
   const teams = isDemo ? demoTeams : realTeams;
 
+  const [selectedSquadId, setSelectedSquadId] = useState<number | null>(
+    isDemo ? (demoSquads[0]?.squadId ?? null) : null
+  );
+
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -70,6 +76,12 @@ export default function TeamDetailPage() {
   const recommendationSettings = (currentTeamDetails && 'recommendationSettings' in currentTeamDetails
     ? currentTeamDetails.recommendationSettings
     : currentTeamDetails?.settings) ?? null;
+
+  const squads: SquadResponse[] = isDemo ? demoSquads : [];
+  const selectedSquad = squads.find((s) => s.squadId === selectedSquadId) ?? null;
+  const selectedSquadName = selectedSquad?.squadName ?? null;
+  const activeRecommendationSettings = (selectedSquad?.recommendationSettings ?? recommendationSettings) as typeof recommendationSettings;
+  const activeTodayProblems = selectedSquad?.todayProblems ?? currentTeamDetails?.todayProblem;
 
   const currentUserMember = useMemo(
     () => teamMembers.find(member => member.isMe),
@@ -243,7 +255,7 @@ export default function TeamDetailPage() {
     <div className="relative">
       <div className="px-4 sm:px-6 lg:px-8">
         {/* 헤더 */}
-        <div className="py-6 mb-8 border-b border-gray-200">
+        <div className="py-4 mb-4 border-b border-gray-200">
           <div className="sm:flex sm:items-center sm:justify-between">
             <div className="sm:flex-auto">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -318,8 +330,15 @@ export default function TeamDetailPage() {
           </div>
         </div>
 
+        {/* 스쿼드 선택 바 */}
+        {squads.length > 0 && (
+          <div className="mt-4 mb-3">
+            <SquadTabBar squads={squads} selectedSquadId={selectedSquadId} onSelect={setSelectedSquadId} />
+          </div>
+        )}
+
         {/* 메인 콘텐츠 */}
-        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className={`grid grid-cols-1 gap-6 lg:grid-cols-3 ${squads.length > 0 ? 'mt-0' : 'mt-6'}`}>
           <div className="lg:col-span-2">
             <TodayProblems
               teamId={numericTeamId!}
@@ -328,9 +347,10 @@ export default function TeamDetailPage() {
               onShowToast={toast}
               onOpenSettings={handleOpenSettings}
               onRefreshActivity={handleRefreshActivity}
-              recommendationSettings={recommendationSettings}
-              initialTodayProblems={currentTeamDetails?.todayProblem}
+              recommendationSettings={activeRecommendationSettings}
+              initialTodayProblems={activeTodayProblems}
               isDemo={isDemo}
+              selectedSquadName={selectedSquadName}
             />
 
             <div className="mt-6">
@@ -369,7 +389,8 @@ export default function TeamDetailPage() {
 
           <div className="space-y-4">
             <TeamInfoSection
-              recommendationSettings={recommendationSettings}
+              recommendationSettings={activeRecommendationSettings}
+              selectedSquadName={selectedSquadName}
             />
 
             <TeamMembersList members={teamMembers} />
