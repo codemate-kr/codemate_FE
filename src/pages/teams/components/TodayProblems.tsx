@@ -6,7 +6,6 @@ import { verifyProblemSolved, triggerSuccessConfetti, type VerifyErrorType } fro
 import { useTimerStore } from '../../../store/timerStore';
 import { useTimer, formatDuration } from '../../../hooks/useTimer';
 import Tooltip from '../../../components/common/Tooltip';
-import NewBadge from '../../../components/common/NewBadge';
 
 // 개별 문제의 타이머 표시 컴포넌트 (일시정지/초기화 버튼 포함)
 function ProblemTimerDisplay({ problemId, problemTitle, isSolved, solvedTime }: { problemId: number; problemTitle: string; isSolved: boolean; solvedTime?: string }) {
@@ -292,7 +291,6 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
                   <Settings className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">문제 추천 설정</span>
                 </button>
-                <NewBadge />
               </div>
             )}
           </div>

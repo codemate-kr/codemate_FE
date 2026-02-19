@@ -4,7 +4,6 @@ import { getTierName, getTierColor } from '../../../../utils/tierUtils';
 import { DayToKorean } from '../../../../utils/dayUtils';
 import { getTagNames } from '../../../../constants/algorithmTags';
 import type { TeamRecommendationSettingsResponse, SolvedacTier } from '../../../../api/teams';
-import NewBadge from '../../../../components/common/NewBadge';
 
 // 상수를 컴포넌트 외부로 추출
 const ALL_DAYS = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'] as const;
@@ -87,7 +86,6 @@ export default memo(function TeamInfoSection({
               <div className="flex items-center gap-1.5 mb-1.5">
                 <Tag className="h-3.5 w-3.5 text-gray-400" />
                 <span className="text-gray-500">알고리즘 태그</span>
-                <NewBadge />
               </div>
               {recommendationSettings?.includeTags && recommendationSettings.includeTags.length > 0 ? (
                 <div className="flex flex-wrap gap-1">

@@ -4,7 +4,6 @@ import {
   searchAlgorithmTags,
   getTagByKey,
 } from '../../../../constants/algorithmTags';
-import NewBadge from '../../../../components/common/NewBadge';
 
 interface AlgorithmTagSelectorProps {
   selectedTags: string[];
@@ -114,7 +113,6 @@ export function AlgorithmTagSelector({
         <div className="flex items-center space-x-2">
           <Tag className="h-4 w-4 text-gray-600" />
           <h4 className="text-sm font-semibold text-gray-900">알고리즘 태그</h4>
-          <NewBadge />
         </div>
         <span className={`text-xs font-medium ${isMaxReached ? 'text-orange-600' : 'text-blue-600'}`}>
           {selectedTags.length}/{maxTags} 선택
