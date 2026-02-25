@@ -3,19 +3,20 @@ import { persist } from 'zustand/middleware';
 import type {
   MyTeamResponse,
   TeamMemberResponse,
-  TeamRecommendationSettingsResponse,
   CreateTeamRequest,
   CreateTeamResponse,
   TeamInfo,
-  TodayProblemsResponse
+  TodayProblemsResponse,
+  TeamDetailResponse,
 } from '../api/teams';
 import { teamsApi } from '../api/teams';
+import { getApiErrorCode, getApiErrorMessage, getApiErrorStatus } from '../utils/apiError';
 
 interface TeamDetailState {
   team: TeamInfo | null;
   members: TeamMemberResponse[];
-  settings: TeamRecommendationSettingsResponse | null;
   todayProblem: TodayProblemsResponse | null;
+  squads: TeamDetailResponse['squads'];
 }
 
 type TeamDetailErrorType = 'not-found' | 'forbidden' | 'network' | 'unknown';
@@ -55,15 +56,20 @@ interface TeamStore {
   // 팀 상세 Actions (내부용)
   setCurrentTeamId: (teamId: number | null) => void;
   setCurrentTeamMembers: (members: TeamMemberResponse[]) => void;
-  setCurrentTeamSettings: (settings: TeamRecommendationSettingsResponse | null) => void;
   updateTeamMember: (memberId: number, updates: Partial<TeamMemberResponse>) => void;
   removeMember: (memberId: number) => void;
   setDetailLoading: (loading: boolean) => void;
   setDetailError: (error: TeamDetailError | null) => void;
 
   // 팀 상세 Actions (API 통합)
-  fetchTeamDetails: (teamId: number) => Promise<void>;
-  refreshTeamSettings: (teamId: number) => Promise<void>;
+  fetchTeamDetails: (teamId: number, options?: { silent?: boolean }) => Promise<void>;
+
+  // 스쿼드 Actions
+  createSquad: (teamId: number, name: string) => Promise<void>;
+  updateSquad: (teamId: number, squadId: number, name: string) => Promise<void>;
+  deleteSquad: (teamId: number, squadId: number) => Promise<void>;
+  assignMember: (teamId: number, squadId: number, memberId: number) => Promise<void>;
+  refreshSquadSettings: (teamId: number, squadId: number) => Promise<void>;
 
   // 전체 초기화
   reset: () => void;
@@ -179,17 +185,14 @@ export const useTeamStore = create<TeamStore>()(
             leaderId: 0, // 불필요하지만 타입 호환성을 위해
             createdAt: newTeam.createdAt,
           };
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error('팀 생성 실패:', error);
 
-          // 백엔드 에러 메시지 추출
-          const errorMessage = error?.response?.data?.message || '팀 생성에 실패했습니다.';
+          const errorMessage = getApiErrorMessage(error, '팀 생성에 실패했습니다.');
           set({ teamsError: errorMessage });
 
           // 에러 객체에 메시지 추가하여 throw
-          const enhancedError = new Error(errorMessage);
-          (enhancedError as any).originalError = error;
-          throw enhancedError;
+          throw new Error(errorMessage);
         }
       },
 
@@ -204,19 +207,8 @@ export const useTeamStore = create<TeamStore>()(
           currentTeamDetails: {
             team: state.currentTeamDetails?.team || null,
             members,
-            settings: state.currentTeamDetails?.settings || null,
             todayProblem: state.currentTeamDetails?.todayProblem || null,
-          },
-          detailError: null,
-        })),
-
-      setCurrentTeamSettings: (settings) =>
-        set((state) => ({
-          currentTeamDetails: {
-            team: state.currentTeamDetails?.team || null,
-            members: state.currentTeamDetails?.members || [],
-            settings,
-            todayProblem: state.currentTeamDetails?.todayProblem || null,
+            squads: state.currentTeamDetails?.squads || [],
           },
           detailError: null,
         })),
@@ -245,9 +237,12 @@ export const useTeamStore = create<TeamStore>()(
       setDetailError: (error: TeamDetailError | null) => set({ detailError: error }),
 
       // 팀 상세 Actions (API 통합)
-      fetchTeamDetails: async (teamId) => {
+      fetchTeamDetails: async (teamId, options = {}) => {
+        const { silent = false } = options;
         try {
-          set({ detailLoading: true, detailError: null });
+          if (!silent) {
+            set({ detailLoading: true, detailError: null });
+          }
 
           // 통합 API로 모든 데이터 한번에 로드
           const detail = await teamsApi.getTeamDetail(teamId);
@@ -257,17 +252,21 @@ export const useTeamStore = create<TeamStore>()(
             currentTeamDetails: {
               team: detail.team,
               members: detail.members,
-              settings: detail.recommendationSettings,
               todayProblem: detail.todayProblem,
+              squads: detail.squads ?? [],
             },
             detailError: null,
           });
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error('팀 데이터 로딩 실패:', error);
 
+          if (silent) {
+            return;
+          }
+
           // HTTP 상태 코드와 에러 코드에 따라 에러 타입 구분
-          const status = error?.response?.status;
-          const errorCode = error?.response?.data?.code;
+          const status = getApiErrorStatus(error);
+          const errorCode = getApiErrorCode(error);
           let errorType: TeamDetailErrorType = 'unknown';
           let errorMessage = '팀 정보를 불러오는데 실패했습니다.';
 
@@ -289,16 +288,9 @@ export const useTeamStore = create<TeamStore>()(
             }
           });
         } finally {
-          set({ detailLoading: false });
-        }
-      },
-
-      refreshTeamSettings: async (teamId) => {
-        try {
-          const settings = await teamsApi.getRecommendationSettings(teamId);
-          get().setCurrentTeamSettings(settings);
-        } catch (error) {
-          console.error('추천 설정 로딩 실패:', error);
+          if (!silent) {
+            set({ detailLoading: false });
+          }
         }
       },
 
@@ -317,9 +309,9 @@ export const useTeamStore = create<TeamStore>()(
               currentTeamDetails: null,
             });
           }
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error('팀 탈퇴 실패:', error);
-          const errorMessage = error?.response?.data?.message || '팀 탈퇴에 실패했습니다.';
+          const errorMessage = getApiErrorMessage(error, '팀 탈퇴에 실패했습니다.');
           set({ teamsError: errorMessage });
           throw new Error(errorMessage);
         }
@@ -340,12 +332,42 @@ export const useTeamStore = create<TeamStore>()(
               currentTeamDetails: null,
             });
           }
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error('팀 해산 실패:', error);
-          const errorMessage = error?.response?.data?.message || '팀 해산에 실패했습니다.';
+          const errorMessage = getApiErrorMessage(error, '팀 해산에 실패했습니다.');
           set({ teamsError: errorMessage });
           throw new Error(errorMessage);
         }
+      },
+
+      // 스쿼드 Actions (API 연동은 추후, 현재는 팀 상세 재조회로 동기화)
+      createSquad: async (teamId: number, name: string) => {
+        const { squadsApi } = await import('../api/squads');
+        await squadsApi.createSquad(teamId, { name });
+        await get().fetchTeamDetails(teamId);
+      },
+
+      updateSquad: async (teamId: number, squadId: number, name: string) => {
+        const { squadsApi } = await import('../api/squads');
+        await squadsApi.updateSquad(teamId, squadId, { name });
+        await get().fetchTeamDetails(teamId);
+      },
+
+      deleteSquad: async (teamId: number, squadId: number) => {
+        const { squadsApi } = await import('../api/squads');
+        await squadsApi.deleteSquad(teamId, squadId);
+        await get().fetchTeamDetails(teamId);
+      },
+
+      assignMember: async (teamId: number, squadId: number, memberId: number) => {
+        const { squadsApi } = await import('../api/squads');
+        await squadsApi.assignMember(teamId, squadId, memberId);
+        await get().fetchTeamDetails(teamId);
+      },
+
+      refreshSquadSettings: async (teamId: number, squadId: number) => {
+        void squadId;
+        await get().fetchTeamDetails(teamId);
       },
 
       // 전체 초기화
