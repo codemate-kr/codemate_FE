@@ -1,21 +1,20 @@
 import { memo, useMemo } from 'react';
 import { Signal, Hash, Users, Tag, Calendar, HelpCircle } from 'lucide-react';
-import { getTierName, getTierColor } from '../../../../utils/tierUtils';
-import { DayToKorean } from '../../../../utils/dayUtils';
-import { getTagNames } from '../../../../constants/algorithmTags';
-import type { TeamRecommendationSettingsResponse, SolvedacTier } from '../../../../api/teams';
+import { getTierName, getTierColor } from '../../../../../utils/tierUtils';
+import { DayToKorean } from '../../../../../utils/dayUtils';
+import { getTagNames } from '../../../../../constants/algorithmTags';
+import type { SolvedacTier } from '../../../../../api/teams';
+import type { SquadRecommendationSettingsResponse } from '../../../../../api/squads';
 // 상수를 컴포넌트 외부로 추출
 const ALL_DAYS = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'] as const;
 const DAYS_FROM_SUNDAY = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'] as const;
 
 interface TeamInfoSectionProps {
-  recommendationSettings: TeamRecommendationSettingsResponse | null;
-  selectedSquadName?: string | null;
+  recommendationSettings: SquadRecommendationSettingsResponse | null;
 }
 
 export default memo(function TeamInfoSection({
   recommendationSettings,
-  selectedSquadName,
 }: TeamInfoSectionProps) {
   // 영어 요일을 한국어로 변환
   const koreanDays = useMemo(() => {
@@ -33,9 +32,6 @@ export default memo(function TeamInfoSection({
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold text-gray-900">문제 추천 정보</h3>
-          {selectedSquadName && (
-            <span className="text-xs font-medium text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded">{selectedSquadName}</span>
-          )}
         </div>
       </div>
       <div className="space-y-2 text-sm">

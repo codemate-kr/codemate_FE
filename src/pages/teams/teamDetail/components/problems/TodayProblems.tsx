@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Calendar, RefreshCw, ExternalLink, CheckCircle, Settings, Loader2, Sparkles, Pause, Play, RotateCcw, Clock } from 'lucide-react';
-import { teamsApi, type TodayProblemsResponse, type TeamRecommendationSettingsResponse } from '../../../api/teams';
-import { getTierIcon } from '../../../components/common/TierIcon';
-import { verifyProblemSolved, triggerSuccessConfetti, type VerifyErrorType } from '../../../utils/problemVerify';
-import { useTimerStore } from '../../../store/timerStore';
-import { useTimer, formatDuration } from '../../../hooks/useTimer';
-import Tooltip from '../../../components/common/Tooltip';
+import { type TodayProblemsResponse } from '../../../../../api/teams';
+import { squadsApi, type SquadRecommendationSettingsResponse } from '../../../../../api/squads';
+import { getTierIcon } from '../../../../../components/common/TierIcon';
+import { verifyProblemSolved, triggerSuccessConfetti, type VerifyErrorType } from '../../../../../utils/problemVerify';
+import { getApiErrorCode, getApiErrorMessage, getApiErrorStatus } from '../../../../../utils/apiError';
+import { useTimerStore } from '../../../../../store/timerStore';
+import { useTimer, formatDuration } from '../../../../../hooks/useTimer';
+import Tooltip from '../../../../../components/common/Tooltip';
 
 // 개별 문제의 타이머 표시 컴포넌트 (일시정지/초기화 버튼 포함)
-function ProblemTimerDisplay({ problemId, problemTitle, isSolved, solvedTime }: { problemId: number; problemTitle: string; isSolved: boolean; solvedTime?: string }) {
+function ProblemTimerDisplay({ problemId, problemTitle, isSolved, solvedTime }: { problemId: number; problemTitle: string; isSolved: boolean | null; solvedTime?: string }) {
   const { isRunning, isPaused, isCompleted, completedDuration, pause, resume, reset, formattedTime } = useTimer({ problemId, problemTitle });
 
   // 해결된 문제: solvedTime이 있으면 그것을, 없으면 로컬 타이머 사용
@@ -52,7 +54,11 @@ function ProblemTimerDisplay({ problemId, problemTitle, isSolved, solvedTime }: 
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            isPaused ? resume() : pause();
+            if (isPaused) {
+              resume();
+            } else {
+              pause();
+            }
           }}
           className={`p-1 rounded-full transition-colors ${isPaused ? 'text-green-500 hover:bg-green-100' : 'text-orange-400 hover:bg-orange-100'}`}
           title={isPaused ? '재개' : '일시정지'}
@@ -92,15 +98,27 @@ interface TodayProblemsProps {
   onShowToast: (message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
   onOpenSettings?: () => void;
   onRefreshActivity?: () => void;
-  recommendationSettings?: TeamRecommendationSettingsResponse | null;
+  recommendationSettings?: SquadRecommendationSettingsResponse | null;
   initialTodayProblems?: TodayProblemsResponse | null;
+  selectedSquadId?: number | null;
   isDemo?: boolean;
-  selectedSquadName?: string | null;
 }
 
-export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast, onOpenSettings, onRefreshActivity, recommendationSettings, initialTodayProblems, isDemo = false, selectedSquadName }: TodayProblemsProps) {
+export function TodayProblems({
+  teamId,
+  isTeamLeader,
+  isTeamMember,
+  onShowToast,
+  onOpenSettings,
+  onRefreshActivity,
+  recommendationSettings,
+  initialTodayProblems,
+  selectedSquadId,
+  isDemo = false,
+}: TodayProblemsProps) {
   // 통합 API에서 받아온 초기 데이터 사용 (중복 API 호출 방지)
   const [todayProblems, setTodayProblems] = useState<TodayProblemsResponse | null>(initialTodayProblems ?? null);
+  const [todayProblemsBySquad, setTodayProblemsBySquad] = useState<Map<number, TodayProblemsResponse | null>>(new Map());
   const [problemsLoading, setProblemsLoading] = useState(false);
   const [verifyingProblemId, setVerifyingProblemId] = useState<number | null>(null);
   const [showErrorFlash, setShowErrorFlash] = useState(false);
@@ -119,19 +137,45 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isDemo]);
 
-  // initialTodayProblems가 변경되면 상태 동기화
+  // 서버에서 내려온 스쿼드별 초기 데이터 동기화
   useEffect(() => {
-    if (initialTodayProblems !== undefined) {
-      setTodayProblems(initialTodayProblems);
+    if (!selectedSquadId) return;
+    setTodayProblemsBySquad((prev) => {
+      const cached = prev.get(selectedSquadId);
+      const nextFromServer = initialTodayProblems ?? null;
+      const shouldSync =
+        !prev.has(selectedSquadId) ||
+        (nextFromServer !== null && cached?.recommendationId !== nextFromServer.recommendationId);
+      if (!shouldSync) return prev;
+      const next = new Map(prev);
+      next.set(selectedSquadId, nextFromServer);
+      return next;
+    });
+  }, [selectedSquadId, initialTodayProblems]);
+
+  // 현재 선택된 스쿼드의 문제셋 표시
+  useEffect(() => {
+    if (!selectedSquadId) {
+      setTodayProblems(initialTodayProblems ?? null);
+      return;
     }
-  }, [initialTodayProblems]);
+    if (todayProblemsBySquad.has(selectedSquadId)) {
+      setTodayProblems(todayProblemsBySquad.get(selectedSquadId) ?? null);
+      return;
+    }
+    setTodayProblems(initialTodayProblems ?? null);
+  }, [selectedSquadId, initialTodayProblems, todayProblemsBySquad]);
 
   const handleRefreshProblems = async () => {
     if (!isTeamLeader) return;
+    if (!selectedSquadId) {
+      onShowToast('스쿼드 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.', 'warning');
+      return;
+    }
 
     setProblemsLoading(true);
     try {
-      const newProblems = await teamsApi.createManualRecommendation(teamId);
+      const newProblems = await squadsApi.createManualRecommendation(teamId, selectedSquadId);
       // 오전 6시 기준으로 날짜 계산 (6시 전이면 전날 날짜)
       const now = new Date();
       const missionDate = new Date(now);
@@ -142,14 +186,23 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
         ...newProblems,
         createdAt: newProblems.createdAt || missionDate.toISOString(),
       });
+      setTodayProblemsBySquad((prev) => {
+        if (!selectedSquadId) return prev;
+        const next = new Map(prev);
+        next.set(selectedSquadId, {
+          ...newProblems,
+          createdAt: newProblems.createdAt || missionDate.toISOString(),
+        });
+        return next;
+      });
       onShowToast('✨ 오늘의 미션이 생성되었습니다!', 'success');
       onRefreshActivity?.();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('수동 미션 생성 실패:', error);
 
-      const status = error?.response?.status;
-      const message = error?.response?.data?.message || error?.message;
-      const errorCode = error?.response?.data?.code;
+      const status = getApiErrorStatus(error);
+      const message = getApiErrorMessage(error, '');
+      const errorCode = getApiErrorCode(error);
 
       // Handle specific error cases from backend
       if (status === 409 && errorCode === '5009') {
@@ -206,11 +259,18 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
         }
 
         if (todayProblems) {
-          setTodayProblems({
+          const updated = {
             ...todayProblems,
             problems: todayProblems.problems.map(p =>
               p.problemId === problemId ? { ...p, isSolved: true, solvedTime } : p
             ),
+          };
+          setTodayProblems(updated);
+          setTodayProblemsBySquad((prev) => {
+            if (!selectedSquadId) return prev;
+            const next = new Map(prev);
+            next.set(selectedSquadId, updated);
+            return next;
           });
         }
         onShowToast('문제 해결을 축하합니다!');
@@ -226,11 +286,18 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
         stopTimer(problemId);
         // 문제 상태 업데이트
         if (todayProblems) {
-          setTodayProblems({
+          const updated = {
             ...todayProblems,
             problems: todayProblems.problems.map(p =>
               p.problemId === problemId ? { ...p, isSolved: true } : p
             ),
+          };
+          setTodayProblems(updated);
+          setTodayProblemsBySquad((prev) => {
+            if (!selectedSquadId) return prev;
+            const next = new Map(prev);
+            next.set(selectedSquadId, updated);
+            return next;
           });
         }
         // 팀 활동 현황 갱신
@@ -277,26 +344,10 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
               <Calendar className="h-4 w-4 text-blue-600" />
             </div>
             <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate">오늘의 미션</h3>
-            {selectedSquadName && (
-              <span className="text-xs font-medium text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded flex-shrink-0">{selectedSquadName}</span>
-            )}
-            {todayProblems && todayProblems.problems.length > 0 && (
+{todayProblems && todayProblems.problems.length > 0 && (
               <span className="text-sm text-blue-600 font-medium flex-shrink-0">· {todayProblems.problems.length}개</span>
             )}
             <span className="text-xs text-gray-400 flex-shrink-0">· 오전 6시 초기화</span>
-          </div>
-          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-            {isTeamLeader && onOpenSettings && (
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={onOpenSettings}
-                  className="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap"
-                >
-                  <Settings className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">문제 추천 설정</span>
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>

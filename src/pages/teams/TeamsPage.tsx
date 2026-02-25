@@ -10,6 +10,7 @@ import CreateTeamModal from './components/CreateTeamModal';
 import { TeamCard } from './components/TeamCard';
 import InvitationBanner from '../../components/common/InvitationBanner';
 import type { CreateTeamRequest, MyTeamResponse } from '../../api/teams';
+import { getApiErrorMessage } from '../../utils/apiError';
 
 // 비로그인 시 보여줄 데모 팀 데이터
 const DEMO_TEAMS: MyTeamResponse[] = [
@@ -71,8 +72,8 @@ export default function TeamsPage() {
       const newTeam = await createTeam(data);
       setShowCreateModal(false);
       toast(`${newTeam.name} 팀이 생성되었습니다`);
-    } catch (error: any) {
-      const errorMessage = error?.message || '팀 생성에 실패했습니다.';
+    } catch (error: unknown) {
+      const errorMessage = getApiErrorMessage(error, '팀 생성에 실패했습니다.');
       toast(errorMessage, 'error');
       setShowCreateModal(false);
     } finally {
