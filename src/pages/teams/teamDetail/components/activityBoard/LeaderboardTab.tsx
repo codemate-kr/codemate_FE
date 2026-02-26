@@ -1,19 +1,29 @@
 import type { TeamActivityMember } from '../../../../../api/teams';
-import { MemberAvatar } from './common';
+import { DayRangeToggle, MemberAvatar } from './common';
 
 interface LeaderboardTabProps {
   members: TeamActivityMember[];
   currentMemberId: number;
+  dayRange: 7 | 30;
+  onDayRangeChange: (range: 7 | 30) => void;
 }
 
-export default function LeaderboardTab({ members, currentMemberId }: LeaderboardTabProps) {
+export default function LeaderboardTab({
+  members,
+  currentMemberId,
+  dayRange,
+  onDayRangeChange,
+}: LeaderboardTabProps) {
   const myRank = members.find((m) => m.memberId === currentMemberId)?.rank || 0;
   const myIndex = members.findIndex((m) => m.memberId === currentMemberId);
 
   return (
     <div className="space-y-3 max-sm:space-y-2">
-      <div className="text-[11px] max-sm:text-[10px] text-gray-400 text-right">
-        최근 30일 기준
+      <div className="flex items-center justify-between">
+        <DayRangeToggle dayRange={dayRange} onChange={onDayRangeChange} />
+        <div className="text-[11px] max-sm:text-[10px] text-gray-400 text-right">
+          최근 {dayRange}일 기준
+        </div>
       </div>
       <div className="space-y-1.5 max-sm:space-y-1">
         {members.map((member) => {

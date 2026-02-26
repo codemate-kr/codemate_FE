@@ -519,4 +519,10 @@ export const teamsApi = {
     ]);
     return buildLegacyActivityFromV2(activity, leaderboard);
   },
+
+  // 참여 현황 전용: leaderboard 호출 없이 activity만 변환
+  getTeamActivityParticipationV2: async (teamId: number, days: number = 30): Promise<TeamActivityResponse> => {
+    const activity = await teamsApi.getTeamActivityV2(teamId, days);
+    return buildLegacyActivityFromV2(activity);
+  },
 };

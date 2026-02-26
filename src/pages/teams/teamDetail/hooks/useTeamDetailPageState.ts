@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { toast } from '../../../../components/common/toast';
-import { teamsApi, type TeamActivityResponse } from '../../../../api/teams';
+import { teamsApi } from '../../../../api/teams';
 import { useTeamStore, useCurrentTeamDetails, useDetailLoading, useDetailError, useTeams } from '../../../../store/teamStore';
 import { useAuthStore } from '../../../../store/authStore';
 import { useLoginModal } from '../../../../contexts/LoginModalContext';
@@ -54,8 +54,9 @@ export function useTeamDetailPageState() {
   const [showSquadManagement, setShowSquadManagement] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [selectedCellInfo, setSelectedCellInfo] = useState<SelectedCellInfo | null>(null);
-  const [activityData, setActivityData] = useState<TeamActivityResponse | null>(isDemo ? demoActivityData : null);
-  const [activityLoading, setActivityLoading] = useState(false);
+  const [activityData] = useState(isDemo ? demoActivityData : null);
+  const [activityLoading] = useState(false);
+  const [activityReloadKey, setActivityReloadKey] = useState(0);
 
   const teamInfo = currentTeamDetails?.team ?? null;
   const teamMembers = useMemo(
@@ -124,20 +125,6 @@ export function useTeamDetailPageState() {
     setSelectedSquadId(mySquad?.squadId ?? squads[0]?.squadId ?? null);
   }, [squads, selectedSquadId, currentUserMember?.squadId]);
 
-  useEffect(() => {
-    if (isDemo) return;
-    if (numericTeamId) {
-      setActivityLoading(true);
-      teamsApi.getTeamActivityViewV2(numericTeamId, 30)
-        .then(setActivityData)
-        .catch((error) => {
-          console.error('팀 활동 현황 로드 실패:', error);
-          setActivityData(null);
-        })
-        .finally(() => setActivityLoading(false));
-    }
-  }, [isDemo, numericTeamId]);
-
   const handleSquadSettingsUpdate = useCallback(async () => {
     if (!numericTeamId || !selectedSquad) return;
     const { refreshSquadSettings } = useTeamStore.getState();
@@ -146,11 +133,7 @@ export function useTeamDetailPageState() {
 
   const handleRefreshActivity = useCallback(() => {
     if (isReadOnly || !numericTeamId) return;
-    teamsApi.getTeamActivityViewV2(numericTeamId, 30)
-      .then(setActivityData)
-      .catch((error) => {
-        console.error('팀 활동 현황 갱신 실패:', error);
-      });
+    setActivityReloadKey((prev) => prev + 1);
   }, [isReadOnly, numericTeamId]);
 
   const handleRetry = useCallback(() => {
@@ -279,6 +262,7 @@ export function useTeamDetailPageState() {
       selectedCellInfo,
       activityData,
       activityLoading,
+      activityReloadKey,
     },
     ui: {
       showSquadSettings,

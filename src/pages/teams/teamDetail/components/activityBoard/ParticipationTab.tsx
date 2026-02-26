@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { TeamActivityDailyActivity, TeamActivityMember, TeamMemberResponse } from '../../../../../api/teams';
 import type { SquadResponse } from '../../../../../api/squads';
@@ -14,6 +14,8 @@ interface ParticipationTabProps {
   onCellSelect: (info: SelectedCellInfo | null) => void;
   squads?: SquadResponse[];
   teamMembers?: TeamMemberResponse[];
+  dayRange: 7 | 30;
+  onDayRangeChange: (range: 7 | 30) => void;
 }
 
 export default function ParticipationTab({
@@ -24,8 +26,9 @@ export default function ParticipationTab({
   onCellSelect,
   squads,
   teamMembers,
+  dayRange,
+  onDayRangeChange,
 }: ParticipationTabProps) {
-  const [dayRange, setDayRange] = useState<7 | 30>(7);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const recentDays = getRecentDays(dayRange);
 
@@ -94,7 +97,7 @@ export default function ParticipationTab({
   };
 
   const handleDayRangeChange = (range: 7 | 30) => {
-    setDayRange(range);
+    onDayRangeChange(range);
     onCellSelect(null);
   };
 

@@ -97,10 +97,12 @@ interface TodayProblemsProps {
   isTeamMember: boolean;
   onShowToast: (message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
   onOpenSettings?: () => void;
+  onOpenSquadManagement?: () => void;
   onRefreshActivity?: () => void;
   recommendationSettings?: SquadRecommendationSettingsResponse | null;
   initialTodayProblems?: TodayProblemsResponse | null;
   selectedSquadId?: number | null;
+  selectedSquadMemberCount?: number;
   isDemo?: boolean;
 }
 
@@ -110,10 +112,12 @@ export function TodayProblems({
   isTeamMember,
   onShowToast,
   onOpenSettings,
+  onOpenSquadManagement,
   onRefreshActivity,
   recommendationSettings,
   initialTodayProblems,
   selectedSquadId,
+  selectedSquadMemberCount = 0,
   isDemo = false,
 }: TodayProblemsProps) {
   // 통합 API에서 받아온 초기 데이터 사용 (중복 API 호출 방지)
@@ -170,6 +174,10 @@ export function TodayProblems({
     if (!isTeamLeader) return;
     if (!selectedSquadId) {
       onShowToast('스쿼드 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.', 'warning');
+      return;
+    }
+    if (selectedSquadMemberCount < 1) {
+      onShowToast('현재 스쿼드에 배정된 팀원이 없어 미션을 생성할 수 없습니다.', 'warning');
       return;
     }
 
@@ -387,7 +395,7 @@ export function TodayProblems({
             ))}
           </div>
         ) : !recommendationSettings?.isActive ? (
-          <div className="text-center py-8">
+          <div className="text-center py-5">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-50 mb-3">
               <Calendar className="h-7 w-7 text-blue-400" />
             </div>
@@ -396,7 +404,7 @@ export function TodayProblems({
                 ? '아직 문제 추천이 설정되지 않았습니다'
                 : '문제 추천이 설정되지 않았습니다'}
             </p>
-            <p className="text-xs text-gray-500 mb-5">
+            <p className="text-xs text-gray-500 mb-3">
               {isTeamLeader
                 ? '문제 추천을 설정하면 팀원들에게 미션이 자동으로 제공됩니다.'
                 : '팀장이 문제 추천을 설정하면 이곳에 표시됩니다.'}
@@ -510,15 +518,36 @@ export function TodayProblems({
               </div>
             ))}
           </div>
+        ) : selectedSquadMemberCount < 1 ? (
+          <div className="text-center py-5">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-amber-50 mb-3">
+              <Calendar className="h-7 w-7 text-amber-500" />
+            </div>
+            <p className="text-sm font-medium text-gray-900 mb-1">
+              현재 스쿼드에 배정된 팀원이 없습니다
+            </p>
+            <p className="text-xs text-gray-500 mb-3">
+              팀원이 있어야 미션이 제공됩니다.
+            </p>
+            {isTeamLeader && onOpenSquadManagement && (
+              <button
+                onClick={onOpenSquadManagement}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+              >
+                <Settings className="h-4 w-4" />
+                스쿼드 관리
+              </button>
+            )}
+          </div>
         ) : (
-          <div className="text-center py-8">
+          <div className="text-center py-5">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-50 mb-3">
               <Calendar className="h-7 w-7 text-green-500" />
             </div>
             <p className="text-sm font-medium text-gray-900 mb-1">
               설정이 완료되었습니다
             </p>
-            <p className="text-xs text-gray-500 mb-5">
+            <p className="text-xs text-gray-500 mb-3">
               추천 요일마다 오전 6시에 미션이 제공되며, 오전 9시에 이메일이 발송됩니다.
             </p>
 

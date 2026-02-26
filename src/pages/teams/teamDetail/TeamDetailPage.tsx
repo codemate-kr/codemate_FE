@@ -143,20 +143,25 @@ export default function TeamDetailPage() {
               isTeamMember={data.isTeamMember}
               onShowToast={toast}
               onOpenSettings={actions.handleOpenSquadSettings}
+              onOpenSquadManagement={() => actions.setShowSquadManagement(true)}
               onRefreshActivity={actions.handleRefreshActivity}
               recommendationSettings={data.activeRecommendationSettings}
               initialTodayProblems={data.activeTodayProblems}
               selectedSquadId={data.selectedSquad?.squadId ?? null}
+              selectedSquadMemberCount={data.selectedSquad?.memberCount ?? 0}
               isDemo={auth.isDemo}
             />
 
             <div className="mt-6">
               <TeamActivityBoard
+                teamId={route.numericTeamId!}
                 activityData={data.activityData}
                 loading={data.activityLoading}
+                reloadKey={data.activityReloadKey}
                 onCellSelect={actions.setSelectedCellInfo}
                 squads={data.squads}
                 teamMembers={data.teamMembers}
+                isDemo={auth.isDemo}
               />
             </div>
 

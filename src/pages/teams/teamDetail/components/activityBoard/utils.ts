@@ -67,7 +67,11 @@ export const getMemberDayStatsFromApi = (
   const memberSolvedInfo = dayActivity.memberSolved?.find((m) => Number(m.memberId) === memberId);
   const rawMemberSolved = memberSolvedInfo?.solved || {};
   const memberSpecificProblems = dayActivity.memberProblems?.find((m) => Number(m.memberId) === memberId)?.problems;
-  const sourceProblems = memberSpecificProblems ?? (dayActivity.problems || []);
+  const hasMemberScopedData = Boolean(memberSolvedInfo) || Array.isArray(memberSpecificProblems);
+  if (!hasMemberScopedData) {
+    return { solvedCount: 0, totalCount: 0, problems: [], memberSolved: {} };
+  }
+  const sourceProblems = memberSpecificProblems ?? [];
 
   // 클릭 시마다 독립 배열을 만들고 problemId 기준으로 중복 제거해 누적 렌더를 방지한다.
   const problemById = new Map<number, TeamActivityProblem>();
