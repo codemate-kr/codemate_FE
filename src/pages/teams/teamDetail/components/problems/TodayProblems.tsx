@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Calendar, RefreshCw, ExternalLink, CheckCircle, Settings, Loader2, Sparkles, Pause, Play, RotateCcw, Clock } from 'lucide-react';
 import { type TodayProblemsResponse } from '../../../../../api/teams';
 import { squadsApi, type SquadRecommendationSettingsResponse } from '../../../../../api/squads';
+import { recommendationApi } from '../../../../../api/recommendation';
 import { getTierIcon } from '../../../../../components/common/TierIcon';
 import { verifyProblemSolved, triggerSuccessConfetti, type VerifyErrorType } from '../../../../../utils/problemVerify';
 import { getApiErrorCode, getApiErrorMessage, getApiErrorStatus } from '../../../../../utils/apiError';
@@ -128,6 +129,7 @@ export function TodayProblems({
   const [verifyingProblemId, setVerifyingProblemId] = useState<number | null>(null);
   const [showErrorFlash, setShowErrorFlash] = useState(false);
   const [demoFailMode, setDemoFailMode] = useState(false);
+  const [verifiableProblemIds, setVerifiableProblemIds] = useState<Set<number> | null>(null);
 
   // 데모 모드: Cmd+Shift+F (Mac) 또는 Ctrl+Shift+F (Windows)로 실패 모드 토글
   useEffect(() => {
@@ -171,6 +173,31 @@ export function TodayProblems({
     setTodayProblems(initialTodayProblems ?? null);
   }, [selectedSquadId, initialTodayProblems, todayProblemsBySquad]);
 
+  useEffect(() => {
+    if (isDemo || !isTeamMember) {
+      setVerifiableProblemIds(null);
+      return;
+    }
+
+    let cancelled = false;
+    recommendationApi.getMyTodayProblemsV2()
+      .then((response) => {
+        if (cancelled) return;
+        const teamToday = response.teams.find((team) => team.teamId === teamId);
+        const ids = new Set<number>((teamToday?.problems ?? []).map((problem) => problem.problemId));
+        setVerifiableProblemIds(ids);
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        console.error('내 오늘 추천 문제(v2) 로딩 실패:', error);
+        setVerifiableProblemIds(new Set());
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isDemo, isTeamMember, teamId]);
+
   const handleRefreshProblems = async () => {
     if (!isTeamLeader) return;
     if (!selectedSquadId) {
@@ -204,6 +231,15 @@ export function TodayProblems({
         });
         return next;
       });
+      recommendationApi.getMyTodayProblemsV2()
+        .then((response) => {
+          const teamToday = response.teams.find((team) => team.teamId === teamId);
+          const ids = new Set<number>((teamToday?.problems ?? []).map((problem) => problem.problemId));
+          setVerifiableProblemIds(ids);
+        })
+        .catch(() => {
+          // 인증 가능 체크용 보조 호출 실패는 UI를 막지 않는다.
+        });
       onShowToast('✨ 오늘의 미션이 생성되었습니다!', 'success');
       onRefreshActivity?.();
     } catch (error: unknown) {
@@ -499,9 +535,21 @@ export function TodayProblems({
                   해결 완료
                 </button>
               ) : (
+                (() => {
+                  const isVerifiableByTodayList = !isTeamMember
+                    ? false
+                    : (verifiableProblemIds === null || verifiableProblemIds.has(problem.problemId));
+                  const isDisabled = !isTeamMember || !isVerifiableByTodayList || verifyingProblemId === problem.problemId;
+                  const buttonLabel = !isTeamMember
+                    ? '팀원만 인증 가능'
+                    : !isVerifiableByTodayList
+                      ? '내 추천 문제 아님'
+                      : '해결 인증하기';
+
+                  return (
                 <button
                   onClick={() => isTeamMember && handleVerifyProblem(problem.problemId)}
-                  disabled={!isTeamMember || verifyingProblemId === problem.problemId}
+                  disabled={isDisabled}
                   className="w-full py-2.5 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-500"
                 >
                   {verifyingProblemId === problem.problemId ? (
@@ -512,10 +560,12 @@ export function TodayProblems({
                   ) : (
                     <>
                       <CheckCircle className="h-4 w-4" />
-                      {isTeamMember ? '해결 인증하기' : '팀원만 인증 가능'}
+                      {buttonLabel}
                     </>
                   )}
                 </button>
+                  );
+                })()
               )}
               </div>
             ))}
