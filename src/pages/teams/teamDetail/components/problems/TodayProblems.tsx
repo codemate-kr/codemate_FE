@@ -8,6 +8,7 @@ import { getApiErrorCode, getApiErrorMessage, getApiErrorStatus } from '../../..
 import { useTimerStore } from '../../../../../store/timerStore';
 import { useTimer, formatDuration } from '../../../../../hooks/useTimer';
 import Tooltip from '../../../../../components/common/Tooltip';
+import { MissionActionButton } from './MissionActionButton';
 
 // 개별 문제의 타이머 표시 컴포넌트 (일시정지/초기화 버튼 포함)
 function ProblemTimerDisplay({ problemId, problemTitle, isSolved, solvedTime }: { problemId: number; problemTitle: string; isSolved: boolean | null; solvedTime?: string }) {
@@ -410,13 +411,14 @@ export function TodayProblems({
                 : '팀장이 문제 추천을 설정하면 이곳에 표시됩니다.'}
             </p>
             {isTeamLeader && onOpenSettings && (
-              <button
+              <MissionActionButton
                 onClick={onOpenSettings}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                variant="secondary"
+                size="md"
+                leadingIcon={<Settings className="h-3.5 w-3.5" />}
               >
-                <Settings className="h-4 w-4" />
                 문제 추천 설정하기
-              </button>
+              </MissionActionButton>
             )}
           </div>
         ) : todayProblems && todayProblems.problems.length > 0 ? (
@@ -530,13 +532,14 @@ export function TodayProblems({
               팀원이 있어야 미션이 제공됩니다.
             </p>
             {isTeamLeader && onOpenSquadManagement && (
-              <button
+              <MissionActionButton
                 onClick={onOpenSquadManagement}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                variant="secondary"
+                size="md"
+                leadingIcon={<Settings className="h-3.5 w-3.5" />}
               >
-                <Settings className="h-4 w-4" />
                 스쿼드 관리
-              </button>
+              </MissionActionButton>
             )}
           </div>
         ) : (
@@ -553,23 +556,27 @@ export function TodayProblems({
 
             {isTeamLeader && (
               <>
-                <button
+                <MissionActionButton
                   onClick={handleRefreshProblems}
                   disabled={problemsLoading}
-                  className="inline-flex items-center px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                  variant="primary"
+                  size="md"
+                  leadingIcon={
+                    problemsLoading
+                      ? <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                      : <Sparkles className="h-3.5 w-3.5" />
+                  }
                 >
                   {problemsLoading ? (
                     <>
-                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                       미션 생성 중...
                     </>
                   ) : (
                     <>
-                      <Sparkles className="h-4 w-4 mr-2" />
                       바로 미션 받기
                     </>
                   )}
-                </button>
+                </MissionActionButton>
                 <p className="text-xs text-gray-400 mt-2">
                   하루 1회 · 이메일 즉시 발송
                 </p>
