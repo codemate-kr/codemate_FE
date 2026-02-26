@@ -38,7 +38,15 @@ export interface MyTodayProblemsResponse {
 }
 
 export const recommendationApi = {
-  // 로그인한 유저가 속한 모든 팀의 오늘 추천 문제 조회
+  // 로그인한 유저가 속한 모든 팀의 오늘 추천 문제 조회 (v2)
+  getMyTodayProblemsV2: async (): Promise<MyTodayProblemsResponse> => {
+    const response = await apiClient.get<ApiResponse<MyTodayProblemsResponse>>(
+      '/recommendation/my/today-problems/v2'
+    );
+    return response.data.data;
+  },
+
+  // 로그인한 유저가 속한 모든 팀의 오늘 추천 문제 조회 (deprecated)
   getMyTodayProblems: async (): Promise<MyTodayProblemsResponse> => {
     const response = await apiClient.get<ApiResponse<MyTodayProblemsResponse>>(
       '/recommendation/my/today-problems'
