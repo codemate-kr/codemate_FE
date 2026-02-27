@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { Search, Users } from 'lucide-react';
 import { PublicTeamCard } from './components/PublicTeamCard';
 import { teamsApi, type PublicTeamResponse } from '../../../api/teams';
@@ -7,29 +8,20 @@ import { teamsApi, type PublicTeamResponse } from '../../../api/teams';
 export default function TeamListPage() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [teams, setTeams] = useState<PublicTeamResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchPublicTeams = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        const data = await teamsApi.getPublicTeams();
-        // 최신 팀이 먼저 나오도록 teamId 역순 정렬
-        const sortedData = [...data].sort((a, b) => b.teamId - a.teamId);
-        setTeams(sortedData);
-      } catch (err) {
-        setError('팀 목록을 불러오는데 실패했습니다');
-        console.error('Failed to fetch public teams:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPublicTeams();
-  }, []);
+  const [expandedTeamId, setExpandedTeamId] = useState<number | null>(null);
+  const {
+    data: teams = [],
+    isLoading,
+    error,
+  } = useQuery<PublicTeamResponse[], Error>({
+    queryKey: ['publicTeams'],
+    queryFn: async () => {
+      const data = await teamsApi.getPublicTeams();
+      return [...data].sort((a, b) => b.teamId - a.teamId);
+    },
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
 
   const filteredTeams = teams.filter(team =>
     team.teamName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -45,9 +37,6 @@ export default function TeamListPage() {
       <div className="mb-6 sm:mb-8">
         <div className="flex items-center gap-2 flex-wrap">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">팀 찾기</h1>
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-700">
-            개발 중
-          </span>
         </div>
         <p className="mt-1 sm:mt-2 text-sm text-gray-600">
           다양한 공개 스터디 팀을 탐색하고 참여하세요
@@ -94,7 +83,7 @@ export default function TeamListPage() {
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               오류가 발생했습니다
             </h3>
-            <p className="text-sm text-gray-500">{error}</p>
+            <p className="text-sm text-gray-500">팀 목록을 불러오는데 실패했습니다</p>
           </div>
         ) : filteredTeams.length === 0 ? (
           <div className="text-center py-16">
@@ -111,7 +100,9 @@ export default function TeamListPage() {
             <PublicTeamCard
               key={team.teamId}
               team={team}
-              onClick={() => handleTeamClick(team.teamId)}
+              isExpanded={expandedTeamId === team.teamId}
+              onToggle={() => setExpandedTeamId((prev) => (prev === team.teamId ? null : team.teamId))}
+              onNavigate={() => handleTeamClick(team.teamId)}
             />
           ))
         )}

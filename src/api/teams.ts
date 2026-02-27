@@ -34,7 +34,7 @@ export type RecommendationDayOfWeek = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THUR
 export type ProblemDifficultyPreset = 'EASY' | 'NORMAL' | 'HARD' | 'CUSTOM';
 
 // solved.ac 티어 시스템 (Bronze5 = 1, ..., Platinum5 = 20)
-export type SolvedacTier = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30;
+export type SolvedacTier = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30;
 
 export interface DifficultyRange {
   minTier: SolvedacTier;
@@ -222,9 +222,22 @@ export interface PublicTeamResponse {
   description?: string;
   leaderHandle: string;
   memberCount: number;
-  recommendationDays: RecommendationDayOfWeek[];
-  minProblemLevel: number;
-  maxProblemLevel: number;
+  // legacy fields (v1) - optional for backward compatibility
+  recommendationDays?: RecommendationDayOfWeek[];
+  minProblemLevel?: number;
+  maxProblemLevel?: number;
+  squads?: Array<{
+    squadId: number;
+    name: string;
+    isDefault?: boolean;
+    isActive: boolean;
+    recommendationDays: RecommendationDayOfWeek[];
+    problemDifficultyPreset?: ProblemDifficultyPreset;
+    minProblemLevel?: number | null;
+    maxProblemLevel?: number | null;
+    memberCount?: number;
+    problemCount?: number;
+  }>;
 }
 
 // ============ 팀 활동 현황 API 타입 ============
@@ -470,7 +483,11 @@ export const teamsApi = {
 
   // 공개 팀 목록 조회 (비로그인 가능)
   getPublicTeams: async (): Promise<PublicTeamResponse[]> => {
-    const response = await apiClient.get<ApiResponse<PublicTeamResponse[]>>('/v2/teams/public');
+    const response = await apiClient.get<ApiResponse<PublicTeamResponse[]> | PublicTeamResponse[]>('/v2/teams/public');
+    // v2 명세: 배열 직접 반환, 기존 래핑 응답도 하위 호환
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
     return response.data.data;
   },
 
