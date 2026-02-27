@@ -237,6 +237,7 @@ export interface PublicTeamResponse {
     maxProblemLevel?: number | null;
     memberCount?: number;
     problemCount?: number;
+    includeTags?: string[];
   }>;
 }
 

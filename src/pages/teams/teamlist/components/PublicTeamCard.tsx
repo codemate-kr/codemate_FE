@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { Users, ChevronRight, Crown } from 'lucide-react';
 import { getTierName } from '../../../../utils/tierUtils';
 import { getTierIcon } from '../../../../components/common/TierIcon';
+import { getTagNames } from '../../../../constants/algorithmTags';
 import type { PublicTeamResponse } from '../../../../api/teams';
 
 interface PublicTeamCardProps {
@@ -45,6 +46,8 @@ export const PublicTeamCard = memo(function PublicTeamCard({
       isDefault: Boolean(squad.isDefault),
       isActive: squad.isActive,
       memberCount: squad.memberCount ?? 0,
+      problemCount: squad.problemCount ?? 3,
+      includeTags: squad.includeTags ?? [],
       dayLabel,
       levelLabel,
       minLevel: minLevel ?? null,
@@ -78,9 +81,12 @@ export const PublicTeamCard = memo(function PublicTeamCard({
             </div>
 
             <div className="flex-1 min-w-0">
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
-                {team.teamName}
-              </h3>
+              <div className="flex items-center gap-2 min-w-0">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+                  {team.teamName}
+                </h3>
+                <span className="text-xs text-gray-400 flex-shrink-0">#{team.teamId}</span>
+              </div>
               {hasDescription && (
                 <p className="text-sm mt-1 text-gray-500 line-clamp-2">
                   {description}
@@ -135,15 +141,15 @@ export const PublicTeamCard = memo(function PublicTeamCard({
             }}
             className="inline-flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-2.5 py-1.5 rounded-md transition-colors"
           >
-            <span>{isExpanded ? '접기' : '스쿼드 설정 펼치기'}</span>
+            <span>{isExpanded ? '상세 닫기' : '추천 설정 상세 보기'}</span>
             <ChevronRight className={`h-3.5 w-3.5 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
           </button>
         </div>
       </div>
 
       {isExpanded && (
-        <div className="px-4 sm:px-5 pb-4 sm:pb-5 border-t border-gray-200 bg-gray-50">
-          <div className="pt-3 mb-2.5 flex items-center justify-between">
+        <div className="px-4 sm:px-5 pb-3 sm:pb-4 border-t border-gray-200 bg-gray-50">
+          <div className="pt-2.5 mb-2 flex items-center justify-between">
             <p className="text-xs font-semibold text-gray-600">스쿼드 추천 설정</p>
             <span className="text-[11px] text-gray-400">{squadSettings.length}개</span>
           </div>
@@ -152,9 +158,9 @@ export const PublicTeamCard = memo(function PublicTeamCard({
               표시할 스쿼드 정보가 없습니다.
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {squadSettings.map((squad) => (
-                <div key={squad.id} className="rounded-md border border-gray-100 bg-white px-3 py-2.5">
+                <div key={squad.id} className="rounded-md border border-gray-100 bg-white px-3 py-2">
                   <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
                     <div className="flex items-center gap-1.5 min-w-0">
                       <span className="text-sm font-medium text-gray-800 truncate">{squad.name}</span>
@@ -171,14 +177,18 @@ export const PublicTeamCard = memo(function PublicTeamCard({
                   </div>
                   {squad.isActive && (
                     <>
-                      <div className="mt-1 flex items-center gap-1.5 text-xs">
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">
-                          요일
-                        </span>
-                        <span className="text-gray-600">{squad.dayLabel}</span>
-                      </div>
+                      <dl className="mt-0.5 grid grid-cols-[44px,1fr] gap-x-2 gap-y-0.5 text-xs">
+                        <dt className="text-gray-400">요일</dt>
+                        <dd className="text-gray-700">{squad.dayLabel}</dd>
+                        <dt className="text-gray-400">문제수</dt>
+                        <dd className="text-gray-700">{squad.problemCount}문제</dd>
+                        <dt className="text-gray-400">태그</dt>
+                        <dd className="text-gray-700">
+                          {squad.includeTags.length > 0 ? getTagNames(squad.includeTags).join(', ') : '전체'}
+                        </dd>
+                      </dl>
                       {squad.minLevel !== null && squad.maxLevel !== null ? (
-                        <div className="mt-1 inline-flex items-center gap-1.5 text-xs text-gray-600">
+                        <div className="mt-0.5 inline-flex items-center gap-1.5 text-xs text-gray-600">
                           <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 text-gray-700 px-2 py-1">
                             {getTierIcon(squad.minLevel, 14)}
                             {getTierName(squad.minLevel)}
@@ -190,7 +200,7 @@ export const PublicTeamCard = memo(function PublicTeamCard({
                           </span>
                         </div>
                       ) : (
-                        <div className="mt-1 text-xs text-gray-400">{squad.levelLabel}</div>
+                        <div className="mt-0.5 text-xs text-gray-400">{squad.levelLabel}</div>
                       )}
                     </>
                   )}

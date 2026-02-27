@@ -8,7 +8,7 @@ import { teamsApi, type PublicTeamResponse } from '../../../api/teams';
 export default function TeamListPage() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedTeamId, setExpandedTeamId] = useState<number | null>(null);
+  const [expandedTeamIds, setExpandedTeamIds] = useState<Set<number>>(new Set());
   const {
     data: teams = [],
     isLoading,
@@ -100,8 +100,18 @@ export default function TeamListPage() {
             <PublicTeamCard
               key={team.teamId}
               team={team}
-              isExpanded={expandedTeamId === team.teamId}
-              onToggle={() => setExpandedTeamId((prev) => (prev === team.teamId ? null : team.teamId))}
+              isExpanded={expandedTeamIds.has(team.teamId)}
+              onToggle={() => {
+                setExpandedTeamIds((prev) => {
+                  const next = new Set(prev);
+                  if (next.has(team.teamId)) {
+                    next.delete(team.teamId);
+                  } else {
+                    next.add(team.teamId);
+                  }
+                  return next;
+                });
+              }}
               onNavigate={() => handleTeamClick(team.teamId)}
             />
           ))
