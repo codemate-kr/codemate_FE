@@ -71,7 +71,7 @@ export default function CreateSquadModal({ initialName = '', isEdit = false, isL
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="예: 스쿼드A"
+            placeholder="예: 스쿼드 A"
             maxLength={MAX_SQUAD_NAME_LENGTH}
             disabled={loading}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"

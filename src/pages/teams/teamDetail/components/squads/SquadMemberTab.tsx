@@ -506,7 +506,7 @@ export default function SquadMemberTab({
 
       {showCreateModal && (
         <CreateSquadModal
-          initialName={`스쿼드${String.fromCharCode(65 + localSquads.length)}`}
+          initialName={`스쿼드 ${String.fromCharCode(65 + localSquads.length)}`}
           onClose={() => setShowCreateModal(false)}
           onSubmit={handleCreate}
         />
