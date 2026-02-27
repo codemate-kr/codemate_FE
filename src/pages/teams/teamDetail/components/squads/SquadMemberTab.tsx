@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Plus, Pencil, Trash2, GripVertical, CheckCircle } from 'lucide-react';
 import type { SquadResponse } from '../../../../../api/squads';
@@ -92,15 +92,11 @@ export default function SquadMemberTab({
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editTarget, setEditTarget] = useState<SquadResponse | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<SquadResponse | null>(null);
-  const [deleteLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
 
   const [localSquads, setLocalSquads] = useState<SquadResponse[]>(squads);
   const [originalSquads, setOriginalSquads] = useState<SquadResponse[]>(squads);
-
-  useEffect(() => {
-    onSquadsChange?.(localSquads);
-  }, [localSquads, onSquadsChange]);
 
   // null = 미배정 (엣지케이스 — 정상적으론 isDefault 스쿼드로 자동 배정)
   const [originalAssignments, setOriginalAssignments] = useState<Map<number, number | null>>(
@@ -190,7 +186,9 @@ export default function SquadMemberTab({
       setOriginalSquads(localSquads);
       setOriginalAssignments(new Map(localAssignments));
       setLocalAssignments((prev) => new Map(prev)); // 재렌더 트리거
+      onSquadsChange?.(localSquads);
       onShowToast('변경사항이 저장되었습니다.', 'success');
+      onSaveSuccess?.();
       return;
     }
     if (!hasChanges) return;
@@ -292,9 +290,8 @@ export default function SquadMemberTab({
     };
     const nextSquads = [...localSquads, tempSquad];
     setLocalSquads(nextSquads);
-    onSquadsChange?.(nextSquads);
     setShowCreateModal(false);
-  }, [teamId, localSquads, onSquadsChange]);
+  }, [teamId, localSquads]);
 
   const handleEdit = useCallback(async (name: string) => {
     if (!editTarget) return;
@@ -302,22 +299,25 @@ export default function SquadMemberTab({
       s.squadId === editTarget.squadId ? { ...s, squadName: name } : s
     );
     setLocalSquads(nextSquads);
-    onSquadsChange?.(nextSquads);
     setEditTarget(null);
-  }, [editTarget, localSquads, onSquadsChange]);
+  }, [editTarget, localSquads]);
 
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
-    const nextAssignments = new Map(localAssignments);
-    nextAssignments.forEach((squadId, memberId) => {
-      if (squadId === deleteTarget.squadId) nextAssignments.set(memberId, null);
-    });
-    const nextSquads = localSquads.filter((s) => s.squadId !== deleteTarget.squadId);
-    setLocalAssignments(nextAssignments);
-    setLocalSquads(nextSquads);
-    onSquadsChange?.(nextSquads);
-    setDeleteTarget(null);
-  }, [deleteTarget, localSquads, localAssignments, onSquadsChange]);
+    setDeleteLoading(true);
+    try {
+      const nextAssignments = new Map(localAssignments);
+      nextAssignments.forEach((squadId, memberId) => {
+        if (squadId === deleteTarget.squadId) nextAssignments.set(memberId, null);
+      });
+      const nextSquads = localSquads.filter((s) => s.squadId !== deleteTarget.squadId);
+      setLocalAssignments(nextAssignments);
+      setLocalSquads(nextSquads);
+      setDeleteTarget(null);
+    } finally {
+      setDeleteLoading(false);
+    }
+  }, [deleteTarget, localSquads, localAssignments]);
 
   const renderMemberCard = (member: TeamMemberResponse) => {
     const isDragging = draggingMemberId === member.memberId;
