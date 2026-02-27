@@ -1,4 +1,5 @@
 import { apiClient, type ApiResponse } from './client';
+import type { SquadResponse, SquadRecommendationSettingsResponse } from './squads';
 
 export interface CreateTeamRequest {
   name: string;
@@ -20,8 +21,10 @@ export type TeamRole = 'LEADER' | 'MEMBER';
 export interface TeamMemberResponse {
   memberId: number;
   handle: string;
-  email: string;
+  email?: string;
   role: TeamRole;
+  squadId?: number | null;
+  squadName?: string | null;
   isMe: boolean;
 }
 
@@ -31,7 +34,7 @@ export type RecommendationDayOfWeek = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THUR
 export type ProblemDifficultyPreset = 'EASY' | 'NORMAL' | 'HARD' | 'CUSTOM';
 
 // solved.ac 티어 시스템 (Bronze5 = 1, ..., Platinum5 = 20)
-export type SolvedacTier = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30;
+export type SolvedacTier = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30;
 
 export interface DifficultyRange {
   minTier: SolvedacTier;
@@ -59,6 +62,7 @@ export interface TeamRecommendationSettingsResponse {
   maxProblemLevel?: number;
   problemCount?: number; // 추천 문제 수 (1~10, 기본값 3)
   includeTags?: string[]; // 알고리즘 태그 키 배열
+  deprecationMessage?: string;
 }
 
 // 하위 호환성을 위한 타입 alias
@@ -73,8 +77,13 @@ export interface TodayProblem {
   url: string;
   acceptedUserCount: number;
   averageTries: number;
-  isSolved: boolean; // 로그인 사용자의 해결 여부
+  isSolved: boolean | null; // 로그인 사용자의 해결 여부 (비로그인 null)
   solvedTime?: string; // 해결 시간 (mm:ss 형식)
+  tags?: Array<{
+    key: string;
+    nameKo: string;
+    nameEn: string;
+  }>;
 }
 
 export interface TodayProblemsResponse {
@@ -125,7 +134,86 @@ export interface TeamDetailResponse {
   members: TeamMemberResponse[];
   recommendationSettings: TeamRecommendationSettingsResponse | null;
   todayProblem: TodayProblemsResponse | null;
+  squads?: SquadResponse[];
 }
+
+type RawTeamDetailResponse = {
+  team?: {
+    id?: number;
+    teamId?: number;
+    name?: string;
+    teamName?: string;
+    description?: string;
+    isPrivate?: boolean;
+    memberCount?: number;
+  };
+  members?: TeamMemberResponse[];
+  recommendationSettings?: TeamRecommendationSettingsResponse | null;
+  todayProblem?: TodayProblemsResponse | null;
+  squads?: Array<{
+    squadId?: number;
+    name?: string;
+    squadName?: string;
+    isDefault?: boolean;
+    memberCount?: number;
+    isActive?: boolean;
+    recommendationDays?: RecommendationDayOfWeek[];
+    problemDifficultyPreset?: ProblemDifficultyPreset;
+    minProblemLevel?: number;
+    maxProblemLevel?: number;
+    problemCount?: number;
+    includeTags?: string[];
+    recommendationSettings?: SquadRecommendationSettingsResponse | null;
+    todayProblems?: TodayProblemsResponse | null;
+  }>;
+};
+
+const normalizeTeamDetail = (raw: RawTeamDetailResponse): TeamDetailResponse => {
+  const members = Array.isArray(raw.members) ? raw.members : [];
+  const teamId = Number(raw.team?.teamId ?? raw.team?.id ?? 0);
+  const teamName = raw.team?.teamName ?? raw.team?.name ?? '';
+
+  const squads = Array.isArray(raw.squads)
+    ? raw.squads.map((s) => {
+      const squadId = Number(s.squadId ?? 0);
+      const squadMembers = members.filter((m) => m.squadId === squadId);
+      return {
+        squadId,
+        squadName: s.squadName ?? s.name ?? '이름 없음',
+        teamId,
+        isDefault: Boolean(s.isDefault),
+        memberCount: typeof s.memberCount === 'number' ? s.memberCount : squadMembers.length,
+        members: squadMembers,
+        recommendationSettings: s.recommendationSettings ?? {
+          squadId,
+          squadName: s.squadName ?? s.name ?? '이름 없음',
+          isActive: Boolean(s.isActive),
+          recommendationDays: s.recommendationDays ?? [],
+          problemDifficultyPreset: s.problemDifficultyPreset,
+          minProblemLevel: s.minProblemLevel,
+          maxProblemLevel: s.maxProblemLevel,
+          problemCount: s.problemCount,
+          includeTags: s.includeTags ?? [],
+        },
+        todayProblems: s.todayProblems ?? null,
+      } satisfies SquadResponse;
+    })
+    : [];
+
+  return {
+    team: {
+      teamId,
+      teamName,
+      description: raw.team?.description ?? '',
+      isPrivate: Boolean(raw.team?.isPrivate),
+      memberCount: Number(raw.team?.memberCount ?? members.length),
+    },
+    members,
+    recommendationSettings: raw.recommendationSettings ?? null,
+    todayProblem: raw.todayProblem ?? null,
+    squads,
+  };
+};
 
 // 공개 팀 목록 응답 타입
 export interface PublicTeamResponse {
@@ -134,9 +222,23 @@ export interface PublicTeamResponse {
   description?: string;
   leaderHandle: string;
   memberCount: number;
-  recommendationDays: RecommendationDayOfWeek[];
-  minProblemLevel: number;
-  maxProblemLevel: number;
+  // legacy fields (v1) - optional for backward compatibility
+  recommendationDays?: RecommendationDayOfWeek[];
+  minProblemLevel?: number;
+  maxProblemLevel?: number;
+  squads?: Array<{
+    squadId: number;
+    name: string;
+    isDefault?: boolean;
+    isActive: boolean;
+    recommendationDays: RecommendationDayOfWeek[];
+    problemDifficultyPreset?: ProblemDifficultyPreset;
+    minProblemLevel?: number | null;
+    maxProblemLevel?: number | null;
+    memberCount?: number;
+    problemCount?: number;
+    includeTags?: string[];
+  }>;
 }
 
 // ============ 팀 활동 현황 API 타입 ============
@@ -168,6 +270,10 @@ export interface TeamActivityDailyActivity {
   date: string;
   problems: TeamActivityProblem[];
   memberSolved: TeamActivityMemberSolved[];
+  memberProblems?: Array<{
+    memberId: number;
+    problems: TeamActivityProblem[];
+  }>;
 }
 
 export interface TeamActivityResponse {
@@ -176,6 +282,149 @@ export interface TeamActivityResponse {
   members: TeamActivityMember[];
   dailyActivities: TeamActivityDailyActivity[];
 }
+
+export interface TeamLeaderboardMemberRank {
+  memberId: number;
+  handle: string;
+  squadId: number | null;
+  squadName: string | null;
+  rank: number;
+  totalSolved: number;
+}
+
+export interface TeamLeaderboardResponse {
+  currentMemberId: number;
+  period: TeamActivityPeriod;
+  memberRanks: TeamLeaderboardMemberRank[];
+}
+
+export interface TeamActivityRecommendationProblem {
+  problemId: number;
+  title: string;
+  titleKo: string;
+  tier: number;
+  solved: boolean;
+}
+
+export interface TeamActivityDailyRecommendation {
+  date: string;
+  problems: TeamActivityRecommendationProblem[];
+}
+
+export interface TeamActivityMemberActivity {
+  memberId: number;
+  handle: string;
+  squadId: number | null;
+  squadName: string | null;
+  dailyRecommendations: TeamActivityDailyRecommendation[];
+}
+
+export interface TeamActivityV2Response {
+  currentMemberId: number;
+  period: TeamActivityPeriod;
+  memberActivities: TeamActivityMemberActivity[];
+}
+
+const buildLegacyActivityFromV2 = (
+  activity: TeamActivityV2Response,
+  leaderboard?: TeamLeaderboardResponse
+): TeamActivityResponse => {
+  const leaderboardByMemberId = new Map<number, TeamLeaderboardMemberRank>(
+    (leaderboard?.memberRanks ?? []).map((entry) => [entry.memberId, entry])
+  );
+
+  const membersById = new Map<number, TeamActivityMember>();
+  activity.memberActivities.forEach((member) => {
+    const ranked = leaderboardByMemberId.get(member.memberId);
+    membersById.set(member.memberId, {
+      memberId: member.memberId,
+      handle: member.handle,
+      rank: ranked?.rank ?? 0,
+      totalSolved: ranked?.totalSolved ?? 0,
+    });
+  });
+
+  (leaderboard?.memberRanks ?? []).forEach((member) => {
+    if (!membersById.has(member.memberId)) {
+      membersById.set(member.memberId, {
+        memberId: member.memberId,
+        handle: member.handle,
+        rank: member.rank,
+        totalSolved: member.totalSolved,
+      });
+    }
+  });
+
+  const members = Array.from(membersById.values()).sort((a, b) => {
+    if (a.rank === 0 && b.rank !== 0) return 1;
+    if (a.rank !== 0 && b.rank === 0) return -1;
+    if (a.rank !== b.rank) return a.rank - b.rank;
+    if (a.totalSolved !== b.totalSolved) return b.totalSolved - a.totalSolved;
+    return a.memberId - b.memberId;
+  });
+
+  const dayMap = new Map<
+    string,
+    {
+      problemsById: Map<number, TeamActivityProblem>;
+      memberSolvedByMemberId: Map<number, Record<string, boolean>>;
+      memberProblemsByMemberId: Map<number, TeamActivityProblem[]>;
+    }
+  >();
+
+  activity.memberActivities.forEach((member) => {
+    member.dailyRecommendations.forEach((daily) => {
+      const dayState = dayMap.get(daily.date) ?? {
+        problemsById: new Map<number, TeamActivityProblem>(),
+        memberSolvedByMemberId: new Map<number, Record<string, boolean>>(),
+        memberProblemsByMemberId: new Map<number, TeamActivityProblem[]>(),
+      };
+
+      const sortedProblems = [...daily.problems]
+        .sort((a, b) => a.problemId - b.problemId)
+        .map((problem) => {
+          const normalized: TeamActivityProblem = {
+            problemId: problem.problemId,
+            title: problem.titleKo || problem.title,
+            tier: problem.tier,
+          };
+          dayState.problemsById.set(problem.problemId, normalized);
+          return normalized;
+        });
+
+      const solvedMap: Record<string, boolean> = {};
+      daily.problems.forEach((problem) => {
+        solvedMap[String(problem.problemId)] = problem.solved;
+      });
+
+      dayState.memberSolvedByMemberId.set(member.memberId, solvedMap);
+      dayState.memberProblemsByMemberId.set(member.memberId, sortedProblems);
+      dayMap.set(daily.date, dayState);
+    });
+  });
+
+  const dailyActivities: TeamActivityDailyActivity[] = Array.from(dayMap.entries())
+    .sort((a, b) => b[0].localeCompare(a[0]))
+    .map(([date, state]) => ({
+      date,
+      problems: Array.from(state.problemsById.values()).sort((a, b) => a.problemId - b.problemId),
+      memberSolved: Array.from(state.memberSolvedByMemberId.entries()).map(([memberId, solved]) => ({
+        memberId,
+        solved,
+      })),
+      memberProblems: Array.from(state.memberProblemsByMemberId.entries()).map(([memberId, problems]) => ({
+        memberId,
+        problems,
+      })),
+    }));
+
+  return {
+    currentMemberId: activity.currentMemberId,
+    period: activity.period,
+    members,
+    dailyActivities,
+  };
+};
 
 export const teamsApi = {
   create: async (data: CreateTeamRequest): Promise<CreateTeamResponse> => {
@@ -190,33 +439,12 @@ export const teamsApi = {
 
   // 팀 상세 통합 조회 (멤버, 설정, 오늘의 문제 포함)
   getTeamDetail: async (teamId: number): Promise<TeamDetailResponse> => {
-    const response = await apiClient.get<ApiResponse<TeamDetailResponse>>(`/teams/${teamId}`);
-    return response.data.data;
+    const response = await apiClient.get<ApiResponse<RawTeamDetailResponse>>(`/v2/teams/${teamId}`);
+    return normalizeTeamDetail(response.data.data);
   },
 
   getTeamMembers: async (teamId: number): Promise<TeamMemberResponse[]> => {
     const response = await apiClient.get<ApiResponse<TeamMemberResponse[]>>(`/teams/${teamId}/members`);
-    return response.data.data;
-  },
-
-  getRecommendationSettings: async (teamId: number): Promise<TeamRecommendationSettingsResponse> => {
-    const response = await apiClient.get<ApiResponse<TeamRecommendationSettingsResponse>>(`/teams/${teamId}/recommendation-settings`);
-    return response.data.data;
-  },
-
-  updateRecommendationSettings: async (
-    teamId: number,
-    settings: TeamRecommendationSettingsRequest
-  ): Promise<TeamRecommendationSettingsResponse> => {
-    const response = await apiClient.put<ApiResponse<TeamRecommendationSettingsResponse>>(
-      `/teams/${teamId}/recommendation-settings`,
-      settings
-    );
-    return response.data.data;
-  },
-
-  disableRecommendation: async (teamId: number): Promise<TeamRecommendationSettingsResponse> => {
-    const response = await apiClient.delete<ApiResponse<TeamRecommendationSettingsResponse>>(`/teams/${teamId}/recommendation-settings`);
     return response.data.data;
   },
 
@@ -256,7 +484,11 @@ export const teamsApi = {
 
   // 공개 팀 목록 조회 (비로그인 가능)
   getPublicTeams: async (): Promise<PublicTeamResponse[]> => {
-    const response = await apiClient.get<ApiResponse<PublicTeamResponse[]>>('/teams/public');
+    const response = await apiClient.get<ApiResponse<PublicTeamResponse[]> | PublicTeamResponse[]>('/v2/teams/public');
+    // v2 명세: 배열 직접 반환, 기존 래핑 응답도 하위 호환
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
     return response.data.data;
   },
 
@@ -277,5 +509,38 @@ export const teamsApi = {
       { params: { days } }
     );
     return response.data.data;
+  },
+
+  // 팀 활동(참여 현황) v2
+  getTeamActivityV2: async (teamId: number, days: number = 30): Promise<TeamActivityV2Response> => {
+    const response = await apiClient.get<ApiResponse<TeamActivityV2Response>>(
+      `/v2/teams/${teamId}/activity`,
+      { params: { days } }
+    );
+    return response.data.data;
+  },
+
+  // 팀 리더보드 v2
+  getTeamLeaderboardV2: async (teamId: number, days: number = 30): Promise<TeamLeaderboardResponse> => {
+    const response = await apiClient.get<ApiResponse<TeamLeaderboardResponse>>(
+      `/v2/teams/${teamId}/leaderboard`,
+      { params: { days } }
+    );
+    return response.data.data;
+  },
+
+  // 화면 하위호환용: v2 activity + leaderboard를 기존 TeamActivityResponse 형태로 변환
+  getTeamActivityViewV2: async (teamId: number, days: number = 30): Promise<TeamActivityResponse> => {
+    const [activity, leaderboard] = await Promise.all([
+      teamsApi.getTeamActivityV2(teamId, days),
+      teamsApi.getTeamLeaderboardV2(teamId, days),
+    ]);
+    return buildLegacyActivityFromV2(activity, leaderboard);
+  },
+
+  // 참여 현황 전용: leaderboard 호출 없이 activity만 변환
+  getTeamActivityParticipationV2: async (teamId: number, days: number = 30): Promise<TeamActivityResponse> => {
+    const activity = await teamsApi.getTeamActivityV2(teamId, days);
+    return buildLegacyActivityFromV2(activity);
   },
 };

@@ -18,10 +18,6 @@ export default function TeamActionMenu({
   onEditClick,
   onSentInvitationsClick,
 }: TeamActionMenuProps) {
-  // 팀원이 아니면 액션 메뉴 표시 안함
-  if (!isTeamMember) {
-    return null;
-  }
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -67,6 +63,11 @@ export default function TeamActionMenu({
     setIsOpen(false);
     action();
   };
+
+  // 팀원이 아니면 액션 메뉴 표시 안함
+  if (!isTeamMember) {
+    return null;
+  }
 
   return (
     <div className="relative" ref={menuRef}>

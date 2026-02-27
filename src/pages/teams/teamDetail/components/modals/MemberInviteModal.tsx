@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { X, Search, UserPlus, Loader2, CheckCircle } from 'lucide-react';
-import { memberApi, type MemberSearchResponse } from '../../../api/member';
-import { teamJoinsApi } from '../../../api/teamJoins';
+import { memberApi, type MemberSearchResponse } from '../../../../../api/member';
+import { teamJoinsApi } from '../../../../../api/teamJoins';
 
 interface MemberInviteModalProps {
   teamId: number;
@@ -20,6 +20,37 @@ export function MemberInviteModal({ teamId, onClose, onShowToast, onInviteSucces
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const searchQueryRef = useRef(searchQuery);
+
+  useEffect(() => {
+    searchQueryRef.current = searchQuery;
+  }, [searchQuery]);
+
+  const handleSearch = useCallback(async () => {
+    const query = searchQueryRef.current.trim();
+    if (query.length === 0) {
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const results = await memberApi.getByHandle(query);
+      // 인증된 유저를 상단에 정렬 (verified: true가 우선)
+      const sortedResults = results.sort((a, b) => {
+        if (a.verified && !b.verified) return -1;
+        if (!a.verified && b.verified) return 1;
+        return 0;
+      });
+      setSearchResults(sortedResults);
+      setShowDropdown(true);
+    } catch (error) {
+      console.error('멤버 검색 실패:', error);
+      setSearchResults([]);
+      setShowDropdown(false);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
 
   // 검색 입력 시 디바운스 처리
   useEffect(() => {
@@ -34,7 +65,7 @@ export function MemberInviteModal({ teamId, onClose, onShowToast, onInviteSucces
     }
 
     searchTimeoutRef.current = setTimeout(() => {
-      handleSearch();
+      void handleSearch();
     }, 300);
 
     return () => {
@@ -42,7 +73,7 @@ export function MemberInviteModal({ teamId, onClose, onShowToast, onInviteSucces
         clearTimeout(searchTimeoutRef.current);
       }
     };
-  }, [searchQuery]);
+  }, [searchQuery, handleSearch]);
 
   // 모달 열릴 때 입력창 자동 포커싱
   useEffect(() => {
@@ -76,31 +107,6 @@ export function MemberInviteModal({ teamId, onClose, onShowToast, onInviteSucces
 
   const handleRemoveSelected = (memberId: number) => {
     setSelectedMembers(selectedMembers.filter(m => m.id !== memberId));
-  };
-
-  const handleSearch = async () => {
-    if (searchQuery.trim().length === 0) {
-      return;
-    }
-
-    setIsSearching(true);
-    try {
-      const results = await memberApi.getByHandle(searchQuery.trim());
-      // 인증된 유저를 상단에 정렬 (verified: true가 우선)
-      const sortedResults = results.sort((a, b) => {
-        if (a.verified && !b.verified) return -1;
-        if (!a.verified && b.verified) return 1;
-        return 0;
-      });
-      setSearchResults(sortedResults);
-      setShowDropdown(true);
-    } catch (error) {
-      console.error('멤버 검색 실패:', error);
-      setSearchResults([]);
-      setShowDropdown(false);
-    } finally {
-      setIsSearching(false);
-    }
   };
 
   const handleInvite = async () => {

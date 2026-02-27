@@ -3,8 +3,7 @@ import { Search, Tag, X, Check } from 'lucide-react';
 import {
   searchAlgorithmTags,
   getTagByKey,
-} from '../../../../constants/algorithmTags';
-
+} from '../../../../../../constants/algorithmTags';
 interface AlgorithmTagSelectorProps {
   selectedTags: string[];
   onChange: (tags: string[]) => void;

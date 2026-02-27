@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { X, Clock, Loader2, Send, UserPlus } from 'lucide-react';
-import { teamJoinsApi, type TeamJoinResponse } from '../../../../api/teamJoins';
+import { teamJoinsApi, type TeamJoinResponse } from '../../../../../api/teamJoins';
+import { getApiErrorMessage } from '../../../../../utils/apiError';
 
 interface SentInvitationsModalProps {
   teamId: number;
@@ -17,19 +18,7 @@ export default function SentInvitationsModal({
   const [loading, setLoading] = useState(true);
   const [cancelingId, setCancelingId] = useState<number | null>(null);
 
-  useEffect(() => {
-    fetchInvitations();
-  }, []);
-
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [onClose]);
-
-  const fetchInvitations = async () => {
+  const fetchInvitations = useCallback(async () => {
     setLoading(true);
     try {
       const data = await teamJoinsApi.getSentInvitations();
@@ -41,7 +30,19 @@ export default function SentInvitationsModal({
     } finally {
       setLoading(false);
     }
-  };
+  }, [teamId, onShowToast]);
+
+  useEffect(() => {
+    fetchInvitations();
+  }, [fetchInvitations]);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [onClose]);
 
   const handleCancel = async (id: number) => {
     setCancelingId(id);
@@ -49,9 +50,9 @@ export default function SentInvitationsModal({
       await teamJoinsApi.cancelInvitation(id);
       setInvitations(prev => prev.filter(inv => inv.id !== id));
       onShowToast('초대가 취소되었습니다');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('초대 취소 실패:', error);
-      onShowToast(error?.response?.data?.message || '초대 취소에 실패했습니다', 'error');
+      onShowToast(getApiErrorMessage(error, '초대 취소에 실패했습니다'), 'error');
     } finally {
       setCancelingId(null);
     }

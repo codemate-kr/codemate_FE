@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Calendar, RefreshCw, ExternalLink, CheckCircle, Settings, Loader2, Sparkles, Pause, Play, RotateCcw, Clock } from 'lucide-react';
-import { teamsApi, type TodayProblemsResponse, type TeamRecommendationSettingsResponse } from '../../../api/teams';
-import { getTierIcon } from '../../../components/common/TierIcon';
-import { verifyProblemSolved, triggerSuccessConfetti, type VerifyErrorType } from '../../../utils/problemVerify';
-import { useTimerStore } from '../../../store/timerStore';
-import { useTimer, formatDuration } from '../../../hooks/useTimer';
-import Tooltip from '../../../components/common/Tooltip';
+import { type TodayProblemsResponse } from '../../../../../api/teams';
+import { squadsApi, type SquadRecommendationSettingsResponse } from '../../../../../api/squads';
+import { recommendationApi } from '../../../../../api/recommendation';
+import { getTierIcon } from '../../../../../components/common/TierIcon';
+import { verifyProblemSolved, triggerSuccessConfetti, type VerifyErrorType } from '../../../../../utils/problemVerify';
+import { getApiErrorCode, getApiErrorMessage, getApiErrorStatus } from '../../../../../utils/apiError';
+import { useTimerStore } from '../../../../../store/timerStore';
+import { useTimer, formatDuration } from '../../../../../hooks/useTimer';
+import Tooltip from '../../../../../components/common/Tooltip';
+import { MissionActionButton } from './MissionActionButton';
 
 // 개별 문제의 타이머 표시 컴포넌트 (일시정지/초기화 버튼 포함)
-function ProblemTimerDisplay({ problemId, problemTitle, isSolved, solvedTime }: { problemId: number; problemTitle: string; isSolved: boolean; solvedTime?: string }) {
+function ProblemTimerDisplay({ problemId, problemTitle, isSolved, solvedTime }: { problemId: number; problemTitle: string; isSolved: boolean | null; solvedTime?: string }) {
   const { isRunning, isPaused, isCompleted, completedDuration, pause, resume, reset, formattedTime } = useTimer({ problemId, problemTitle });
 
   // 해결된 문제: solvedTime이 있으면 그것을, 없으면 로컬 타이머 사용
@@ -52,7 +56,11 @@ function ProblemTimerDisplay({ problemId, problemTitle, isSolved, solvedTime }: 
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            isPaused ? resume() : pause();
+            if (isPaused) {
+              resume();
+            } else {
+              pause();
+            }
           }}
           className={`p-1 rounded-full transition-colors ${isPaused ? 'text-green-500 hover:bg-green-100' : 'text-orange-400 hover:bg-orange-100'}`}
           title={isPaused ? '재개' : '일시정지'}
@@ -91,19 +99,37 @@ interface TodayProblemsProps {
   isTeamMember: boolean;
   onShowToast: (message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
   onOpenSettings?: () => void;
+  onOpenSquadManagement?: () => void;
   onRefreshActivity?: () => void;
-  recommendationSettings?: TeamRecommendationSettingsResponse | null;
+  recommendationSettings?: SquadRecommendationSettingsResponse | null;
   initialTodayProblems?: TodayProblemsResponse | null;
+  selectedSquadId?: number | null;
+  selectedSquadMemberCount?: number;
   isDemo?: boolean;
 }
 
-export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast, onOpenSettings, onRefreshActivity, recommendationSettings, initialTodayProblems, isDemo = false }: TodayProblemsProps) {
+export function TodayProblems({
+  teamId,
+  isTeamLeader,
+  isTeamMember,
+  onShowToast,
+  onOpenSettings,
+  onOpenSquadManagement,
+  onRefreshActivity,
+  recommendationSettings,
+  initialTodayProblems,
+  selectedSquadId,
+  selectedSquadMemberCount = 0,
+  isDemo = false,
+}: TodayProblemsProps) {
   // 통합 API에서 받아온 초기 데이터 사용 (중복 API 호출 방지)
   const [todayProblems, setTodayProblems] = useState<TodayProblemsResponse | null>(initialTodayProblems ?? null);
+  const [todayProblemsBySquad, setTodayProblemsBySquad] = useState<Map<number, TodayProblemsResponse | null>>(new Map());
   const [problemsLoading, setProblemsLoading] = useState(false);
   const [verifyingProblemId, setVerifyingProblemId] = useState<number | null>(null);
   const [showErrorFlash, setShowErrorFlash] = useState(false);
   const [demoFailMode, setDemoFailMode] = useState(false);
+  const [verifiableProblemIds, setVerifiableProblemIds] = useState<Set<number> | null>(null);
 
   // 데모 모드: Cmd+Shift+F (Mac) 또는 Ctrl+Shift+F (Windows)로 실패 모드 토글
   useEffect(() => {
@@ -118,19 +144,74 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isDemo]);
 
-  // initialTodayProblems가 변경되면 상태 동기화
+  // 서버에서 내려온 스쿼드별 초기 데이터 동기화
   useEffect(() => {
-    if (initialTodayProblems !== undefined) {
-      setTodayProblems(initialTodayProblems);
+    if (!selectedSquadId) return;
+    setTodayProblemsBySquad((prev) => {
+      const cached = prev.get(selectedSquadId);
+      const nextFromServer = initialTodayProblems ?? null;
+      const shouldSync =
+        !prev.has(selectedSquadId) ||
+        (nextFromServer !== null && cached?.recommendationId !== nextFromServer.recommendationId);
+      if (!shouldSync) return prev;
+      const next = new Map(prev);
+      next.set(selectedSquadId, nextFromServer);
+      return next;
+    });
+  }, [selectedSquadId, initialTodayProblems]);
+
+  // 현재 선택된 스쿼드의 문제셋 표시
+  useEffect(() => {
+    if (!selectedSquadId) {
+      setTodayProblems(initialTodayProblems ?? null);
+      return;
     }
-  }, [initialTodayProblems]);
+    if (todayProblemsBySquad.has(selectedSquadId)) {
+      setTodayProblems(todayProblemsBySquad.get(selectedSquadId) ?? null);
+      return;
+    }
+    setTodayProblems(initialTodayProblems ?? null);
+  }, [selectedSquadId, initialTodayProblems, todayProblemsBySquad]);
+
+  useEffect(() => {
+    if (isDemo || !isTeamMember) {
+      setVerifiableProblemIds(null);
+      return;
+    }
+
+    let cancelled = false;
+    recommendationApi.getMyTodayProblemsV2()
+      .then((response) => {
+        if (cancelled) return;
+        const teamToday = response.teams.find((team) => team.teamId === teamId);
+        const ids = new Set<number>((teamToday?.problems ?? []).map((problem) => problem.problemId));
+        setVerifiableProblemIds(ids);
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        console.error('내 오늘 추천 문제(v2) 로딩 실패:', error);
+        setVerifiableProblemIds(new Set());
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isDemo, isTeamMember, teamId]);
 
   const handleRefreshProblems = async () => {
     if (!isTeamLeader) return;
+    if (!selectedSquadId) {
+      onShowToast('스쿼드 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.', 'warning');
+      return;
+    }
+    if (selectedSquadMemberCount < 1) {
+      onShowToast('현재 스쿼드에 배정된 팀원이 없어 미션을 생성할 수 없습니다.', 'warning');
+      return;
+    }
 
     setProblemsLoading(true);
     try {
-      const newProblems = await teamsApi.createManualRecommendation(teamId);
+      const newProblems = await squadsApi.createManualRecommendation(teamId, selectedSquadId);
       // 오전 6시 기준으로 날짜 계산 (6시 전이면 전날 날짜)
       const now = new Date();
       const missionDate = new Date(now);
@@ -141,14 +222,32 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
         ...newProblems,
         createdAt: newProblems.createdAt || missionDate.toISOString(),
       });
+      setTodayProblemsBySquad((prev) => {
+        if (!selectedSquadId) return prev;
+        const next = new Map(prev);
+        next.set(selectedSquadId, {
+          ...newProblems,
+          createdAt: newProblems.createdAt || missionDate.toISOString(),
+        });
+        return next;
+      });
+      recommendationApi.getMyTodayProblemsV2()
+        .then((response) => {
+          const teamToday = response.teams.find((team) => team.teamId === teamId);
+          const ids = new Set<number>((teamToday?.problems ?? []).map((problem) => problem.problemId));
+          setVerifiableProblemIds(ids);
+        })
+        .catch(() => {
+          // 인증 가능 체크용 보조 호출 실패는 UI를 막지 않는다.
+        });
       onShowToast('✨ 오늘의 미션이 생성되었습니다!', 'success');
       onRefreshActivity?.();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('수동 미션 생성 실패:', error);
 
-      const status = error?.response?.status;
-      const message = error?.response?.data?.message || error?.message;
-      const errorCode = error?.response?.data?.code;
+      const status = getApiErrorStatus(error);
+      const message = getApiErrorMessage(error, '');
+      const errorCode = getApiErrorCode(error);
 
       // Handle specific error cases from backend
       if (status === 409 && errorCode === '5009') {
@@ -205,11 +304,18 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
         }
 
         if (todayProblems) {
-          setTodayProblems({
+          const updated = {
             ...todayProblems,
             problems: todayProblems.problems.map(p =>
               p.problemId === problemId ? { ...p, isSolved: true, solvedTime } : p
             ),
+          };
+          setTodayProblems(updated);
+          setTodayProblemsBySquad((prev) => {
+            if (!selectedSquadId) return prev;
+            const next = new Map(prev);
+            next.set(selectedSquadId, updated);
+            return next;
           });
         }
         onShowToast('문제 해결을 축하합니다!');
@@ -225,11 +331,18 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
         stopTimer(problemId);
         // 문제 상태 업데이트
         if (todayProblems) {
-          setTodayProblems({
+          const updated = {
             ...todayProblems,
             problems: todayProblems.problems.map(p =>
               p.problemId === problemId ? { ...p, isSolved: true } : p
             ),
+          };
+          setTodayProblems(updated);
+          setTodayProblemsBySquad((prev) => {
+            if (!selectedSquadId) return prev;
+            const next = new Map(prev);
+            next.set(selectedSquadId, updated);
+            return next;
           });
         }
         // 팀 활동 현황 갱신
@@ -245,6 +358,38 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
     });
 
     setVerifyingProblemId(null);
+  };
+
+  const renderVerifyButton = (problem: NonNullable<TodayProblemsResponse>['problems'][number]) => {
+    const isVerifiableByTodayList = !isTeamMember
+      ? false
+      : (verifiableProblemIds === null || verifiableProblemIds.has(problem.problemId));
+    const isDisabled = !isTeamMember || !isVerifiableByTodayList || verifyingProblemId === problem.problemId;
+    const buttonLabel = !isTeamMember
+      ? '팀원만 인증 가능'
+      : !isVerifiableByTodayList
+        ? '내 미션 문제 아님'
+        : '해결 인증하기';
+
+    return (
+      <button
+        onClick={() => isTeamMember && handleVerifyProblem(problem.problemId)}
+        disabled={isDisabled}
+        className="w-full py-2.5 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-500"
+      >
+        {verifyingProblemId === problem.problemId ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            인증 중...
+          </>
+        ) : (
+          <>
+            <CheckCircle className="h-4 w-4" />
+            {buttonLabel}
+          </>
+        )}
+      </button>
+    );
   };
 
   return (
@@ -269,36 +414,23 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
           <div className="absolute inset-0 bg-red-500/20 z-10 pointer-events-none animate-pulse" />
         )}
         {/* 헤더 */}
-        <div className="px-4 sm:px-6 py-4 bg-blue-50 border-b border-blue-100">
+        <div className="px-4 sm:px-6 py-3 bg-blue-50 border-b border-blue-100">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <div className="p-1.5 bg-blue-100 rounded-lg flex-shrink-0">
               <Calendar className="h-4 w-4 text-blue-600" />
             </div>
             <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate">오늘의 미션</h3>
-            {todayProblems && todayProblems.problems.length > 0 && (
+{todayProblems && todayProblems.problems.length > 0 && (
               <span className="text-sm text-blue-600 font-medium flex-shrink-0">· {todayProblems.problems.length}개</span>
             )}
             <span className="text-xs text-gray-400 flex-shrink-0">· 오전 6시 초기화</span>
-          </div>
-          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-            {isTeamLeader && onOpenSettings && (
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={onOpenSettings}
-                  className="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap"
-                >
-                  <Settings className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">문제 추천 설정</span>
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
 
       {/* 컨텐츠 */}
-      <div className="px-4 sm:px-6 pb-6 pt-4">
+      <div className="px-4 sm:px-6 pb-4 pt-3">
         {problemsLoading ? (
           <div className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-2 -mx-4 sm:-mx-6 px-4 sm:px-6">
             {[1, 2, 3].map((i) => (
@@ -332,7 +464,7 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
             ))}
           </div>
         ) : !recommendationSettings?.isActive ? (
-          <div className="text-center py-8">
+          <div className="text-center py-5">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-50 mb-3">
               <Calendar className="h-7 w-7 text-blue-400" />
             </div>
@@ -341,19 +473,20 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
                 ? '아직 문제 추천이 설정되지 않았습니다'
                 : '문제 추천이 설정되지 않았습니다'}
             </p>
-            <p className="text-xs text-gray-500 mb-5">
+            <p className="text-xs text-gray-500 mb-3">
               {isTeamLeader
                 ? '문제 추천을 설정하면 팀원들에게 미션이 자동으로 제공됩니다.'
                 : '팀장이 문제 추천을 설정하면 이곳에 표시됩니다.'}
             </p>
             {isTeamLeader && onOpenSettings && (
-              <button
+              <MissionActionButton
                 onClick={onOpenSettings}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                variant="secondary"
+                size="md"
+                leadingIcon={<Settings className="h-3.5 w-3.5" />}
               >
-                <Settings className="h-4 w-4" />
                 문제 추천 설정하기
-              </button>
+              </MissionActionButton>
             )}
           </div>
         ) : todayProblems && todayProblems.problems.length > 0 ? (
@@ -434,58 +567,68 @@ export function TodayProblems({ teamId, isTeamLeader, isTeamMember, onShowToast,
                   해결 완료
                 </button>
               ) : (
-                <button
-                  onClick={() => isTeamMember && handleVerifyProblem(problem.problemId)}
-                  disabled={!isTeamMember || verifyingProblemId === problem.problemId}
-                  className="w-full py-2.5 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-500"
-                >
-                  {verifyingProblemId === problem.problemId ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      인증 중...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="h-4 w-4" />
-                      {isTeamMember ? '해결 인증하기' : '팀원만 인증 가능'}
-                    </>
-                  )}
-                </button>
+                renderVerifyButton(problem)
               )}
               </div>
             ))}
           </div>
+        ) : selectedSquadMemberCount < 1 ? (
+          <div className="text-center py-5">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-amber-50 mb-3">
+              <Calendar className="h-7 w-7 text-amber-500" />
+            </div>
+            <p className="text-sm font-medium text-gray-900 mb-1">
+              현재 스쿼드에 배정된 팀원이 없습니다
+            </p>
+            <p className="text-xs text-gray-500 mb-3">
+              팀원이 있어야 미션이 제공됩니다.
+            </p>
+            {isTeamLeader && onOpenSquadManagement && (
+              <MissionActionButton
+                onClick={onOpenSquadManagement}
+                variant="secondary"
+                size="md"
+                leadingIcon={<Settings className="h-3.5 w-3.5" />}
+              >
+                스쿼드 관리
+              </MissionActionButton>
+            )}
+          </div>
         ) : (
-          <div className="text-center py-8">
+          <div className="text-center py-5">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-50 mb-3">
               <Calendar className="h-7 w-7 text-green-500" />
             </div>
             <p className="text-sm font-medium text-gray-900 mb-1">
               설정이 완료되었습니다
             </p>
-            <p className="text-xs text-gray-500 mb-5">
+            <p className="text-xs text-gray-500 mb-3">
               추천 요일마다 오전 6시에 미션이 제공되며, 오전 9시에 이메일이 발송됩니다.
             </p>
 
             {isTeamLeader && (
               <>
-                <button
+                <MissionActionButton
                   onClick={handleRefreshProblems}
                   disabled={problemsLoading}
-                  className="inline-flex items-center px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                  variant="primary"
+                  size="md"
+                  leadingIcon={
+                    problemsLoading
+                      ? <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                      : <Sparkles className="h-3.5 w-3.5" />
+                  }
                 >
                   {problemsLoading ? (
                     <>
-                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                       미션 생성 중...
                     </>
                   ) : (
                     <>
-                      <Sparkles className="h-4 w-4 mr-2" />
                       바로 미션 받기
                     </>
                   )}
-                </button>
+                </MissionActionButton>
                 <p className="text-xs text-gray-400 mt-2">
                   하루 1회 · 이메일 즉시 발송
                 </p>

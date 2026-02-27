@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { getApiErrorMessage } from '../../../../../utils/apiError';
 
 interface TeamEditModalProps {
   teamId: number;
@@ -64,8 +65,8 @@ export default function TeamEditModal({
         description: description.trim(),
         isPrivate,
       });
-    } catch (err: any) {
-      setError(err?.message || '팀 정보 수정에 실패했습니다');
+    } catch (error: unknown) {
+      setError(getApiErrorMessage(error, '팀 정보 수정에 실패했습니다'));
     }
   }, [name, description, isPrivate, onSubmit]);
 

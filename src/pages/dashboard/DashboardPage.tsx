@@ -51,7 +51,7 @@ export default function DashboardPage() {
   const loadAllTodayProblems = async () => {
     setProblemsLoading(true);
     try {
-      const response = await recommendationApi.getMyTodayProblems();
+      const response = await recommendationApi.getMyTodayProblemsV2();
       const allProblems = response.teams.flatMap(team =>
         team.problems.map(problem => ({
           ...problem,
