@@ -15,13 +15,14 @@ export default function TeamMembersList({ members, squads }: TeamMembersListProp
 
   const visibleMembers = isExpanded ? members : members.slice(0, DEFAULT_VISIBLE_COUNT);
   const hasMoreMembers = members.length > DEFAULT_VISIBLE_COUNT;
+  const membersRegionId = 'team-members-list';
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4">
       <h3 className="text-sm font-semibold text-gray-900 mb-3">
         멤버 ({members.length})
       </h3>
-      <div className="space-y-2">
+      <div id={membersRegionId} className="space-y-2">
         {visibleMembers.map((member) => {
           const memberSquadName =
             member.squadName ??
@@ -76,6 +77,8 @@ export default function TeamMembersList({ members, squads }: TeamMembersListProp
       {hasMoreMembers && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
+          aria-expanded={isExpanded}
+          aria-controls={membersRegionId}
           className="w-full flex items-center justify-center gap-1 mt-3 py-2 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
         >
           {isExpanded ? (

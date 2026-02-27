@@ -45,35 +45,41 @@ export default function SquadsList({
             : (squad.members ?? []).some((m) => m.memberId === currentUserMemberId);
 
           return (
-            <button
+            <div
               key={squad.squadId}
-              onClick={() => onSelectSquad(squad.squadId)}
               className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                 isSelected
                   ? 'bg-slate-700 text-white border-slate-700 shadow-sm'
                   : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:text-gray-800'
               }`}
             >
-              {squad.squadName}
-              {isMySquad && (
-                <span className={`text-[10px] ${isSelected ? 'text-slate-300' : 'text-gray-400'}`}>
-                  내 스쿼드
-                </span>
-              )}
+              <button
+                type="button"
+                onClick={() => onSelectSquad(squad.squadId)}
+                className="flex items-center gap-1"
+              >
+                {squad.squadName}
+                {isMySquad && (
+                  <span className={`text-[10px] ${isSelected ? 'text-slate-300' : 'text-gray-400'}`}>
+                    내 스쿼드
+                  </span>
+                )}
+              </button>
               {/* 선택된 탭에만 설정 아이콘 (팀장 전용) */}
               {isSelected && isTeamLeader && onOpenSettings && (
-                <span
-                  role="button"
-                  onClick={(e) => { e.stopPropagation(); onOpenSettings(); }}
+                <button
+                  type="button"
+                  onClick={onOpenSettings}
+                  aria-label="문제추천설정"
                   className="relative group ml-1 pl-1.5 border-l border-white/30 text-white/70 hover:text-white transition-colors"
                 >
                   <Settings className="h-4 w-4" />
                   <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-1 text-xs text-white bg-gray-800 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
                     문제추천설정
                   </span>
-                </span>
+                </button>
               )}
-            </button>
+            </div>
           );
         })}
         {/* 스쿼드 관리 버튼 (리더 전용) — 마지막 탭 우측 */}

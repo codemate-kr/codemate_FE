@@ -17,6 +17,8 @@ import { useTeamDetailPageState } from './hooks/useTeamDetailPageState';
 
 export default function TeamDetailPage() {
   const { route, auth, data, ui, actions } = useTeamDetailPageState();
+  const selectedHandle = data.selectedCellInfo?.handle?.trim() || 'unknown';
+  const selectedAvatarInitial = selectedHandle[0]?.toUpperCase() ?? '?';
 
   // 유효하지 않은 팀 ID
   if (!route.numericTeamId) {
@@ -181,10 +183,10 @@ export default function TeamDetailPage() {
                 </div>
                 <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
                   <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] font-bold">
-                    {data.selectedCellInfo.handle[0].toUpperCase()}
+                    {selectedAvatarInitial}
                   </div>
                   <span className="text-sm font-medium text-gray-700">
-                    @{data.selectedCellInfo.handle}
+                    @{selectedHandle}
                   </span>
                 </div>
                 <ProblemDetail
@@ -218,10 +220,10 @@ export default function TeamDetailPage() {
                 </div>
                 <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
                   <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] font-bold">
-                    {data.selectedCellInfo.handle[0].toUpperCase()}
+                    {selectedAvatarInitial}
                   </div>
                   <span className="text-sm font-medium text-gray-700">
-                    @{data.selectedCellInfo.handle}
+                    @{selectedHandle}
                   </span>
                 </div>
                 <ProblemDetail

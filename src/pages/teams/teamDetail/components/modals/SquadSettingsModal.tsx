@@ -38,6 +38,7 @@ export function SquadSettingsModal({
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const contentRef = useRef<HTMLDivElement>(null);
   const daySelectionRef = useRef<HTMLDivElement>(null);
+  const settingsSignatureRef = useRef<string>('');
 
   const applySettings = (nextSettings: SquadRecommendationSettingsResponse | null) => {
     if (nextSettings) {
@@ -69,6 +70,11 @@ export function SquadSettingsModal({
   }, [isEnabled]);
 
   useEffect(() => {
+    const signature = JSON.stringify(settings ?? {});
+    if (settingsSignatureRef.current === signature) {
+      return;
+    }
+    settingsSignatureRef.current = signature;
     applySettings(settings);
   }, [settings]);
 
@@ -141,7 +147,7 @@ export function SquadSettingsModal({
 
   const handleSave = async () => {
     if (isEnabled && selectedDays.length === 0) {
-      alert('최소 하나의 요일을 선택해주세요.');
+      onShowToast('최소 하나의 요일을 선택해주세요.');
       return;
     }
 
@@ -162,7 +168,7 @@ export function SquadSettingsModal({
       onClose();
     } catch (error) {
       console.error('스쿼드 설정 저장 실패:', error);
-      alert('설정 저장에 실패했습니다.');
+      onShowToast('설정 저장에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }

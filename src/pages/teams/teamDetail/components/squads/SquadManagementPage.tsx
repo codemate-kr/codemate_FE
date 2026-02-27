@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { X, Users } from 'lucide-react';
 import type { SquadResponse } from '../../../../../api/squads';
 import type { TeamMemberResponse } from '../../../../../api/teams';
@@ -24,12 +25,28 @@ export default function SquadManagementPage({
   onSquadsChange,
   isDemo,
 }: SquadManagementPageProps) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    dialogRef.current?.focus();
+    return () => {
+      previousFocusRef.current?.focus();
+    };
+  }, []);
+
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="squad-management-title"
     >
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[85vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
@@ -40,7 +57,7 @@ export default function SquadManagementPage({
               <Users className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900">스쿼드 관리</h2>
+              <h2 id="squad-management-title" className="text-lg font-bold text-gray-900">스쿼드 관리</h2>
               {isDemo && (
                 <p className="text-xs text-gray-400 mt-0.5">데모 모드 — 변경 사항이 저장되지 않습니다</p>
               )}

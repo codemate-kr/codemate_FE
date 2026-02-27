@@ -16,6 +16,9 @@ export default function LeaderboardTab({
 }: LeaderboardTabProps) {
   const myRank = members.find((m) => m.memberId === currentMemberId)?.rank || 0;
   const myIndex = members.findIndex((m) => m.memberId === currentMemberId);
+  const gapToPrev = myIndex > 0
+    ? members[myIndex - 1].totalSolved - members[myIndex].totalSolved
+    : 0;
 
   return (
     <div className="space-y-3 max-sm:space-y-2">
@@ -62,9 +65,9 @@ export default function LeaderboardTab({
         })}
       </div>
 
-      {myRank > 1 && myIndex > 0 && (
+      {myRank > 1 && myIndex > 0 && gapToPrev > 0 && (
         <div className="text-center text-xs max-sm:text-[10px] text-gray-500 pt-2 border-t border-gray-100">
-          {members[myIndex - 1].totalSolved - members[myIndex].totalSolved}문제만 더 풀면 {myRank - 1}위!
+          {gapToPrev}문제만 더 풀면 {myRank - 1}위!
         </div>
       )}
     </div>

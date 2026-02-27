@@ -366,8 +366,23 @@ export const useTeamStore = create<TeamStore>()(
       },
 
       refreshSquadSettings: async (teamId: number, squadId: number) => {
-        void squadId;
-        await get().fetchTeamDetails(teamId);
+        const { squadsApi } = await import('../api/squads');
+        const latestSettings = await squadsApi.getRecommendationSettings(teamId, squadId);
+        set((state) => {
+          if (!state.currentTeamDetails) return state;
+          return {
+            currentTeamDetails: {
+              ...state.currentTeamDetails,
+              squads: (state.currentTeamDetails.squads ?? []).map((squad) => {
+                if (squad.squadId !== squadId) return squad;
+                return {
+                  ...squad,
+                  recommendationSettings: latestSettings,
+                };
+              }),
+            },
+          };
+        });
       },
 
       // 전체 초기화

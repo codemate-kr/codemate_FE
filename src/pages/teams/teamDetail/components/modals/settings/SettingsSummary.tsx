@@ -1,7 +1,7 @@
 import { Mail, Calendar, Signal, Hash, Tag, Users, HelpCircle } from 'lucide-react';
-import type { ProblemDifficultyPreset, RecommendationDayOfWeek } from '../../../../../../api/teams';
 import { getTierShortName } from '../../../../../../utils/tierUtils';
 import { getTagNames } from '../../../../../../constants/algorithmTags';
+import type { ProblemDifficultyPreset, RecommendationDayOfWeek } from '../../../../../../api/teams';
 
 interface SettingsSummaryProps {
   selectedDays: RecommendationDayOfWeek[];

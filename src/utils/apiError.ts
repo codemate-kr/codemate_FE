@@ -10,7 +10,9 @@ type ApiErrorShape = {
 };
 
 const isApiErrorShape = (error: unknown): error is ApiErrorShape =>
-  typeof error === 'object' && error !== null;
+  typeof error === 'object'
+  && error !== null
+  && ('message' in error || 'response' in error);
 
 export const getApiErrorMessage = (error: unknown, fallback: string): string => {
   if (isApiErrorShape(error)) {

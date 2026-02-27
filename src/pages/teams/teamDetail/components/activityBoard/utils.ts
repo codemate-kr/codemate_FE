@@ -22,6 +22,8 @@ const formatLocalDate = (date: Date): string => {
   return `${year}-${month}-${day}`;
 };
 
+// 팀 미션 사이클이 오전 6시를 기준으로 바뀌므로,
+// 로컬 시간 기준 06:00 이전에는 전날 활동으로 집계한다.
 const getAdjustedToday = (): Date => {
   const now = new Date();
   if (now.getHours() < 6) {

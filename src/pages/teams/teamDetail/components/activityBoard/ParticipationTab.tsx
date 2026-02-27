@@ -68,16 +68,32 @@ export default function ParticipationTab({
       const squadMembers = members.filter((m) => memberToSquadId.get(m.memberId) === squad.squadId);
       if (squadMembers.length === 0) return;
       result.push({ type: 'divider' as const, squadName: squad.squadName });
-      squadMembers.forEach((m) => result.push({ type: 'member' as const, member: m }));
+      squadMembers.forEach((m) => {
+        result.push({ type: 'member' as const, member: m });
+      });
     });
     const assignedIds = new Set<number>(memberToSquadId.keys());
     const unassigned = members.filter((m) => !assignedIds.has(m.memberId));
     if (unassigned.length > 0) {
       result.push({ type: 'divider' as const, squadName: '미배정' });
-      unassigned.forEach((m) => result.push({ type: 'member' as const, member: m }));
+      unassigned.forEach((m) => {
+        result.push({ type: 'member' as const, member: m });
+      });
     }
     return result;
   }, [members, squads, teamMembers]);
+
+  const cellStatsMap = useMemo(() => {
+    const map = new Map<string, ReturnType<typeof getMemberDayStatsFromApi>>();
+    rows.forEach((row) => {
+      if (row.type !== 'member') return;
+      recentDays.forEach((date) => {
+        const key = `${row.member.memberId}:${date.dateStr}`;
+        map.set(key, getMemberDayStatsFromApi(row.member.memberId, date.dateStr, dailyActivities));
+      });
+    });
+    return map;
+  }, [rows, recentDays, dailyActivities]);
 
   const handleCellClick = (member: TeamActivityMember, dateStr: string, dateIndex: number, date: DayInfo) => {
     const isAlreadySelected = selectedCellInfo?.memberId === member.memberId && selectedCellInfo?.dateStr === dateStr;
@@ -196,7 +212,8 @@ export default function ParticipationTab({
               return (
                 <div key={member.memberId} className={memberRowContainerClass}>
                   {recentDays.map((date, dateIndex) => {
-                    const { solvedCount, totalCount } = getMemberDayStatsFromApi(member.memberId, date.dateStr, dailyActivities);
+                    const { solvedCount, totalCount } = cellStatsMap.get(`${member.memberId}:${date.dateStr}`)
+                      ?? { solvedCount: 0, totalCount: 0, problems: [], memberSolved: {} };
                     return (
                       <button
                         key={date.dateStr}

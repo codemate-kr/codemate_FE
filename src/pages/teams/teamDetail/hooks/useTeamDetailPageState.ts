@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { toast } from '../../../../components/common/toast';
 import { teamsApi } from '../../../../api/teams';
 import { useTeamStore, useCurrentTeamDetails, useDetailLoading, useDetailError, useTeams } from '../../../../store/teamStore';
@@ -32,7 +32,9 @@ export function useTeamDetailPageState() {
   const realDetailLoading = useDetailLoading();
   const realDetailError = useDetailError();
   const realTeams = useTeams();
-  const { fetchTeamDetails, leaveTeam, deleteTeam } = useTeamStore();
+  const { fetchTeamDetails, leaveTeam, deleteTeam, refreshSquadSettings } = useTeamStore();
+  const leaveNavigateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const deleteNavigateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const currentTeamDetails = isDemo ? demoTeamDetails : realCurrentTeamDetails;
   const detailLoading = isDemo ? false : realDetailLoading;
@@ -101,6 +103,15 @@ export function useTeamDetailPageState() {
     }
   }, [isDemo, clearAllTimers]);
 
+  useEffect(() => () => {
+    if (leaveNavigateTimeoutRef.current) {
+      clearTimeout(leaveNavigateTimeoutRef.current);
+    }
+    if (deleteNavigateTimeoutRef.current) {
+      clearTimeout(deleteNavigateTimeoutRef.current);
+    }
+  }, []);
+
   useEffect(() => {
     if (isDemo) return;
     if (numericTeamId) {
@@ -127,9 +138,8 @@ export function useTeamDetailPageState() {
 
   const handleSquadSettingsUpdate = useCallback(async () => {
     if (!numericTeamId || !selectedSquad) return;
-    const { refreshSquadSettings } = useTeamStore.getState();
     await refreshSquadSettings(numericTeamId, selectedSquad.squadId);
-  }, [numericTeamId, selectedSquad]);
+  }, [numericTeamId, selectedSquad, refreshSquadSettings]);
 
   const handleRefreshActivity = useCallback(() => {
     if (isReadOnly || !numericTeamId) return;
@@ -156,7 +166,7 @@ export function useTeamDetailPageState() {
       await leaveTeam(numericTeamId);
       toast('팀에서 탈퇴했습니다');
       setShowLeaveConfirm(false);
-      setTimeout(() => navigate('/teams'), 1000);
+      leaveNavigateTimeoutRef.current = setTimeout(() => navigate('/teams'), 1000);
     } catch (error: unknown) {
       toast(getApiErrorMessage(error, '팀 탈퇴에 실패했습니다'), 'error');
       setShowLeaveConfirm(false);
@@ -173,7 +183,7 @@ export function useTeamDetailPageState() {
       await deleteTeam(numericTeamId);
       toast('팀이 해산되었습니다');
       setShowDeleteConfirm(false);
-      setTimeout(() => navigate('/teams'), 1000);
+      deleteNavigateTimeoutRef.current = setTimeout(() => navigate('/teams'), 1000);
     } catch (error: unknown) {
       toast(getApiErrorMessage(error, '팀 해산에 실패했습니다'), 'error');
       setShowDeleteConfirm(false);
@@ -224,8 +234,7 @@ export function useTeamDetailPageState() {
       fetchTeamDetails(numericTeamId);
     } catch (error: unknown) {
       console.error('팀 정보 수정 실패:', error);
-      const errorMessage = getApiErrorMessage(error, '팀 정보 수정에 실패했습니다');
-      throw new Error(errorMessage);
+      toast(getApiErrorMessage(error, '팀 정보 수정에 실패했습니다'), 'error');
     } finally {
       setIsEditLoading(false);
     }

@@ -46,7 +46,10 @@ export const recommendationApi = {
     return response.data.data;
   },
 
-  // 로그인한 유저가 속한 모든 팀의 오늘 추천 문제 조회 (deprecated)
+  /**
+   * @deprecated Use `getMyTodayProblemsV2` instead.
+   * 기존 `/recommendation/my/today-problems` 경로는 deprecated 예정입니다.
+   */
   getMyTodayProblems: async (): Promise<MyTodayProblemsResponse> => {
     const response = await apiClient.get<ApiResponse<MyTodayProblemsResponse>>(
       '/recommendation/my/today-problems'

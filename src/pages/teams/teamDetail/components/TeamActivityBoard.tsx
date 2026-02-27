@@ -21,9 +21,6 @@ interface TeamActivityBoardProps {
   isDemo?: boolean;
 }
 
-const participationInFlight = new Map<string, Promise<TeamActivityResponse>>();
-const leaderboardInFlight = new Map<string, Promise<TeamLeaderboardResponse>>();
-
 export default function TeamActivityBoard({
   teamId,
   activityData,
@@ -51,6 +48,13 @@ export default function TeamActivityBoard({
   const [lastParticipationData, setLastParticipationData] = useState<TeamActivityResponse | null>(activityData);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const [contentHeight, setContentHeight] = useState<number | null>(null);
+  const onCellSelectRef = useRef(onCellSelect);
+  const participationInFlightRef = useRef<Map<string, Promise<TeamActivityResponse>>>(new Map());
+  const leaderboardInFlightRef = useRef<Map<string, Promise<TeamLeaderboardResponse>>>(new Map());
+
+  useEffect(() => {
+    onCellSelectRef.current = onCellSelect;
+  }, [onCellSelect]);
 
   const tabs = [
     { id: 'participation' as TabType, label: '참여 현황', icon: Calendar },
@@ -84,8 +88,8 @@ export default function TeamActivityBoard({
       setLeaderboardCurrentMemberId(0);
     }
     setSelectedCellInfo(null);
-    onCellSelect?.(null);
-  }, [isDemo, teamId, reloadKey, activeTab, onCellSelect]);
+    onCellSelectRef.current?.(null);
+  }, [isDemo, teamId, reloadKey, activeTab]);
 
   const cachedParticipationData = participationDataByRange[participationDayRange] ?? null;
 
@@ -103,12 +107,12 @@ export default function TeamActivityBoard({
 
     let cancelled = false;
     const requestKey = `${teamId}:${participationDayRange}`;
-    const request = participationInFlight.get(requestKey)
+    const request = participationInFlightRef.current.get(requestKey)
       ?? teamsApi.getTeamActivityParticipationV2(teamId, participationDayRange);
-    if (!participationInFlight.has(requestKey)) {
-      participationInFlight.set(requestKey, request);
+    if (!participationInFlightRef.current.has(requestKey)) {
+      participationInFlightRef.current.set(requestKey, request);
       void request.finally(() => {
-        participationInFlight.delete(requestKey);
+        participationInFlightRef.current.delete(requestKey);
       });
     }
 
@@ -148,12 +152,12 @@ export default function TeamActivityBoard({
 
     let cancelled = false;
     const requestKey = `${teamId}:${leaderboardDayRange}`;
-    const request = leaderboardInFlight.get(requestKey)
+    const request = leaderboardInFlightRef.current.get(requestKey)
       ?? teamsApi.getTeamLeaderboardV2(teamId, leaderboardDayRange);
-    if (!leaderboardInFlight.has(requestKey)) {
-      leaderboardInFlight.set(requestKey, request);
+    if (!leaderboardInFlightRef.current.has(requestKey)) {
+      leaderboardInFlightRef.current.set(requestKey, request);
       void request.finally(() => {
-        leaderboardInFlight.delete(requestKey);
+        leaderboardInFlightRef.current.delete(requestKey);
       });
     }
 
@@ -202,6 +206,16 @@ export default function TeamActivityBoard({
       resizeObserver.disconnect();
     };
   }, [activeTab]);
+
+  useEffect(() => {
+    participationInFlightRef.current.clear();
+    leaderboardInFlightRef.current.clear();
+  }, [teamId]);
+
+  useEffect(() => () => {
+    participationInFlightRef.current.clear();
+    leaderboardInFlightRef.current.clear();
+  }, []);
 
   if (loading) {
     return (

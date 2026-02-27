@@ -20,15 +20,21 @@ export function MemberInviteModal({ teamId, onClose, onShowToast, onInviteSucces
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const searchQueryRef = useRef(searchQuery);
+
+  useEffect(() => {
+    searchQueryRef.current = searchQuery;
+  }, [searchQuery]);
 
   const handleSearch = useCallback(async () => {
-    if (searchQuery.trim().length === 0) {
+    const query = searchQueryRef.current.trim();
+    if (query.length === 0) {
       return;
     }
 
     setIsSearching(true);
     try {
-      const results = await memberApi.getByHandle(searchQuery.trim());
+      const results = await memberApi.getByHandle(query);
       // 인증된 유저를 상단에 정렬 (verified: true가 우선)
       const sortedResults = results.sort((a, b) => {
         if (a.verified && !b.verified) return -1;
@@ -44,7 +50,7 @@ export function MemberInviteModal({ teamId, onClose, onShowToast, onInviteSucces
     } finally {
       setIsSearching(false);
     }
-  }, [searchQuery]);
+  }, []);
 
   // 검색 입력 시 디바운스 처리
   useEffect(() => {

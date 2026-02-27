@@ -7,7 +7,10 @@
       "Bash(xargs:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

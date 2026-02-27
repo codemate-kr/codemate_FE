@@ -360,6 +360,38 @@ export function TodayProblems({
     setVerifyingProblemId(null);
   };
 
+  const renderVerifyButton = (problem: NonNullable<TodayProblemsResponse>['problems'][number]) => {
+    const isVerifiableByTodayList = !isTeamMember
+      ? false
+      : (verifiableProblemIds === null || verifiableProblemIds.has(problem.problemId));
+    const isDisabled = !isTeamMember || !isVerifiableByTodayList || verifyingProblemId === problem.problemId;
+    const buttonLabel = !isTeamMember
+      ? '팀원만 인증 가능'
+      : !isVerifiableByTodayList
+        ? '내 추천 문제 아님'
+        : '해결 인증하기';
+
+    return (
+      <button
+        onClick={() => isTeamMember && handleVerifyProblem(problem.problemId)}
+        disabled={isDisabled}
+        className="w-full py-2.5 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-500"
+      >
+        {verifyingProblemId === problem.problemId ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            인증 중...
+          </>
+        ) : (
+          <>
+            <CheckCircle className="h-4 w-4" />
+            {buttonLabel}
+          </>
+        )}
+      </button>
+    );
+  };
+
   return (
     <>
       {/* 화면 떨림 효과를 위한 스타일 */}
@@ -535,37 +567,7 @@ export function TodayProblems({
                   해결 완료
                 </button>
               ) : (
-                (() => {
-                  const isVerifiableByTodayList = !isTeamMember
-                    ? false
-                    : (verifiableProblemIds === null || verifiableProblemIds.has(problem.problemId));
-                  const isDisabled = !isTeamMember || !isVerifiableByTodayList || verifyingProblemId === problem.problemId;
-                  const buttonLabel = !isTeamMember
-                    ? '팀원만 인증 가능'
-                    : !isVerifiableByTodayList
-                      ? '내 추천 문제 아님'
-                      : '해결 인증하기';
-
-                  return (
-                <button
-                  onClick={() => isTeamMember && handleVerifyProblem(problem.problemId)}
-                  disabled={isDisabled}
-                  className="w-full py-2.5 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-500"
-                >
-                  {verifyingProblemId === problem.problemId ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      인증 중...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="h-4 w-4" />
-                      {buttonLabel}
-                    </>
-                  )}
-                </button>
-                  );
-                })()
+                renderVerifyButton(problem)
               )}
               </div>
             ))}
