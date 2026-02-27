@@ -368,7 +368,7 @@ export function TodayProblems({
     const buttonLabel = !isTeamMember
       ? '팀원만 인증 가능'
       : !isVerifiableByTodayList
-        ? '내 추천 문제 아님'
+        ? '내 미션 문제 아님'
         : '해결 인증하기';
 
     return (
