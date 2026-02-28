@@ -23,7 +23,7 @@ export const demoTeams: MyTeamResponse[] = [
     teamId: 1,
     teamName: '알고리즘 마스터즈',
     teamDescription: '매일 백준 문제 3개씩 풀기',
-    memberCount: 4,
+    memberCount: 10,
     isPrivate: false,
     myRole: 'LEADER',
     isRecommendationActive: true,
@@ -87,6 +87,12 @@ export const demoTeamMembers: TeamMemberResponse[] = [
   { memberId: 2, handle: 'code_ninja', email: 'ninja@test.com', role: 'MEMBER', isMe: false },
   { memberId: 3, handle: 'dev_rookie', email: 'rookie@test.com', role: 'MEMBER', isMe: false },
   { memberId: 4, handle: 'ps_lover', email: 'lover@test.com', role: 'MEMBER', isMe: false },
+  { memberId: 5, handle: 'graph_master', email: 'graph@test.com', role: 'MEMBER', isMe: false },
+  { memberId: 6, handle: 'dp_wizard', email: 'dp@test.com', role: 'MEMBER', isMe: false },
+  { memberId: 7, handle: 'binary_hunter', email: 'binary@test.com', role: 'MEMBER', isMe: false },
+  { memberId: 8, handle: 'tree_traveler', email: 'tree@test.com', role: 'MEMBER', isMe: false },
+  { memberId: 9, handle: 'queue_runner', email: 'queue@test.com', role: 'MEMBER', isMe: false },
+  { memberId: 10, handle: 'heap_keeper', email: 'heap@test.com', role: 'MEMBER', isMe: false },
 ];
 
 export const demoRecommendationSettings: TeamRecommendationSettingsResponse = {
@@ -146,7 +152,7 @@ export const demoTeamDetails: TeamDetailResponse = {
     teamName: '알고리즘 마스터즈',
     description: '매일 백준 문제 3개씩 풀기',
     isPrivate: false,
-    memberCount: 4,
+    memberCount: 10,
   },
   members: demoTeamMembers,
   recommendationSettings: demoRecommendationSettings,
@@ -280,8 +286,8 @@ export const demoSquads: SquadResponse[] = [
     squadName: '스쿼드A',
     teamId: 1,
     isDefault: true,
-    memberCount: 2,
-    members: [demoTeamMembers[0], demoTeamMembers[1]],
+    memberCount: 5,
+    members: [demoTeamMembers[0], demoTeamMembers[1], demoTeamMembers[4], demoTeamMembers[6], demoTeamMembers[8]],
     recommendationSettings: {
       squadId: 1,
       squadName: '스쿼드A',
@@ -326,8 +332,8 @@ export const demoSquads: SquadResponse[] = [
     squadName: '스쿼드B',
     teamId: 1,
     isDefault: false,
-    memberCount: 2,
-    members: [demoTeamMembers[2], demoTeamMembers[3]],
+    memberCount: 5,
+    members: [demoTeamMembers[2], demoTeamMembers[3], demoTeamMembers[5], demoTeamMembers[7], demoTeamMembers[9]],
     recommendationSettings: {
       squadId: 2,
       squadName: '스쿼드B',

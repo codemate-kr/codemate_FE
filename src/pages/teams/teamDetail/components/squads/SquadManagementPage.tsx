@@ -38,7 +38,7 @@ export default function SquadManagementPage({
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -47,7 +47,7 @@ export default function SquadManagementPage({
       <div
         ref={dialogRef}
         tabIndex={-1}
-        className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[85vh] flex flex-col"
+        className="bg-white rounded-xl shadow-2xl w-full max-w-5xl h-[85vh] max-h-[85vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 헤더 */}
@@ -73,7 +73,7 @@ export default function SquadManagementPage({
         </div>
 
         {/* 콘텐츠 */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 min-h-0 overflow-hidden">
           <SquadMemberTab
             teamId={teamId}
             squads={squads}

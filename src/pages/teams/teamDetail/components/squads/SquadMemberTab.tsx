@@ -1,6 +1,6 @@
-import { useState, useRef, useCallback, useMemo } from 'react';
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, Pencil, Trash2, GripVertical, CheckCircle } from 'lucide-react';
+import { Plus, Pencil, Trash2, GripVertical, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { SquadResponse } from '../../../../../api/squads';
 import type { TeamMemberResponse } from '../../../../../api/teams';
 import { squadsApi } from '../../../../../api/squads';
@@ -30,6 +30,9 @@ export default function SquadMemberTab({
   isDemo,
 }: SquadMemberTabProps) {
   const [tooltip, setTooltip] = useState<{ text: string; left: number; top: number } | null>(null);
+  const boardScrollRef = useRef<HTMLDivElement | null>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   const normalizeMemberId = useCallback((value: unknown): number | null => {
     const parsed = Number(value);
@@ -58,6 +61,28 @@ export default function SquadMemberTab({
 
   const hideTooltip = useCallback(() => {
     setTooltip(null);
+  }, []);
+
+  const updateBoardScrollState = useCallback(() => {
+    const container = boardScrollRef.current;
+    if (!container) {
+      setCanScrollLeft(false);
+      setCanScrollRight(false);
+      return;
+    }
+
+    const maxScrollLeft = container.scrollWidth - container.clientWidth;
+    const hasHorizontalOverflow = maxScrollLeft > 1;
+
+    setCanScrollLeft(hasHorizontalOverflow && container.scrollLeft > 1);
+    setCanScrollRight(hasHorizontalOverflow && container.scrollLeft < maxScrollLeft - 1);
+  }, []);
+
+  const scrollBoardBy = useCallback((direction: 'left' | 'right') => {
+    boardScrollRef.current?.scrollBy({
+      left: direction === 'left' ? -240 : 240,
+      behavior: 'smooth',
+    });
   }, []);
 
   const buildAssignments = useCallback((targetSquads: SquadResponse[]) => {
@@ -140,6 +165,25 @@ export default function SquadMemberTab({
   }, [localSquads, originalSquads]);
 
   const hasChanges = changedAssignments.length > 0 || hasSquadChanges;
+
+  useEffect(() => {
+    updateBoardScrollState();
+    const rafId = requestAnimationFrame(updateBoardScrollState);
+    return () => cancelAnimationFrame(rafId);
+  }, [updateBoardScrollState, hasUnassigned, localSquads.length]);
+
+  useEffect(() => {
+    const container = boardScrollRef.current;
+    if (!container) return;
+
+    container.addEventListener('scroll', updateBoardScrollState, { passive: true });
+    window.addEventListener('resize', updateBoardScrollState);
+
+    return () => {
+      container.removeEventListener('scroll', updateBoardScrollState);
+      window.removeEventListener('resize', updateBoardScrollState);
+    };
+  }, [updateBoardScrollState]);
 
   const getMembersForSquad = (squadId: number) =>
     uniqueMembers.filter((m) => localAssignments.get(m.memberId) === squadId);
@@ -349,10 +393,31 @@ export default function SquadMemberTab({
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full min-h-0 flex flex-col">
       {/* 칸반 보드 */}
-      <div className="flex-1 overflow-auto p-6">
-        <div className="flex gap-4 h-full min-h-[320px] items-start">
+      <div className="flex-1 min-h-0 relative">
+        {canScrollLeft && (
+          <button
+            type="button"
+            onClick={() => scrollBoardBy('left')}
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors shadow-sm"
+            aria-label="왼쪽으로 이동"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+        )}
+        {canScrollRight && (
+          <button
+            type="button"
+            onClick={() => scrollBoardBy('right')}
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors shadow-sm"
+            aria-label="오른쪽으로 이동"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        )}
+        <div ref={boardScrollRef} className="h-full overflow-auto p-6">
+          <div className="flex gap-4 h-full min-h-[320px] items-start">
 
           {/* 미배정 컬럼 — 미배정 멤버가 있을 때만 노출 */}
           {hasUnassigned && (
@@ -468,6 +533,7 @@ export default function SquadMemberTab({
             <span className="text-xs font-medium">새 스쿼드</span>
           </button>
 
+          </div>
         </div>
       </div>
 
