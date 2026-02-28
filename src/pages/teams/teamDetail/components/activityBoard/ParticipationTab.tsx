@@ -62,10 +62,21 @@ export default function ParticipationTab({
   }, []);
 
   const rows = useMemo((): RowItem[] => {
-    const originalIndexMap = new Map<number, number>();
-    members.forEach((member, index) => {
-      originalIndexMap.set(member.memberId, index);
+    const joinOrderIndexMap = new Map<number, number>();
+    (teamMembers ?? []).forEach((member, index) => {
+      joinOrderIndexMap.set(member.memberId, index);
     });
+
+    const fallbackIndexMap = new Map<number, number>();
+    members.forEach((member, index) => {
+      fallbackIndexMap.set(member.memberId, index);
+    });
+
+    const getOrderIndex = (memberId: number) => (
+      joinOrderIndexMap.get(memberId)
+      ?? fallbackIndexMap.get(memberId)
+      ?? Number.MAX_SAFE_INTEGER
+    );
 
     const sortMembers = (targetMembers: TeamActivityMember[]) => {
       if (sortMode === 'handle') {
@@ -81,14 +92,12 @@ export default function ParticipationTab({
           const bSolved = solvedTotalsByMemberId.get(b.memberId) ?? 0;
           const aSolved = solvedTotalsByMemberId.get(a.memberId) ?? 0;
           if (bSolved !== aSolved) return bSolved - aSolved;
-          return a.memberId - b.memberId;
+          return getOrderIndex(a.memberId) - getOrderIndex(b.memberId);
         });
       }
 
       return [...targetMembers].sort((a, b) => {
-        const aIndex = originalIndexMap.get(a.memberId) ?? Number.MAX_SAFE_INTEGER;
-        const bIndex = originalIndexMap.get(b.memberId) ?? Number.MAX_SAFE_INTEGER;
-        return aIndex - bIndex;
+        return getOrderIndex(a.memberId) - getOrderIndex(b.memberId);
       });
     };
 
