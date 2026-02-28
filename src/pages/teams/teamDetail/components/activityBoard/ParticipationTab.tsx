@@ -37,11 +37,16 @@ export default function ParticipationTab({
   const solvedTotalsByMemberId = useMemo(() => {
     const totals = new Map<number, number>();
     members.forEach((member) => {
-      const solvedTotal = recentDays.reduce((acc, day) => {
+      const solvedProblemIds = new Set<number>();
+      recentDays.forEach((day) => {
         const stats = getMemberDayStatsFromApi(member.memberId, day.dateStr, dailyActivities);
-        return acc + stats.solvedCount;
-      }, 0);
-      totals.set(member.memberId, solvedTotal);
+        stats.problems.forEach((problem) => {
+          if (stats.memberSolved[String(problem.problemId)]) {
+            solvedProblemIds.add(problem.problemId);
+          }
+        });
+      });
+      totals.set(member.memberId, solvedProblemIds.size);
     });
     return totals;
   }, [members, recentDays, dailyActivities]);
