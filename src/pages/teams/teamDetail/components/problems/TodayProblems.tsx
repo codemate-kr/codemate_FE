@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Calendar, RefreshCw, ExternalLink, CheckCircle, Settings, Loader2, Sparkles, Pause, Play, RotateCcw, Clock } from 'lucide-react';
 import { type TodayProblemsResponse } from '../../../../../api/teams';
 import { squadsApi, type SquadRecommendationSettingsResponse } from '../../../../../api/squads';
@@ -131,6 +131,16 @@ export function TodayProblems({
   const [demoFailMode, setDemoFailMode] = useState(false);
   const [verifiableProblemIds, setVerifiableProblemIds] = useState<Set<number> | null>(null);
 
+  const buildVerifiableProblemIds = useCallback((teams: { teamId: number; problems: { problemId: number }[] }[]) => {
+    const ids = new Set<number>();
+    teams
+      .filter((team) => team.teamId === teamId)
+      .forEach((team) => {
+        team.problems.forEach((problem) => ids.add(problem.problemId));
+      });
+    return ids;
+  }, [teamId]);
+
   // 데모 모드: Cmd+Shift+F (Mac) 또는 Ctrl+Shift+F (Windows)로 실패 모드 토글
   useEffect(() => {
     if (!isDemo) return;
@@ -183,9 +193,7 @@ export function TodayProblems({
     recommendationApi.getMyTodayProblemsV2()
       .then((response) => {
         if (cancelled) return;
-        const teamToday = response.teams.find((team) => team.teamId === teamId);
-        const ids = new Set<number>((teamToday?.problems ?? []).map((problem) => problem.problemId));
-        setVerifiableProblemIds(ids);
+        setVerifiableProblemIds(buildVerifiableProblemIds(response.teams));
       })
       .catch((error) => {
         if (cancelled) return;
@@ -196,7 +204,7 @@ export function TodayProblems({
     return () => {
       cancelled = true;
     };
-  }, [isDemo, isTeamMember, teamId]);
+  }, [isDemo, isTeamMember, buildVerifiableProblemIds]);
 
   const handleRefreshProblems = async () => {
     if (!isTeamLeader) return;
@@ -233,9 +241,7 @@ export function TodayProblems({
       });
       recommendationApi.getMyTodayProblemsV2()
         .then((response) => {
-          const teamToday = response.teams.find((team) => team.teamId === teamId);
-          const ids = new Set<number>((teamToday?.problems ?? []).map((problem) => problem.problemId));
-          setVerifiableProblemIds(ids);
+          setVerifiableProblemIds(buildVerifiableProblemIds(response.teams));
         })
         .catch(() => {
           // 인증 가능 체크용 보조 호출 실패는 UI를 막지 않는다.
