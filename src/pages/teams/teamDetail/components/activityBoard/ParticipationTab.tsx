@@ -81,8 +81,6 @@ export default function ParticipationTab({
           const bSolved = solvedTotalsByMemberId.get(b.memberId) ?? 0;
           const aSolved = solvedTotalsByMemberId.get(a.memberId) ?? 0;
           if (bSolved !== aSolved) return bSolved - aSolved;
-          const handleCompare = (a.handle ?? '').localeCompare(b.handle ?? '', 'ko');
-          if (handleCompare !== 0) return handleCompare;
           return a.memberId - b.memberId;
         });
       }
