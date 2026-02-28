@@ -55,6 +55,9 @@ export default function TeamListPage() {
             className="w-full sm:max-w-md pl-9 sm:pl-10 pr-4 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
           />
         </div>
+        <p className="mt-2 text-xs text-gray-500">
+          {searchQuery ? `검색 결과 ${filteredTeams.length}개` : `전체 ${teams.length}개 팀`}
+        </p>
       </div>
 
       {/* 팀 목록 */}

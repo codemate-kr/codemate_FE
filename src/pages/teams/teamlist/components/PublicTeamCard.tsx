@@ -76,37 +76,35 @@ export const PublicTeamCard = memo(function PublicTeamCard({
       <div className="p-4 sm:p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 flex-1 min-w-0">
-            <div className="hidden sm:flex flex-shrink-0 mt-0.5">
-              <div className="h-11 w-11 rounded-lg bg-blue-50 flex items-center justify-center">
-                <Users className="h-5.5 w-5.5 text-blue-600" />
+            <div className="flex flex-shrink-0 mt-0.5">
+              <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-blue-50 flex items-center justify-center">
+                <Users className="h-4.5 w-4.5 sm:h-5.5 sm:w-5.5 text-blue-600" />
               </div>
             </div>
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 min-w-0">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+                <h3 className="text-[15px] sm:text-lg font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
                   {team.teamName}
                 </h3>
                 <span className="text-xs sm:text-sm text-gray-400 flex-shrink-0">#{team.teamId}</span>
               </div>
               {hasDescription && (
-                <p className="text-sm sm:text-[15px] mt-1 text-gray-500 line-clamp-2">
+                <p className="text-sm sm:text-[15px] mt-1 text-gray-500 line-clamp-1 sm:line-clamp-2">
                   {description}
                 </p>
               )}
 
-              <div className="mt-2.5 flex items-center gap-2 flex-wrap text-xs sm:text-sm text-gray-600">
-                <span className="inline-flex items-center gap-1">
+              <div className="mt-2.5 flex items-center gap-1.5 sm:gap-2 flex-wrap text-xs sm:text-sm text-gray-600">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 sm:bg-transparent sm:px-0 sm:py-0">
                   <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yellow-500" />
                   <span className="font-medium text-gray-700">@{team.leaderHandle}</span>
                 </span>
-                <span className="text-gray-300">|</span>
-                <span className="inline-flex items-center gap-1">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 sm:bg-transparent sm:px-0 sm:py-0">
                   <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
                   {team.memberCount}명
                 </span>
-                <span className="text-gray-300">|</span>
-                <span>스쿼드 {squadSettings.length}개</span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-100 sm:bg-transparent sm:px-0 sm:py-0">스쿼드 {squadSettings.length}개</span>
               </div>
             </div>
           </div>
@@ -116,7 +114,7 @@ export const PublicTeamCard = memo(function PublicTeamCard({
           </div>
         </div>
 
-        <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
+        <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 sm:gap-3">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs sm:text-sm text-gray-500">난이도 범위</span>
             {minTeamLevel !== null && maxTeamLevel !== null ? (
@@ -141,9 +139,10 @@ export const PublicTeamCard = memo(function PublicTeamCard({
               e.stopPropagation();
               onToggle();
             }}
-            className="inline-flex items-center gap-1 text-xs sm:text-sm font-medium text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-2.5 sm:px-3 py-1.5 rounded-md transition-colors"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-1 text-xs sm:text-sm font-medium text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-2.5 sm:px-3 py-1.5 rounded-md transition-colors"
           >
-            <span>{isExpanded ? '상세 닫기' : '추천 설정 상세 보기'}</span>
+            <span className="sm:hidden">{isExpanded ? '상세 닫기' : '추천 설정 보기'}</span>
+            <span className="hidden sm:inline">{isExpanded ? '상세 닫기' : '추천 설정 상세 보기'}</span>
             <ChevronRight className={`h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
           </button>
         </div>
