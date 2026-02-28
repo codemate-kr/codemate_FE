@@ -1,8 +1,16 @@
 import { CheckCircle } from 'lucide-react';
 
-export function DayRangeToggle({ dayRange, onChange }: { dayRange: 7 | 30; onChange: (range: 7 | 30) => void }) {
+export function DayRangeToggle({
+  dayRange,
+  onChange,
+  compact = false,
+}: {
+  dayRange: 7 | 30;
+  onChange: (range: 7 | 30) => void;
+  compact?: boolean;
+}) {
   return (
-    <div className="w-40 max-sm:w-24 flex-shrink-0 flex items-center gap-2 max-sm:gap-1 pr-2 max-sm:pr-1">
+    <div className={`${compact ? '' : 'w-40 max-sm:w-24 pr-2 max-sm:pr-1'} flex-shrink-0 flex items-center gap-2 max-sm:gap-1`}>
       <span className="text-xs text-gray-500 max-sm:hidden">최근</span>
       <div className="flex bg-gray-100 rounded-md p-0.5">
         <button

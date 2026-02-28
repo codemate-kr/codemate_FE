@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { TeamActivityDailyActivity, TeamActivityMember, TeamMemberResponse } from '../../../../../api/teams';
 import type { SquadResponse } from '../../../../../api/squads';
@@ -31,6 +31,20 @@ export default function ParticipationTab({
 }: ParticipationTabProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const recentDays = getRecentDays(dayRange);
+  const [viewMode, setViewMode] = useState<'squad' | 'integrated'>('squad');
+  const [sortMode, setSortMode] = useState<'default' | 'handle' | 'solved'>('default');
+
+  const solvedTotalsByMemberId = useMemo(() => {
+    const totals = new Map<number, number>();
+    members.forEach((member) => {
+      const solvedTotal = recentDays.reduce((acc, day) => {
+        const stats = getMemberDayStatsFromApi(member.memberId, day.dateStr, dailyActivities);
+        return acc + stats.solvedCount;
+      }, 0);
+      totals.set(member.memberId, solvedTotal);
+    });
+    return totals;
+  }, [members, recentDays, dailyActivities]);
 
   useEffect(() => {
     if (dayRange === 30 && scrollContainerRef.current) {
@@ -43,8 +57,40 @@ export default function ParticipationTab({
   }, []);
 
   const rows = useMemo((): RowItem[] => {
-    if (!squads || squads.length === 0) {
-      return members.map((m) => ({ type: 'member' as const, member: m }));
+    const originalIndexMap = new Map<number, number>();
+    members.forEach((member, index) => {
+      originalIndexMap.set(member.memberId, index);
+    });
+
+    const sortMembers = (targetMembers: TeamActivityMember[]) => {
+      if (sortMode === 'handle') {
+        return [...targetMembers].sort((a, b) => {
+          const compare = (a.handle ?? '').localeCompare(b.handle ?? '', 'ko');
+          if (compare !== 0) return compare;
+          return a.memberId - b.memberId;
+        });
+      }
+
+      if (sortMode === 'solved') {
+        return [...targetMembers].sort((a, b) => {
+          const bSolved = solvedTotalsByMemberId.get(b.memberId) ?? 0;
+          const aSolved = solvedTotalsByMemberId.get(a.memberId) ?? 0;
+          if (bSolved !== aSolved) return bSolved - aSolved;
+          const handleCompare = (a.handle ?? '').localeCompare(b.handle ?? '', 'ko');
+          if (handleCompare !== 0) return handleCompare;
+          return a.memberId - b.memberId;
+        });
+      }
+
+      return [...targetMembers].sort((a, b) => {
+        const aIndex = originalIndexMap.get(a.memberId) ?? Number.MAX_SAFE_INTEGER;
+        const bIndex = originalIndexMap.get(b.memberId) ?? Number.MAX_SAFE_INTEGER;
+        return aIndex - bIndex;
+      });
+    };
+
+    if (!squads || squads.length === 0 || viewMode === 'integrated') {
+      return sortMembers(members).map((m) => ({ type: 'member' as const, member: m }));
     }
 
     // 멤버-스쿼드 매핑은 teamMembers.squadId를 우선 사용하고,
@@ -65,7 +111,9 @@ export default function ParticipationTab({
 
     const result: RowItem[] = [];
     squads.forEach((squad) => {
-      const squadMembers = members.filter((m) => memberToSquadId.get(m.memberId) === squad.squadId);
+      const squadMembers = sortMembers(
+        members.filter((m) => memberToSquadId.get(m.memberId) === squad.squadId)
+      );
       if (squadMembers.length === 0) return;
       result.push({ type: 'divider' as const, squadName: squad.squadName });
       squadMembers.forEach((m) => {
@@ -73,7 +121,7 @@ export default function ParticipationTab({
       });
     });
     const assignedIds = new Set<number>(memberToSquadId.keys());
-    const unassigned = members.filter((m) => !assignedIds.has(m.memberId));
+    const unassigned = sortMembers(members.filter((m) => !assignedIds.has(m.memberId)));
     if (unassigned.length > 0) {
       result.push({ type: 'divider' as const, squadName: '미배정' });
       unassigned.forEach((m) => {
@@ -81,7 +129,7 @@ export default function ParticipationTab({
       });
     }
     return result;
-  }, [members, squads, teamMembers]);
+  }, [members, squads, teamMembers, viewMode, sortMode, solvedTotalsByMemberId]);
 
   const cellStatsMap = useMemo(() => {
     const map = new Map<string, ReturnType<typeof getMemberDayStatsFromApi>>();
@@ -148,13 +196,64 @@ export default function ParticipationTab({
     ? 'w-9 max-sm:w-7 h-9 max-sm:h-7 flex-shrink-0'
     : 'flex-1 h-9 max-sm:h-7';
 
+  const viewModeOptions: Array<{ value: 'squad' | 'integrated'; label: string }> = [
+    { value: 'squad', label: '스쿼드별' },
+    { value: 'integrated', label: '팀 통합' },
+  ];
+
+  const sortModeOptions: Array<{ value: 'default' | 'handle' | 'solved'; label: string }> = [
+    { value: 'default', label: '기본순' },
+    { value: 'handle', label: '핸들순' },
+    { value: 'solved', label: '해결순' },
+  ];
+
+  const filterGroupClass = 'flex items-center bg-gray-100 rounded-md p-0.5';
+  const filterButtonClass = (isActive: boolean) => `px-2 py-1 text-xs font-medium rounded transition-colors ${
+    isActive
+      ? 'bg-white text-blue-600 shadow-sm'
+      : 'text-gray-500 hover:text-gray-700'
+  }`;
+
   return (
     <div className="space-y-2 max-sm:space-y-1.5">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <DayRangeToggle dayRange={dayRange} onChange={handleDayRangeChange} compact />
+
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] font-medium text-gray-500">보기</span>
+            <div className={filterGroupClass}>
+              {viewModeOptions.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setViewMode(option.value)}
+                  className={filterButtonClass(viewMode === option.value)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] font-medium text-gray-500">정렬</span>
+            <div className={filterGroupClass}>
+              {sortModeOptions.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setSortMode(option.value)}
+                  className={filterButtonClass(sortMode === option.value)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="flex">
         <div className="flex-shrink-0 w-40 max-sm:w-24 space-y-2 max-sm:space-y-1.5">
-          <div className="h-10 max-sm:h-8 flex items-center">
-            <DayRangeToggle dayRange={dayRange} onChange={handleDayRangeChange} />
-          </div>
+          <div className="h-7 max-sm:h-5" />
           {rows.map((row, i) => {
             if (row.type === 'divider') {
               return (
@@ -187,7 +286,7 @@ export default function ParticipationTab({
 
         <div className={rightColumnWrapperClass} ref={scrollContainerRef}>
           <div className={rightColumnInnerClass} style={isThirtyDays ? { minWidth: dynamicGridMinWidth } : undefined}>
-            <div className="flex gap-1 max-sm:gap-0.5 h-10 max-sm:h-8 items-center">
+            <div className="flex gap-1 max-sm:gap-0.5 h-7 max-sm:h-5 items-center">
               {recentDays.map((date) => (
                 <div key={date.dateStr} className={`${dayHeaderCellClass} ${getDateHeaderClass(date)}`}>
                   <div className="text-[10px] max-sm:text-[9px]">{date.day}</div>

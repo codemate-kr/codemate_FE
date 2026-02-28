@@ -160,6 +160,13 @@ export const demoTeamDetails: TeamDetailResponse = {
 };
 
 // 최근 7일 날짜 생성
+const formatLocalDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const getRecentDates = (days: number): string[] => {
   const dates: string[] = [];
   const today = new Date();
@@ -169,7 +176,7 @@ const getRecentDates = (days: number): string[] => {
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(today.getDate() - i);
-    dates.push(date.toISOString().split('T')[0]);
+    dates.push(formatLocalDate(date));
   }
   return dates;
 };
@@ -185,24 +192,52 @@ export const demoActivityData: TeamActivityResponse = {
   },
   members: [
     { memberId: 1, handle: 'ryu_eclipse', rank: 1, totalSolved: 28 },
-    { memberId: 2, handle: 'code_ninja', rank: 2, totalSolved: 24 },
-    { memberId: 3, handle: 'dev_rookie', rank: 3, totalSolved: 15 },
-    { memberId: 4, handle: 'ps_lover', rank: 4, totalSolved: 12 },
+    { memberId: 2, handle: 'code_ninja', rank: 4, totalSolved: 19 },
+    { memberId: 3, handle: 'dev_rookie', rank: 8, totalSolved: 11 },
+    { memberId: 4, handle: 'ps_lover', rank: 9, totalSolved: 9 },
+    { memberId: 5, handle: 'graph_master', rank: 2, totalSolved: 24 },
+    { memberId: 6, handle: 'dp_wizard', rank: 5, totalSolved: 17 },
+    { memberId: 7, handle: 'binary_hunter', rank: 6, totalSolved: 15 },
+    { memberId: 8, handle: 'tree_traveler', rank: 10, totalSolved: 7 },
+    { memberId: 9, handle: 'queue_runner', rank: 3, totalSolved: 21 },
+    { memberId: 10, handle: 'heap_keeper', rank: 7, totalSolved: 13 },
   ],
-  dailyActivities: recentDates.slice(-7).map((date, idx) => ({
-    date,
-    problems: [
+  dailyActivities: recentDates.slice(-7).map((date, idx) => {
+    const problems = [
       { problemId: 1260 + idx, title: `문제 ${idx + 1}`, tier: 10 + (idx % 5) },
       { problemId: 1270 + idx, title: `문제 ${idx + 2}`, tier: 11 + (idx % 4) },
       { problemId: 1280 + idx, title: `문제 ${idx + 3}`, tier: 12 + (idx % 3) },
-    ],
-    memberSolved: [
-      { memberId: 1, solved: { [1260 + idx]: true, [1270 + idx]: true, [1280 + idx]: idx < 5 } },
-      { memberId: 2, solved: { [1260 + idx]: true, [1270 + idx]: idx < 4, [1280 + idx]: false } },
-      { memberId: 3, solved: { [1260 + idx]: idx < 3, [1270 + idx]: false, [1280 + idx]: false } },
-      { memberId: 4, solved: { [1260 + idx]: idx < 2, [1270 + idx]: false, [1280 + idx]: false } },
-    ],
-  })),
+    ];
+
+    // 데모에서 참여현황 정렬/구분을 확인할 수 있도록 10명 모두에 멤버별 데이터 제공
+    const solvedByMember: Record<number, Record<number, boolean>> = {
+      1: { [1260 + idx]: true, [1270 + idx]: true, [1280 + idx]: idx < 5 },
+      2: { [1260 + idx]: true, [1270 + idx]: idx < 4, [1280 + idx]: false },
+      3: { [1260 + idx]: idx < 3, [1270 + idx]: false, [1280 + idx]: false },
+      4: { [1260 + idx]: idx < 2, [1270 + idx]: false, [1280 + idx]: false },
+      5: { [1260 + idx]: true, [1270 + idx]: true, [1280 + idx]: idx < 6 },
+      6: { [1260 + idx]: true, [1270 + idx]: idx < 4, [1280 + idx]: idx < 2 },
+      7: { [1260 + idx]: idx < 5, [1270 + idx]: idx < 3, [1280 + idx]: false },
+      8: { [1260 + idx]: idx < 2, [1270 + idx]: idx < 1, [1280 + idx]: false },
+      9: { [1260 + idx]: true, [1270 + idx]: true, [1280 + idx]: idx < 4 },
+      10: { [1260 + idx]: idx < 4, [1270 + idx]: idx < 2, [1280 + idx]: false },
+    };
+
+    return {
+      date,
+      problems,
+      memberSolved: Object.entries(solvedByMember).map(([memberId, solved]) => ({
+        memberId: Number(memberId),
+        solved: Object.fromEntries(
+          Object.entries(solved).map(([problemId, isSolved]) => [String(problemId), isSolved])
+        ),
+      })),
+      memberProblems: Object.keys(solvedByMember).map((memberId) => ({
+        memberId: Number(memberId),
+        problems,
+      })),
+    };
+  }),
 };
 
 // ============ 최근 활동 차트용 데이터 ============
@@ -264,7 +299,7 @@ const generateDemoDailySolved = (): DemoDailySolvedResponse => {
   const dailySolved: DemoDailySolved[] = sampleProblems.map((problems, idx) => {
     const date = new Date(today);
     date.setDate(today.getDate() - (6 - idx));
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = formatLocalDate(date);
 
     return {
       date: dateStr,
