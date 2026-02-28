@@ -191,7 +191,6 @@ export default function ParticipationTab({
   };
 
   const isThirtyDays = dayRange === 30;
-  const dynamicGridMinWidth = `${recentDays.length * 2.25 + Math.max(recentDays.length - 1, 0) * 0.25}rem`;
   const rightColumnWrapperClass = isThirtyDays
     ? 'flex-1 overflow-x-auto scrollbar-hide'
     : 'flex-1';
@@ -297,7 +296,7 @@ export default function ParticipationTab({
         </div>
 
         <div className={rightColumnWrapperClass} ref={scrollContainerRef}>
-          <div className={rightColumnInnerClass} style={isThirtyDays ? { minWidth: dynamicGridMinWidth } : undefined}>
+          <div className={rightColumnInnerClass}>
             <div className="flex gap-1 max-sm:gap-0.5 h-7 max-sm:h-5 items-center">
               {recentDays.map((date) => (
                 <div key={date.dateStr} className={`${dayHeaderCellClass} ${getDateHeaderClass(date)}`}>
@@ -311,11 +310,12 @@ export default function ParticipationTab({
               if (row.type === 'divider') {
                 return (
                   <div key={`div-${row.squadName}-${i}`} className="flex gap-1 max-sm:gap-0.5 h-4 items-center">
-                    {isThirtyDays ? (
-                      <div className="w-full border-t border-dashed border-gray-200" />
-                    ) : (
-                      <div className="flex-1 border-t border-dashed border-gray-200" />
-                    )}
+                    {recentDays.map((date) => (
+                      <div
+                        key={`div-line-${row.squadName}-${i}-${date.dateStr}`}
+                        className={`${dayHeaderCellClass} border-t border-dashed border-gray-200`}
+                      />
+                    ))}
                   </div>
                 );
               }

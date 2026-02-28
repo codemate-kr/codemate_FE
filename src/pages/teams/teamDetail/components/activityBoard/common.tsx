@@ -11,7 +11,7 @@ export function DayRangeToggle({
 }) {
   return (
     <div className={`${compact ? '' : 'w-40 max-sm:w-24 pr-2 max-sm:pr-1'} flex-shrink-0 flex items-center gap-2 max-sm:gap-1`}>
-      <span className="text-xs text-gray-500 max-sm:hidden">최근</span>
+      <span className="text-xs text-gray-500">최근</span>
       <div className="flex bg-gray-100 rounded-md p-0.5">
         <button
           onClick={() => onChange(7)}
