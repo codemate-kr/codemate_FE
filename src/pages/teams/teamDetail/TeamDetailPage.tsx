@@ -13,6 +13,7 @@ import TeamActivityBoard, { ProblemDetail } from './components/TeamActivityBoard
 import SentInvitationsModal from './components/modals/SentInvitationsModal';
 import SquadsList from './components/squads/SquadsList';
 import SquadManagementPage from './components/squads/SquadManagementPage';
+import AdSenseBlock from '../../../components/common/adsense/AdSenseBlock';
 import { useTeamDetailPageState } from './hooks/useTeamDetailPageState';
 
 export default function TeamDetailPage() {
@@ -118,6 +119,7 @@ export default function TeamDetailPage() {
             </div>
           </div>
         </div>
+        <AdSenseBlock slotKey="TOP" sectionClassName="mt-4" />
 
         {/* 스쿼드 탭 — 그리드 전체 위 */}
         {data.squads.length > 0 && (
@@ -323,6 +325,8 @@ export default function TeamDetailPage() {
             onShowToast={toast}
           />
         )}
+
+        <AdSenseBlock slotKey="BOTTOM" />
       </div>
     </div>
   );

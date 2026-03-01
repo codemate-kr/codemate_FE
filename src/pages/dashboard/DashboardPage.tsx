@@ -8,6 +8,7 @@ import StatsCards from './components/StatsCards';
 import MyTeamsSection from './components/MyTeamsSection';
 import TodayTodoSection from './components/TodayTodoSection';
 import DailySolvedChart from './components/DailySolvedChart';
+import AdSenseBlock from '../../components/common/adsense/AdSenseBlock';
 import InvitationBanner from '../../components/common/InvitationBanner';
 import { isDemoMode, demoUser, demoTeams, demoTodayProblems } from '../../data/demoData';
 
@@ -88,6 +89,7 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
+        <AdSenseBlock slotKey="TOP" size="H90" sectionClassName="mt-0 mb-6 sm:mb-8" />
 
         {/* Stats Cards - 모바일에서 숨김 */}
         <StatsCards
@@ -127,6 +129,7 @@ export default function DashboardPage() {
           />
 
         </div>
+        <AdSenseBlock slotKey="BOTTOM" size="H280" />
       </div>
     </div>
   );
