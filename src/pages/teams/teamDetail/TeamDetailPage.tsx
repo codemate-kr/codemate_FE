@@ -258,6 +258,24 @@ export default function TeamDetailPage() {
             teamId={route.numericTeamId!}
             squadId={data.selectedSquad.squadId}
             squadName={data.selectedSquad.squadName}
+            squadMemberHandles={[
+              ...new Set(
+                [
+                  ...data.teamMembers
+                    .filter((member) => {
+                      if (member.squadId === data.selectedSquad!.squadId) {
+                        return true;
+                      }
+                      return data.selectedSquad!.isDefault && member.squadId == null;
+                    })
+                    .map((member) => member.handle?.trim())
+                    .filter((handle): handle is string => Boolean(handle)),
+                  ...(data.selectedSquad!.members ?? [])
+                    .map((member) => member.handle?.trim())
+                    .filter((handle): handle is string => Boolean(handle)),
+                ],
+              ),
+            ]}
             settings={data.selectedSquad.recommendationSettings ?? data.selectedSquadFromDetail?.recommendationSettings ?? null}
             onClose={actions.handleCloseSquadSettings}
             onSettingsUpdate={actions.handleSquadSettingsUpdate}

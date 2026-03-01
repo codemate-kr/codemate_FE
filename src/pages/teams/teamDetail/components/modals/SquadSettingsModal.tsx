@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Settings, X, Mail, Calendar, Signal, CheckCircle, Hash } from 'lucide-react';
 import { squadsApi, type SquadRecommendationSettingsResponse } from '../../../../../api/squads';
 import type { ProblemDifficultyPreset, RecommendationDayOfWeek } from '../../../../../api/teams';
 import { CustomTierModal } from '../../../../problems/components/CustomTierModal';
 import { getTierName } from '../../../../../utils/tierUtils';
+import { buildSolvedAcSearchUrl } from '../../../../../utils/solvedAcSearch';
 import { AlgorithmTagSelector } from './settings/AlgorithmTagSelector';
 import { SettingsSummary } from './settings/SettingsSummary';
 
@@ -11,6 +12,7 @@ interface SquadSettingsModalProps {
   teamId: number;
   squadId: number;
   squadName: string;
+  squadMemberHandles: string[];
   settings: SquadRecommendationSettingsResponse | null;
   onClose: () => void;
   onSettingsUpdate: () => void;
@@ -21,6 +23,7 @@ export function SquadSettingsModal({
   teamId,
   squadId,
   squadName,
+  squadMemberHandles,
   settings,
   onClose,
   onSettingsUpdate,
@@ -171,6 +174,35 @@ export function SquadSettingsModal({
       onShowToast('설정 저장에 실패했습니다.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const solvedAcSearchUrl = useMemo(
+    () =>
+      buildSolvedAcSearchUrl({
+        selectedPreset,
+        minProblemLevel,
+        maxProblemLevel,
+        selectedTags,
+        solvedCountMin: 1000,
+        unsolvedByHandles: squadMemberHandles,
+      }),
+    [selectedPreset, minProblemLevel, maxProblemLevel, selectedTags, squadMemberHandles]
+  );
+
+  const canOpenSolvedAcSearch =
+    selectedPreset !== null ||
+    selectedTags.length > 0;
+
+  const handleOpenSolvedAcSearch = () => {
+    if (!canOpenSolvedAcSearch) {
+      onShowToast('난이도 또는 태그를 먼저 설정해주세요.');
+      return;
+    }
+
+    const opened = window.open(solvedAcSearchUrl, '_blank', 'noopener,noreferrer');
+    if (!opened) {
+      onShowToast('팝업이 차단되었습니다. 브라우저 설정을 확인해주세요.');
     }
   };
 
@@ -386,7 +418,16 @@ export function SquadSettingsModal({
 
                 {/* 설정 요약 (모바일) */}
                 <div className="lg:hidden">
-                  <SettingsSummary selectedDays={selectedDays} selectedPreset={selectedPreset} minProblemLevel={minProblemLevel} maxProblemLevel={maxProblemLevel} problemCount={problemCount} selectedTags={selectedTags} />
+                  <SettingsSummary
+                    selectedDays={selectedDays}
+                    selectedPreset={selectedPreset}
+                    minProblemLevel={minProblemLevel}
+                    maxProblemLevel={maxProblemLevel}
+                    problemCount={problemCount}
+                    selectedTags={selectedTags}
+                    onOpenSolvedAcSearch={handleOpenSolvedAcSearch}
+                    canOpenSolvedAcSearch={canOpenSolvedAcSearch}
+                  />
                 </div>
               </div>
             )}
@@ -425,7 +466,16 @@ export function SquadSettingsModal({
             style={{ left: 'calc(50% + 256px + 16px)', top: '1rem' }}
             onClick={(e) => e.stopPropagation()}
           >
-            <SettingsSummary selectedDays={selectedDays} selectedPreset={selectedPreset} minProblemLevel={minProblemLevel} maxProblemLevel={maxProblemLevel} problemCount={problemCount} selectedTags={selectedTags} />
+            <SettingsSummary
+              selectedDays={selectedDays}
+              selectedPreset={selectedPreset}
+              minProblemLevel={minProblemLevel}
+              maxProblemLevel={maxProblemLevel}
+              problemCount={problemCount}
+              selectedTags={selectedTags}
+              onOpenSolvedAcSearch={handleOpenSolvedAcSearch}
+              canOpenSolvedAcSearch={canOpenSolvedAcSearch}
+            />
           </div>
         )}
 

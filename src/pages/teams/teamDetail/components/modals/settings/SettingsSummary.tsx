@@ -1,4 +1,4 @@
-import { Mail, Calendar, Signal, Hash, Tag, Users, HelpCircle } from 'lucide-react';
+import { Mail, Calendar, Signal, Hash, Tag, Users, HelpCircle, ExternalLink } from 'lucide-react';
 import { getTierShortName } from '../../../../../../utils/tierUtils';
 import { getTagNames } from '../../../../../../constants/algorithmTags';
 import type { ProblemDifficultyPreset, RecommendationDayOfWeek } from '../../../../../../api/teams';
@@ -10,6 +10,8 @@ interface SettingsSummaryProps {
   maxProblemLevel: number | null;
   problemCount: number;
   selectedTags: string[];
+  onOpenSolvedAcSearch?: () => void;
+  canOpenSolvedAcSearch?: boolean;
 }
 
 const weekDays: Array<{ key: RecommendationDayOfWeek; label: string; order: number }> = [
@@ -52,6 +54,8 @@ export function SettingsSummary({
   maxProblemLevel,
   problemCount,
   selectedTags,
+  onOpenSolvedAcSearch,
+  canOpenSolvedAcSearch = false,
 }: SettingsSummaryProps) {
   const sortedDays = [...selectedDays].sort((a, b) => {
     const orderA = weekDays.find((d) => d.key === a)?.order || 0;
@@ -157,6 +161,20 @@ export function SettingsSummary({
           </p>
         </div>
       )}
+
+      <div className="mt-3">
+        <button
+          type="button"
+          onClick={onOpenSolvedAcSearch}
+          disabled={!canOpenSolvedAcSearch}
+          className="w-full px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center justify-center gap-1.5"
+          title={!canOpenSolvedAcSearch ? '난이도 또는 태그를 설정하면 이동할 수 있습니다.' : undefined}
+        >
+          <ExternalLink className="h-3.5 w-3.5" />
+          <span>추천 문제 후보 보기</span>
+        </button>
+        <p className="mt-1.5 text-[11px] text-gray-500">solved.ac 검색 결과로 이동합니다.</p>
+      </div>
     </div>
   );
 }
