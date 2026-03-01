@@ -74,5 +74,5 @@ export function buildSolvedAcSearchUrl({
   }
 
   const query = tokens.join(' ').trim();
-  return `https://solved.ac/search?query=${encodeURIComponent(query)}`;
+  return `https://solved.ac/problems?query=${encodeURIComponent(query)}`;
 }
