@@ -43,8 +43,6 @@ export default function TeamListPage() {
           다양한 공개 스터디 팀을 탐색하고 참여하세요
         </p>
       </div>
-      <AdSenseBlock slotKey="TOP" sectionClassName="mt-0 mb-4 sm:mb-6" />
-
       {/* 검색 */}
       <div className="mb-4 sm:mb-6">
         <div className="relative">
@@ -61,6 +59,7 @@ export default function TeamListPage() {
           {searchQuery ? `검색 결과 ${filteredTeams.length}개` : `전체 ${teams.length}개 팀`}
         </p>
       </div>
+      <AdSenseBlock slotKey="TOP" sectionClassName="mt-0 mb-4 sm:mb-6" />
 
       {/* 팀 목록 */}
       <div className="flex flex-col gap-2 sm:gap-3">
