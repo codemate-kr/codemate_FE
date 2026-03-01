@@ -213,9 +213,9 @@ export default function ParticipationTab({
   ];
 
   const sortModeOptions: Array<{ value: 'default' | 'handle' | 'solved'; label: string }> = [
-    { value: 'default', label: '기본순' },
-    { value: 'handle', label: '핸들순' },
-    { value: 'solved', label: '해결순' },
+    { value: 'default', label: '기본' },
+    { value: 'handle', label: '핸들' },
+    { value: 'solved', label: '해결 수' },
   ];
 
   const filterGroupClass = 'flex items-center bg-gray-100 rounded-md p-0.5';
@@ -245,6 +245,8 @@ export default function ParticipationTab({
               ))}
             </div>
           </div>
+
+          <span className="text-xs text-gray-300">|</span>
 
           <div className="flex items-center gap-1.5">
             <span className="text-[11px] font-medium text-gray-500">정렬</span>
