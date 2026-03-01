@@ -119,6 +119,7 @@ export default function TeamDetailPage() {
             </div>
           </div>
         </div>
+        <AdSenseBlock slotKey="TOP" sectionClassName="mt-4" />
         {/* 스쿼드 탭 — 그리드 전체 위 */}
         {data.squads.length > 0 && (
           <div className="mt-6">
@@ -135,7 +136,6 @@ export default function TeamDetailPage() {
             />
           </div>
         )}
-        <AdSenseBlock slotKey="TOP" sectionClassName="mt-4" />
 
         {/* 메인 콘텐츠 */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mt-3">
