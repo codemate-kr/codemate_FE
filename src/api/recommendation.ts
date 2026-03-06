@@ -26,7 +26,8 @@ export interface TeamTodayProblems {
   teamId: number;
   teamName: string;
   recommendationId: number;
-  createdAt: string;
+  date: string;
+  status: 'PENDING' | 'FAILED' | 'SUCCESS';
   problems: TodayProblem[];
 }
 

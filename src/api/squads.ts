@@ -6,6 +6,7 @@ import type {
   ProblemDifficultyPreset,
   TeamRecommendationSettingsRequest,
 } from './teams';
+import { normalizeTodayProblemsResponse, type RawTodayProblemsResponse } from './recommendationNormalizer';
 
 export interface SquadRecommendationSettingsResponse {
   squadId: number;
@@ -45,7 +46,8 @@ type RawSquadResponse = Partial<SquadResponse> & {
   name?: string;
   recommendationSetting?: SquadRecommendationSettingsResponse | null;
   settings?: SquadRecommendationSettingsResponse | null;
-  todayProblem?: TodayProblemsResponse | null;
+  todayProblem?: RawTodayProblemsResponse | null;
+  todayProblems?: RawTodayProblemsResponse | null;
 };
 
 const normalizeSquad = (squad: RawSquadResponse): SquadResponse => {
@@ -53,7 +55,7 @@ const normalizeSquad = (squad: RawSquadResponse): SquadResponse => {
   const normalizedName = squad.squadName ?? squad.name ?? '이름 없음';
   const normalizedRecommendationSettings =
     squad.recommendationSettings ?? squad.recommendationSetting ?? squad.settings ?? null;
-  const normalizedTodayProblems = squad.todayProblems ?? squad.todayProblem ?? null;
+  const normalizedTodayProblems = normalizeTodayProblemsResponse(squad.todayProblems ?? squad.todayProblem ?? null);
 
   return {
     ...squad,
@@ -125,14 +127,22 @@ export const squadsApi = {
     const response = await apiClient.get<ApiResponse<TodayProblemsResponse>>(
       `/teams/${teamId}/squads/${squadId}/today-problems`
     );
-    return response.data.data;
+    const normalized = normalizeTodayProblemsResponse(response.data.data);
+    if (!normalized) {
+      throw new Error('추천 데이터가 비어 있습니다.');
+    }
+    return normalized;
   },
 
   refreshProblems: async (teamId: number, squadId: number): Promise<TodayProblemsResponse> => {
     const response = await apiClient.post<ApiResponse<TodayProblemsResponse>>(
       `/teams/${teamId}/squads/${squadId}/today-problems/refresh`
     );
-    return response.data.data;
+    const normalized = normalizeTodayProblemsResponse(response.data.data);
+    if (!normalized) {
+      throw new Error('추천 데이터가 비어 있습니다.');
+    }
+    return normalized;
   },
 
   // 스쿼드 수동 추천 생성 - 팀장 전용
@@ -140,6 +150,10 @@ export const squadsApi = {
     const response = await apiClient.post<ApiResponse<TodayProblemsResponse>>(
       `/recommendation/team/${teamId}/squad/${squadId}/manual`
     );
-    return response.data.data;
+    const normalized = normalizeTodayProblemsResponse(response.data.data);
+    if (!normalized) {
+      throw new Error('추천 데이터가 비어 있습니다.');
+    }
+    return normalized;
   },
 };

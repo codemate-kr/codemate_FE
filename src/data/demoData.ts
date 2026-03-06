@@ -109,7 +109,8 @@ export const demoRecommendationSettings: TeamRecommendationSettingsResponse = {
 
 export const demoTodayProblemsResponse: TodayProblemsResponse = {
   recommendationId: 1,
-  createdAt: new Date().toISOString(),
+  date: new Date().toISOString().slice(0, 10),
+  status: 'SUCCESS',
   problems: [
     {
       problemId: 1260,
@@ -336,7 +337,8 @@ export const demoSquads: SquadResponse[] = [
     },
     todayProblems: {
       recommendationId: 2,
-      createdAt: new Date().toISOString(),
+      date: new Date().toISOString().slice(0, 10),
+      status: 'SUCCESS',
       problems: [
         {
           problemId: 1753,
@@ -382,7 +384,8 @@ export const demoSquads: SquadResponse[] = [
     },
     todayProblems: {
       recommendationId: 3,
-      createdAt: new Date().toISOString(),
+      date: new Date().toISOString().slice(0, 10),
+      status: 'SUCCESS',
       problems: [
         {
           problemId: 1260,

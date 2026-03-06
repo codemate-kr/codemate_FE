@@ -1,5 +1,6 @@
 import { apiClient, type ApiResponse } from './client';
 import type { SquadResponse, SquadRecommendationSettingsResponse } from './squads';
+import { normalizeTodayProblemsResponse, type RawTodayProblemsResponse } from './recommendationNormalizer';
 
 export interface CreateTeamRequest {
   name: string;
@@ -88,7 +89,8 @@ export interface TodayProblem {
 
 export interface TodayProblemsResponse {
   recommendationId: number;
-  createdAt: string; // ISO 8601 날짜
+  date: string; // LocalDate ("YYYY-MM-DD")
+  status: 'PENDING' | 'FAILED' | 'SUCCESS';
   problems: TodayProblem[];
 }
 
@@ -149,7 +151,7 @@ type RawTeamDetailResponse = {
   };
   members?: TeamMemberResponse[];
   recommendationSettings?: TeamRecommendationSettingsResponse | null;
-  todayProblem?: TodayProblemsResponse | null;
+  todayProblem?: RawTodayProblemsResponse | null;
   squads?: Array<{
     squadId?: number;
     name?: string;
@@ -164,7 +166,7 @@ type RawTeamDetailResponse = {
     problemCount?: number;
     includeTags?: string[];
     recommendationSettings?: SquadRecommendationSettingsResponse | null;
-    todayProblems?: TodayProblemsResponse | null;
+    todayProblems?: RawTodayProblemsResponse | null;
   }>;
 };
 
@@ -195,7 +197,7 @@ const normalizeTeamDetail = (raw: RawTeamDetailResponse): TeamDetailResponse => 
           problemCount: s.problemCount,
           includeTags: s.includeTags ?? [],
         },
-        todayProblems: s.todayProblems ?? null,
+        todayProblems: normalizeTodayProblemsResponse(s.todayProblems ?? null),
       } satisfies SquadResponse;
     })
     : [];
@@ -210,7 +212,7 @@ const normalizeTeamDetail = (raw: RawTeamDetailResponse): TeamDetailResponse => 
     },
     members,
     recommendationSettings: raw.recommendationSettings ?? null,
-    todayProblem: raw.todayProblem ?? null,
+    todayProblem: normalizeTodayProblemsResponse(raw.todayProblem ?? null),
     squads,
   };
 };
@@ -471,7 +473,11 @@ export const teamsApi = {
   // 오늘의 문제 API - 로그인 시 해결 유무 정보 포함
   getTodayProblems: async (teamId: number): Promise<TodayProblemsResponse> => {
     const response = await apiClient.get<ApiResponse<TodayProblemsResponse>>(`/recommendation/team/${teamId}/today-problem`);
-    return response.data.data;
+    const normalized = normalizeTodayProblemsResponse(response.data.data);
+    if (!normalized) {
+      throw new Error('추천 데이터가 비어 있습니다.');
+    }
+    return normalized;
   },
 
   // 수동 추천 생성 - 팀장 전용
@@ -479,7 +485,11 @@ export const teamsApi = {
     const response = await apiClient.post<ApiResponse<TodayProblemsResponse>>(
       `/recommendation/team/${teamId}/manual`
     );
-    return response.data.data;
+    const normalized = normalizeTodayProblemsResponse(response.data.data);
+    if (!normalized) {
+      throw new Error('추천 데이터가 비어 있습니다.');
+    }
+    return normalized;
   },
 
   // 공개 팀 목록 조회 (비로그인 가능)

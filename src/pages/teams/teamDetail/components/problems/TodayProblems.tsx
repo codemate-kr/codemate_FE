@@ -130,6 +130,8 @@ export function TodayProblems({
   const [showErrorFlash, setShowErrorFlash] = useState(false);
   const [demoFailMode, setDemoFailMode] = useState(false);
   const [verifiableProblemIds, setVerifiableProblemIds] = useState<Set<number> | null>(null);
+  const missionStatus = todayProblems?.status ?? null;
+  const isRecommendationLoading = problemsLoading || missionStatus === 'PENDING';
 
   const buildVerifiableProblemIds = useCallback((teams: { teamId: number; problems: { problemId: number }[] }[]) => {
     const ids = new Set<number>();
@@ -162,7 +164,10 @@ export function TodayProblems({
       const nextFromServer = initialTodayProblems ?? null;
       const shouldSync =
         !prev.has(selectedSquadId) ||
-        (nextFromServer !== null && cached?.recommendationId !== nextFromServer.recommendationId);
+        cached?.recommendationId !== nextFromServer?.recommendationId ||
+        cached?.status !== nextFromServer?.status ||
+        cached?.date !== nextFromServer?.date ||
+        (cached?.problems.length ?? 0) !== (nextFromServer?.problems.length ?? 0);
       if (!shouldSync) return prev;
       const next = new Map(prev);
       next.set(selectedSquadId, nextFromServer);
@@ -216,27 +221,23 @@ export function TodayProblems({
       onShowToast('현재 스쿼드에 배정된 팀원이 없어 미션을 생성할 수 없습니다.', 'warning');
       return;
     }
+    if (todayProblems?.status === 'PENDING') {
+      onShowToast('추천이 아직 준비 중입니다. 잠시 후 다시 확인해주세요.', 'info');
+      return;
+    }
+    if (todayProblems?.status === 'SUCCESS') {
+      onShowToast('오늘 추천이 이미 생성되었습니다.', 'info');
+      return;
+    }
 
     setProblemsLoading(true);
     try {
       const newProblems = await squadsApi.createManualRecommendation(teamId, selectedSquadId);
-      // 오전 6시 기준으로 날짜 계산 (6시 전이면 전날 날짜)
-      const now = new Date();
-      const missionDate = new Date(now);
-      if (now.getHours() < 6) {
-        missionDate.setDate(missionDate.getDate() - 1);
-      }
-      setTodayProblems({
-        ...newProblems,
-        createdAt: newProblems.createdAt || missionDate.toISOString(),
-      });
+      setTodayProblems(newProblems);
       setTodayProblemsBySquad((prev) => {
         if (!selectedSquadId) return prev;
         const next = new Map(prev);
-        next.set(selectedSquadId, {
-          ...newProblems,
-          createdAt: newProblems.createdAt || missionDate.toISOString(),
-        });
+        next.set(selectedSquadId, newProblems);
         return next;
       });
       recommendationApi.getMyTodayProblemsV2()
@@ -263,8 +264,8 @@ export function TodayProblems({
         // Duplicate recommendation within the same mission cycle
         onShowToast('오늘은 이미 미션을 받았습니다.\n오전 7시 이후 다시 시도해주세요.', 'warning');
       } else if (status === 409) {
-        // Other 409 conflict errors
-        onShowToast('미션 생성에 실패했습니다.\n잠시 후 다시 시도해주세요.', 'warning');
+        // 오늘 PENDING/SUCCESS가 이미 존재하는 경우 포함
+        onShowToast('이미 오늘 추천이 생성 중이거나 완료되었습니다.', 'warning');
       } else if (status === 403) {
         // Blocked time window (fallback)
         onShowToast('미션 전환 시간대(05:00-07:00)에는 즉시 미션 생성이 불가합니다.', 'warning');
@@ -309,7 +310,7 @@ export function TodayProblems({
           cancelTimer(problemId); // localStorage에서 삭제 (새로고침 시 초기화)
         }
 
-        if (todayProblems) {
+        if (todayProblems?.status === 'SUCCESS') {
           const updated = {
             ...todayProblems,
             problems: todayProblems.problems.map(p =>
@@ -336,7 +337,7 @@ export function TodayProblems({
         // 타이머가 실행 중이면 자동 정지
         stopTimer(problemId);
         // 문제 상태 업데이트
-        if (todayProblems) {
+        if (todayProblems?.status === 'SUCCESS') {
           const updated = {
             ...todayProblems,
             problems: todayProblems.problems.map(p =>
@@ -421,53 +422,60 @@ export function TodayProblems({
         )}
         {/* 헤더 */}
         <div className="px-4 sm:px-6 py-3 bg-blue-50 border-b border-blue-100">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <div className="p-1.5 bg-blue-100 rounded-lg flex-shrink-0">
-              <Calendar className="h-4 w-4 text-blue-600" />
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <div className="p-1.5 bg-blue-100 rounded-lg flex-shrink-0">
+                <Calendar className="h-4 w-4 text-blue-600" />
+              </div>
+              <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate">오늘의 미션</h3>
+              {todayProblems?.status === 'SUCCESS' && todayProblems.problems.length > 0 && (
+                <span className="text-sm text-blue-600 font-medium flex-shrink-0">· {todayProblems.problems.length}개</span>
+              )}
+              <span className="text-xs text-gray-400 flex-shrink-0">· 오전 6시 초기화</span>
             </div>
-            <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate">오늘의 미션</h3>
-{todayProblems && todayProblems.problems.length > 0 && (
-              <span className="text-sm text-blue-600 font-medium flex-shrink-0">· {todayProblems.problems.length}개</span>
-            )}
-            <span className="text-xs text-gray-400 flex-shrink-0">· 오전 6시 초기화</span>
           </div>
         </div>
-      </div>
 
       {/* 컨텐츠 */}
-      <div className="px-4 sm:px-6 pb-4 pt-3">
-        {problemsLoading ? (
+      <div className="relative px-4 sm:px-6 pb-4 pt-3">
+        {isRecommendationLoading && (
+          <>
+            <div className="absolute inset-0 z-20 bg-slate-900/5 pointer-events-none" />
+            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-30 flex justify-center pointer-events-none px-4">
+              <div className="inline-flex items-center gap-2 rounded-xl border border-blue-100 bg-white/95 px-4 py-2.5 shadow-lg">
+                <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
+                <span className="text-sm font-medium text-gray-700">미션 문제를 준비하고 있어요</span>
+              </div>
+            </div>
+          </>
+        )}
+        {isRecommendationLoading ? (
           <div className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-2 -mx-4 sm:-mx-6 px-4 sm:px-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex-shrink-0 w-52 sm:w-56 flex flex-col gap-2 animate-pulse">
-                <div className="relative bg-white border border-gray-200 rounded-lg p-3 sm:p-4">
-                  {/* 번호 스켈레톤 */}
-                  <div className="absolute top-2 left-2 w-5 h-5 bg-gray-200 rounded"></div>
-                  <div className="flex flex-col pt-6">
-                    {/* 제목 스켈레톤 */}
-                    <div className="mb-3">
-                      <div className="flex items-center gap-1.5 mb-2">
-                        <div className="w-4 h-4 bg-gray-200 rounded"></div>
-                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                      </div>
-                    </div>
-                    {/* 하단 정보 스켈레톤 */}
-                    <div className="mt-auto pt-3 border-t border-gray-100">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-3 bg-gray-200 rounded"></div>
-                          <div className="w-8 h-3 bg-gray-200 rounded"></div>
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex-shrink-0 w-52 sm:w-56 flex flex-col gap-2 animate-pulse">
+                  <div className="relative bg-white border border-gray-200 rounded-lg p-3 sm:p-4">
+                    <div className="absolute top-2 left-2 w-5 h-5 bg-gray-200 rounded"></div>
+                    <div className="flex flex-col pt-6">
+                      <div className="mb-3">
+                        <div className="flex items-center gap-1.5 mb-2">
+                          <div className="w-4 h-4 bg-gray-200 rounded"></div>
+                          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
                         </div>
-                        <div className="w-14 h-3 bg-gray-200 rounded"></div>
+                      </div>
+                      <div className="mt-auto pt-3 border-t border-gray-100">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-3 bg-gray-200 rounded"></div>
+                            <div className="w-8 h-3 bg-gray-200 rounded"></div>
+                          </div>
+                          <div className="w-14 h-3 bg-gray-200 rounded"></div>
+                        </div>
                       </div>
                     </div>
                   </div>
+                  <div className="w-full h-10 bg-gray-200 rounded-lg"></div>
                 </div>
-                {/* 버튼 스켈레톤 */}
-                <div className="w-full h-10 bg-gray-200 rounded-lg"></div>
-              </div>
-            ))}
+              ))}
           </div>
         ) : !recommendationSettings?.isActive ? (
           <div className="text-center py-5">
@@ -495,7 +503,34 @@ export function TodayProblems({
               </MissionActionButton>
             )}
           </div>
-        ) : todayProblems && todayProblems.problems.length > 0 ? (
+        ) : missionStatus === 'FAILED' ? (
+          <div className="text-center py-5">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-rose-50 mb-3">
+              <Calendar className="h-7 w-7 text-rose-500" />
+            </div>
+            <p className="text-sm font-medium text-gray-900 mb-1">
+              오늘 미션 생성에 실패했습니다
+            </p>
+            <p className="text-xs text-gray-500 mb-3">
+              잠시 후 다시 시도해주세요.
+            </p>
+            {isTeamLeader && (
+              <MissionActionButton
+                onClick={handleRefreshProblems}
+                disabled={problemsLoading}
+                variant="primary"
+                size="md"
+                leadingIcon={
+                  problemsLoading
+                    ? <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                    : <Sparkles className="h-3.5 w-3.5" />
+                }
+              >
+                다시 미션받기
+              </MissionActionButton>
+            )}
+          </div>
+        ) : missionStatus === 'SUCCESS' && todayProblems?.problems.length ? (
           <div className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-2 -mx-4 sm:-mx-6 px-4 sm:px-6">
             {todayProblems.problems.map((problem, index) => (
               <div
@@ -611,7 +646,6 @@ export function TodayProblems({
             <p className="text-xs text-gray-500 mb-3">
               추천 요일마다 오전 6시에 미션이 제공되며, 오전 9시에 이메일이 발송됩니다.
             </p>
-
             {isTeamLeader && (
               <>
                 <MissionActionButton
@@ -625,15 +659,7 @@ export function TodayProblems({
                       : <Sparkles className="h-3.5 w-3.5" />
                   }
                 >
-                  {problemsLoading ? (
-                    <>
-                      미션 생성 중...
-                    </>
-                  ) : (
-                    <>
-                      바로 미션 받기
-                    </>
-                  )}
+                  {problemsLoading ? '미션 생성 중...' : '바로 미션 받기'}
                 </MissionActionButton>
                 <p className="text-xs text-gray-400 mt-2">
                   하루 1회 · 이메일 즉시 발송
