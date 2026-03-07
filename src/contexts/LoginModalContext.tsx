@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
@@ -36,6 +37,47 @@ export function LoginModalProvider({ children }: LoginModalProviderProps) {
   const location = useLocation();
   const { login } = useAuthStore();
 
+  const isInAppBrowser = useCallback(() => {
+    const userAgent = window.navigator.userAgent;
+
+    return [
+      /KAKAOTALK/i,
+      /Instagram/i,
+      /FBAN|FBAV/i,
+      /Line/i,
+      /NAVER/i,
+      /Everytime/i,
+      /; wv\)/i,
+      /Version\/[\d.]+.*Mobile.*Safari(?!.*CriOS)/i,
+    ].some((pattern) => pattern.test(userAgent));
+  }, []);
+
+  const copyCurrentUrl = useCallback(async () => {
+    if (!window.navigator.clipboard) {
+      return false;
+    }
+
+    try {
+      await window.navigator.clipboard.writeText(window.location.href);
+      return true;
+    } catch {
+      return false;
+    }
+  }, []);
+
+  const openCurrentUrlInExternalBrowser = useCallback(() => {
+    if (!/Android/i.test(window.navigator.userAgent)) {
+      return false;
+    }
+
+    const currentUrl = window.location.href;
+    const scheme = window.location.protocol.replace(':', '');
+    const targetUrl = currentUrl.replace(/^https?:\/\//, '');
+
+    window.location.href = `intent://${targetUrl}#Intent;scheme=${scheme};package=com.android.chrome;end`;
+    return true;
+  }, []);
+
   const openLoginModal = useCallback(() => {
     setIsOpen(true);
   }, []);
@@ -46,7 +88,37 @@ export function LoginModalProvider({ children }: LoginModalProviderProps) {
     }
   }, [isLoading]);
 
-  const handleGoogleLogin = useCallback(() => {
+  const handleGoogleLogin = useCallback(async () => {
+    if (isInAppBrowser()) {
+      const shouldOpenExternally = window.confirm(
+        '앱 내 브라우저에서는 구글 로그인이 제한될 수 있습니다.\n외부 브라우저에서 이 페이지를 여시겠어요?'
+      );
+
+      if (!shouldOpenExternally) {
+        return;
+      }
+
+      const opened = openCurrentUrlInExternalBrowser();
+
+      if (opened) {
+        toast('외부 브라우저가 열리지 않으면 앱 메뉴에서 브라우저로 열어주세요.', {
+          duration: 4000,
+        });
+        return;
+      }
+
+      const copied = await copyCurrentUrl();
+      toast(
+        copied
+          ? '현재 주소를 복사했습니다. Safari 또는 Chrome에서 붙여넣어 로그인해주세요.'
+          : 'iPhone에서는 자동으로 외부 브라우저를 열 수 없습니다. Safari 또는 Chrome에서 현재 페이지를 직접 열어주세요.',
+        {
+          duration: 5000,
+        }
+      );
+      return;
+    }
+
     setIsLoading(true);
 
     // 팝업 창 크기 설정
@@ -83,7 +155,7 @@ export function LoginModalProvider({ children }: LoginModalProviderProps) {
           if (popup && !popup.closed) {
             popup.close();
           }
-        } catch (e) {
+        } catch {
           // COOP 에러 무시
         }
 
@@ -113,7 +185,7 @@ export function LoginModalProvider({ children }: LoginModalProviderProps) {
           if (popup && !popup.closed) {
             popup.close();
           }
-        } catch (e) {
+        } catch {
           // COOP 에러 무시
         }
         window.removeEventListener('message', handleMessage);
@@ -133,7 +205,7 @@ export function LoginModalProvider({ children }: LoginModalProviderProps) {
         setIsLoading(false);
       }
     }, 500);
-  }, [login, navigate]);
+  }, [copyCurrentUrl, isInAppBrowser, login, navigate, location.pathname, openCurrentUrlInExternalBrowser]);
 
   return (
     <LoginModalContext.Provider
