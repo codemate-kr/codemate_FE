@@ -1,20 +1,8 @@
-import { useEffect } from 'react';
 import { FileText } from 'lucide-react';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 export default function TermsOfServicePage() {
   useDocumentTitle('이용약관');
-
-  // 검색 엔진 인덱싱 방지
-  useEffect(() => {
-    const meta = document.createElement('meta');
-    meta.name = 'robots';
-    meta.content = 'noindex, nofollow';
-    document.head.appendChild(meta);
-    return () => {
-      document.head.removeChild(meta);
-    };
-  }, []);
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8">
