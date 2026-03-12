@@ -71,4 +71,28 @@
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
+
+  <!-- 서비스 소개 -->
+  <url>
+    <loc>https://codemate.kr/about</loc>
+    <lastmod>2026-03-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- 이용 가이드 -->
+  <url>
+    <loc>https://codemate.kr/guide</loc>
+    <lastmod>2026-03-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- 문의 및 운영 정보 -->
+  <url>
+    <loc>https://codemate.kr/contact</loc>
+    <lastmod>2026-03-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
 </urlset>

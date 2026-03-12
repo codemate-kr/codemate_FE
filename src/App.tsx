@@ -21,6 +21,9 @@ import VerifyEmailPage from './pages/auth/VerifyEmailPage';
 import PrivacyPolicyPage from './pages/legal/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/legal/TermsOfServicePage';
 import NotificationsPage from './pages/notifications/NotificationsPage';
+import AboutPage from './pages/about/AboutPage';
+import GuidePage from './pages/guide/GuidePage';
+import ContactPage from './pages/contact/ContactPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,6 +47,9 @@ function App() {
             <LoginModal />
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/guide" element={<GuidePage />} />
+              <Route path="/contact" element={<ContactPage />} />
               <Route path="/verify-email" element={<VerifyEmailPage />} />
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               <Route path="/terms-of-service" element={<TermsOfServicePage />} />
