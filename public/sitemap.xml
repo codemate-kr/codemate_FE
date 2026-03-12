@@ -3,63 +3,23 @@
   <!-- 메인 페이지 -->
   <url>
     <loc>https://codemate.kr/</loc>
-    <lastmod>2026-01-23</lastmod>
+    <lastmod>2026-03-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-  </url>
-
-  <!-- 로그인 -->
-  <url>
-    <loc>https://codemate.kr/login</loc>
-    <lastmod>2026-01-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- 대시보드 -->
-  <url>
-    <loc>https://codemate.kr/dashboard</loc>
-    <lastmod>2026-01-23</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
   </url>
 
   <!-- 팀 목록 -->
   <url>
     <loc>https://codemate.kr/teams</loc>
-    <lastmod>2026-01-23</lastmod>
+    <lastmod>2026-03-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
-  </url>
-
-  <!-- 문제 목록 -->
-  <url>
-    <loc>https://codemate.kr/problems</loc>
-    <lastmod>2026-01-23</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- 오픈 스터디 -->
-  <url>
-    <loc>https://codemate.kr/open-study</loc>
-    <lastmod>2026-01-23</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- 마이페이지 -->
-  <url>
-    <loc>https://codemate.kr/mypage</loc>
-    <lastmod>2026-01-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
   </url>
 
   <!-- 이용약관 -->
   <url>
     <loc>https://codemate.kr/terms-of-service</loc>
-    <lastmod>2026-01-23</lastmod>
+    <lastmod>2026-03-12</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
@@ -67,7 +27,7 @@
   <!-- 개인정보처리방침 -->
   <url>
     <loc>https://codemate.kr/privacy-policy</loc>
-    <lastmod>2026-01-23</lastmod>
+    <lastmod>2026-03-12</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

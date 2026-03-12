@@ -1,8 +1,12 @@
 import { FileText } from 'lucide-react';
-import useDocumentTitle from '../../hooks/useDocumentTitle';
+import usePageMeta from '../../hooks/usePageMeta';
 
 export default function TermsOfServicePage() {
-  useDocumentTitle('이용약관');
+  usePageMeta({
+    title: '이용약관',
+    description: 'CodeMate 서비스 이용 조건과 회원의 권리 및 의무를 정리한 이용약관입니다.',
+    path: '/terms-of-service',
+  });
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8">

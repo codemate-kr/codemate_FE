@@ -1,8 +1,12 @@
 import { FileText } from 'lucide-react';
-import useDocumentTitle from '../../hooks/useDocumentTitle';
+import usePageMeta from '../../hooks/usePageMeta';
 
 export default function PrivacyPolicyPage() {
-  useDocumentTitle('개인정보처리방침');
+  usePageMeta({
+    title: '개인정보처리방침',
+    description: 'CodeMate의 개인정보 수집 항목, 이용 목적, 보관 기간, 이용자 권리를 안내하는 개인정보처리방침입니다.',
+    path: '/privacy-policy',
+  });
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8">

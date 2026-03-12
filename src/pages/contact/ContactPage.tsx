@@ -1,6 +1,6 @@
 import { ExternalLink, Github, Mail, MessageSquare, NotebookPen } from 'lucide-react';
 import Layout from '../../components/common/Layout';
-import useDocumentTitle from '../../hooks/useDocumentTitle';
+import usePageMeta from '../../hooks/usePageMeta';
 
 const channels = [
   {
@@ -27,7 +27,11 @@ const channels = [
 ];
 
 export default function ContactPage() {
-  useDocumentTitle('문의 및 운영 정보');
+  usePageMeta({
+    title: '문의 및 운영 정보',
+    description: 'CodeMate의 문의 채널, 운영 정보, 피드백 접수 경로를 안내합니다.',
+    path: '/contact',
+  });
 
   return (
     <Layout showFooter>

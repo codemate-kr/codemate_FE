@@ -1,7 +1,7 @@
 import { ArrowRight, BookOpen, Clock3, Mail, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Layout from '../../components/common/Layout';
-import useDocumentTitle from '../../hooks/useDocumentTitle';
+import usePageMeta from '../../hooks/usePageMeta';
 
 const principles = [
   {
@@ -28,7 +28,11 @@ const highlights = [
 ];
 
 export default function AboutPage() {
-  useDocumentTitle('서비스 소개');
+  usePageMeta({
+    title: '서비스 소개',
+    description: 'CodeMate가 어떤 문제를 해결하려는 서비스인지, 알고리즘 스터디 운영에 어떤 흐름을 제공하는지 소개합니다.',
+    path: '/about',
+  });
 
   return (
     <Layout showFooter>

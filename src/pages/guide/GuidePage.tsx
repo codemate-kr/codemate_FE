@@ -1,6 +1,6 @@
 import { BellRing, ChartColumn, Settings2, Users } from 'lucide-react';
 import Layout from '../../components/common/Layout';
-import useDocumentTitle from '../../hooks/useDocumentTitle';
+import usePageMeta from '../../hooks/usePageMeta';
 
 const steps = [
   {
@@ -36,7 +36,11 @@ const tips = [
 ];
 
 export default function GuidePage() {
-  useDocumentTitle('이용 가이드');
+  usePageMeta({
+    title: '이용 가이드',
+    description: 'CodeMate에서 팀을 만들고 문제 추천 설정을 정하고 학습 흐름을 운영하는 기본 사용 방법을 안내합니다.',
+    path: '/guide',
+  });
 
   return (
     <Layout showFooter>

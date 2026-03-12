@@ -4,8 +4,15 @@ import { useQuery } from '@tanstack/react-query';
 import { Search, Users } from 'lucide-react';
 import { PublicTeamCard } from './components/PublicTeamCard';
 import { teamsApi, type PublicTeamResponse } from '../../../api/teams';
+import usePageMeta from '../../../hooks/usePageMeta';
 
 export default function TeamListPage() {
+  usePageMeta({
+    title: '팀 찾기',
+    description: 'CodeMate에서 공개된 알고리즘 스터디 팀을 둘러보고 현재 운영 중인 팀 구성을 확인할 수 있습니다.',
+    path: '/teams',
+  });
+
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedTeamIds, setExpandedTeamIds] = useState<Set<number>>(new Set());
