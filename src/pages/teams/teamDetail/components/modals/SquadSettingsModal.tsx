@@ -414,7 +414,7 @@ export function SquadSettingsModal({
                 </div>
 
                 {/* Algorithm Tags */}
-                <AlgorithmTagSelector selectedTags={selectedTags} onChange={setSelectedTags} disabled={isLoading || isFetchingSettings} maxTags={10} />
+                <AlgorithmTagSelector selectedTags={selectedTags} onChange={setSelectedTags} disabled={isLoading || isFetchingSettings} maxTags={16} />
 
                 {/* 설정 요약 (모바일) */}
                 <div className="lg:hidden">

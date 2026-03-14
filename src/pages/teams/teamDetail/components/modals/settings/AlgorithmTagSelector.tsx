@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Search, Tag, X, Check } from 'lucide-react';
+import { Search, Tag, X, Check, CircleHelp } from 'lucide-react';
 import {
   searchAlgorithmTags,
   getTagByKey,
@@ -11,11 +11,32 @@ interface AlgorithmTagSelectorProps {
   maxTags?: number;
 }
 
+const REFERENCE_REPO_URL = 'https://github.com/tony9402/baekjoon';
+
+const COTE_FREQUENT_TAG_KEYS = [
+  'queue',
+  'stack',
+  'deque',
+  'set',
+  'priority_queue',
+  'dp',
+  'dfs',
+  'bfs',
+  'bruteforcing',
+  'trees',
+  'binary_search',
+  'two_pointer',
+  'implementation',
+  'simulation',
+  'math',
+  'greedy',
+];
+
 export function AlgorithmTagSelector({
   selectedTags,
   onChange,
   disabled = false,
-  maxTags = 10,
+  maxTags = 16,
 }: AlgorithmTagSelectorProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -61,6 +82,16 @@ export function AlgorithmTagSelector({
     if (disabled) return;
     onChange(selectedTags.filter((t) => t !== key));
   };
+
+  const handleApplyBeginnerRecommendation = () => {
+    if (disabled) return;
+    onChange(COTE_FREQUENT_TAG_KEYS.slice(0, maxTags));
+  };
+
+  const recommendedTagKeys = COTE_FREQUENT_TAG_KEYS.slice(0, maxTags);
+  const isRecommendedCombinationSelected =
+    selectedTags.length === recommendedTagKeys.length &&
+    recommendedTagKeys.every((key) => selectedTags.includes(key));
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (filteredTags.length === 0) return;
@@ -108,14 +139,57 @@ export function AlgorithmTagSelector({
   return (
     <div className="space-y-3">
       {/* 헤더 */}
-      <div className="flex items-center justify-between">
+      <div className="relative z-20 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Tag className="h-4 w-4 text-gray-600" />
           <h4 className="text-sm font-semibold text-gray-900">알고리즘 태그</h4>
         </div>
-        <span className={`text-xs font-medium ${isMaxReached ? 'text-orange-600' : 'text-blue-600'}`}>
-          {selectedTags.length}/{maxTags} 선택
-        </span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleApplyBeginnerRecommendation}
+            disabled={disabled}
+            className="relative inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-white px-2.5 pr-7 py-1 text-xs font-normal text-blue-700 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <span className={isRecommendedCombinationSelected ? 'font-semibold' : 'font-normal'}>추천 태그 16개</span>
+            <span
+              className="group/help absolute right-2 top-1/2 inline-flex h-5 w-5 -translate-y-1/2 items-center justify-center text-gray-400 cursor-help"
+              aria-label="추천 태그 16개 기준 보기"
+              role="button"
+              tabIndex={0}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              <CircleHelp className="h-3.5 w-3.5" />
+              <span className="pointer-events-auto hidden absolute right-0 top-full z-[9999] w-64 rounded-lg border border-gray-200 bg-white p-3 text-left text-[11px] leading-relaxed text-gray-600 shadow-lg group-hover/help:block group-focus-within/help:block">
+                <p className="text-[11px] font-semibold text-gray-800">선정 기준이 뭐예요?</p>
+                <p className="mt-1 text-[11px] leading-relaxed text-gray-600 break-words whitespace-normal">
+                  코딩테스트 빈출 태그 16개를 선별해 적용합니다.
+                  <br />
+                  더 많은 태그는 참고 레포에서 확인해 주세요.
+                </p>
+                <a
+                  href={REFERENCE_REPO_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="pointer-events-auto mt-2 inline-flex items-center text-[11px] font-medium text-blue-600 hover:text-blue-700"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  참고 레포 보기 (tony9402/baekjoon)
+                </a>
+              </span>
+            </span>
+          </button>
+          <span className={`text-xs font-medium ${isMaxReached ? 'text-orange-600' : 'text-blue-600'}`}>
+            {selectedTags.length}/{maxTags} 선택
+          </span>
+        </div>
       </div>
 
       {/* 선택된 태그 */}
@@ -141,7 +215,7 @@ export function AlgorithmTagSelector({
       )}
 
       {/* 검색창 */}
-      <div className="relative">
+      <div className="relative z-0">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
         <input
           type="text"
@@ -168,7 +242,7 @@ export function AlgorithmTagSelector({
       )}
 
       {/* 태그 목록 */}
-      <div ref={listRef} className="max-h-48 overflow-y-auto border border-gray-200 rounded-lg">
+      <div ref={listRef} className="relative z-0 max-h-48 overflow-y-auto border border-gray-200 rounded-lg">
         {filteredTags.length === 0 ? (
           <div className="p-4 text-center text-sm text-gray-500">
             검색 결과가 없습니다
