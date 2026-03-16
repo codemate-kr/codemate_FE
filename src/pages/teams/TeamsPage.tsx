@@ -122,6 +122,7 @@ export default function TeamsPage() {
           <InvitationBanner />
         </div>
       )}
+      <AdSenseBlock slotKey="TOP" sectionClassName="mt-0 mb-4 sm:mb-6" />
 
       <div className="relative">
         {!isAuthenticated && (
