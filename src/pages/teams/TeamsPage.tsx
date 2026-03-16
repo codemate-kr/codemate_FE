@@ -9,6 +9,7 @@ import { toast } from '../../components/common/toast';
 import CreateTeamModal from './components/CreateTeamModal';
 import { TeamCard } from './components/TeamCard';
 import InvitationBanner from '../../components/common/InvitationBanner';
+import AdSenseBlock from '../../components/common/adsense/AdSenseBlock';
 import type { CreateTeamRequest, MyTeamResponse } from '../../api/teams';
 import { getApiErrorMessage } from '../../utils/apiError';
 
@@ -115,13 +116,13 @@ export default function TeamsPage() {
           </div>
         </div>
       </div>
-
       {/* 팀 초대 알림 배너 */}
       {isAuthenticated && (
         <div className="mb-6 lg:w-[calc(50%-12px)]">
           <InvitationBanner />
         </div>
       )}
+      <AdSenseBlock slotKey="TOP" sectionClassName="mt-0 mb-4 sm:mb-6" />
 
       <div className="relative">
         {!isAuthenticated && (
@@ -205,6 +206,7 @@ export default function TeamsPage() {
         onSubmit={handleModalSubmit}
         isLoading={isLoading}
       />
+      <AdSenseBlock slotKey="BOTTOM" />
     </div>
   );
 }

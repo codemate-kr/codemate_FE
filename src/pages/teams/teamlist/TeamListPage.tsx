@@ -49,7 +49,6 @@ export default function TeamListPage() {
           다양한 공개 스터디 팀을 탐색하고 참여하세요
         </p>
       </div>
-
       {/* 검색 */}
       <div className="mb-4 sm:mb-6">
         <div className="relative">

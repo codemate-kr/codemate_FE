@@ -118,7 +118,6 @@ export default function TeamDetailPage() {
             </div>
           </div>
         </div>
-
         {/* 스쿼드 탭 — 그리드 전체 위 */}
         {data.squads.length > 0 && (
           <div className="mt-6">
