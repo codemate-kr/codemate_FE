@@ -24,6 +24,7 @@ import NotificationsPage from './pages/notifications/NotificationsPage';
 import AboutPage from './pages/about/AboutPage';
 import GuidePage from './pages/guide/GuidePage';
 import ContactPage from './pages/contact/ContactPage';
+import LabsPage from './pages/labs/LabsPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -65,6 +66,7 @@ function App() {
                       <Route path="/teams/my" element={<TeamsPage />} />
                       <Route path="/teams/:teamId" element={<TeamDetailPage />} />
                       <Route path="/problems" element={<ProblemsPage />} />
+                      <Route path="/labs" element={<LabsPage />} />
                       <Route path="/mypage" element={<ProtectedRoute><MyProfilePage /></ProtectedRoute>} />
                       <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
                       {/* 없는 경로는 홈으로 리다이렉트 */}

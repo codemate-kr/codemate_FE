@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useTeamStore, useTeams } from '../../store/teamStore';
+import { useActiveTimerCount } from '../../store/timerStore';
 import { recommendationApi, type TodayProblem } from '../../api/recommendation';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 import { useLoginRedirect } from '../../hooks/useLoginRedirect';
@@ -8,6 +9,7 @@ import StatsCards from './components/StatsCards';
 import MyTeamsSection from './components/MyTeamsSection';
 import TodayTodoSection from './components/TodayTodoSection';
 import DailySolvedChart from './components/DailySolvedChart';
+import DashboardLabsRail from './components/DashboardLabsRail';
 import InvitationBanner from '../../components/common/InvitationBanner';
 import AdSenseBlock from '../../components/common/adsense/AdSenseBlock';
 import { isDemoMode, demoUser, demoTeams, demoTodayProblems } from '../../data/demoData';
@@ -22,6 +24,7 @@ export default function DashboardPage() {
   const { isAuthenticated: realIsAuthenticated, user: realUser } = useAuthStore();
   const realTeams = useTeams();
   const { fetchTeams } = useTeamStore();
+  const activeTimerCount = useActiveTimerCount();
   const [todayProblems, setTodayProblems] = useState<TeamProblem[]>([]);
   const [problemsLoading, setProblemsLoading] = useState(false);
   const openLoginModal = useLoginRedirect();
@@ -31,6 +34,7 @@ export default function DashboardPage() {
   const isAuthenticated = isDemo ? true : realIsAuthenticated;
   const user = isDemo ? demoUser : realUser;
   const teams = isDemo ? demoTeams : realTeams;
+  const hasActiveTimer = activeTimerCount > 0;
 
   useEffect(() => {
     if (isDemo) {
@@ -128,10 +132,17 @@ export default function DashboardPage() {
             isAuthenticated={isAuthenticated}
             onLoginClick={openLoginModal}
           />
-
         </div>
 
         <AdSenseBlock slotKey="BOTTOM" />
+      </div>
+
+      <div
+        className={`fixed bottom-20 z-30 ${
+          hasActiveTimer ? 'right-72 sm:right-80' : 'right-4'
+        }`}
+      >
+        <DashboardLabsRail />
       </div>
     </div>
   );

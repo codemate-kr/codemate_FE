@@ -10,6 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@blocknote/core": "^0.47.2",
+    "@blocknote/mantine": "^0.47.2",
+    "@blocknote/react": "^0.47.2",
+    "@mantine/core": "^8.3.18",
+    "@mantine/hooks": "^8.3.18",
     "@tanstack/react-query": "^5.89.0",
     "@vercel/analytics": "^1.5.0",
     "axios": "^1.12.2",
@@ -19,8 +24,10 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-hot-toast": "^2.6.0",
+    "react-markdown": "^10.1.0",
     "react-router-dom": "^7.9.1",
     "recharts": "^3.5.1",
+    "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.3.1",
     "zustand": "^5.0.8"
   },
