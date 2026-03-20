@@ -41,8 +41,10 @@ export default function TeamListPage() {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
+      <AdSenseBlock slotKey="TOP" sectionClassName="mt-0 mb-3 sm:mb-4" />
+
       {/* 헤더 */}
-      <div className="mb-0 pb-4 border-b border-gray-200">
+      <div className="mb-6 sm:mb-8">
         <div className="flex items-center gap-2 flex-wrap">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">팀 찾기</h1>
         </div>
@@ -50,8 +52,6 @@ export default function TeamListPage() {
           다양한 공개 스터디 팀을 탐색하고 참여하세요
         </p>
       </div>
-
-      <AdSenseBlock slotKey="TOP" sectionClassName="mt-3 sm:mt-4 mb-3 sm:mb-4" />
 
       {/* 검색 */}
       <div className="mb-4 sm:mb-6">

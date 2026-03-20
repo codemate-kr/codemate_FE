@@ -71,8 +71,10 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AdSenseBlock slotKey="TOP" sectionClassName="mt-0 mb-3 sm:mb-4" />
+
         {/* Header + 팀 초대 알림 배너 */}
-        <div className="mb-0 pb-4 border-b border-gray-200">
+        <div className="mb-6 sm:mb-8">
           <div className="lg:flex lg:items-center lg:justify-between lg:gap-6">
             <div className="lg:flex-1">
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 break-words">
@@ -89,8 +91,6 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
-
-        <AdSenseBlock slotKey="TOP" sectionClassName="mt-3 sm:mt-4 mb-3 sm:mb-4" />
 
         {/* Stats Cards - 모바일에서 숨김 */}
         <StatsCards

@@ -88,7 +88,7 @@ export default function TeamsPage() {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
-      <div className="mb-6 sm:mb-8 pb-4 border-b border-gray-200">
+      <div className="mb-6 sm:mb-8">
         <div className="sm:flex sm:items-center sm:justify-between">
           <div className="sm:flex-auto">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">내 팀</h1>

@@ -44,6 +44,8 @@ export default function TeamDetailPage() {
   return (
     <div className="relative">
       <div className="px-4 sm:px-6 lg:px-8">
+        <AdSenseBlock slotKey="TOP" sectionClassName="mt-0 mb-3 sm:mb-4" />
+
         {/* 헤더 */}
         <div className="pt-0 pb-4 mb-0 border-b border-gray-200">
           <div className="sm:flex sm:items-center sm:justify-between">
@@ -120,11 +122,9 @@ export default function TeamDetailPage() {
           </div>
         </div>
 
-        <AdSenseBlock slotKey="TOP" sectionClassName="mt-3 sm:mt-4 mb-3 sm:mb-4" />
-
         {/* 스쿼드 탭 — 그리드 전체 위 */}
         {data.squads.length > 0 && (
-          <div className="mt-1">
+          <div className="mt-3 sm:mt-4">
             <SquadsList
               squads={data.squads}
               isTeamLeader={data.isTeamLeader}
