@@ -183,8 +183,8 @@ export default function BoardPreviewLab() {
       },
     ],
     placeholders: {
-      emptyDocument: '마크다운 사용 가능: **굵게**, # 제목, - 목록 등을 활용해 스터디 소개를 작성하세요.',
-      default: '마크다운 문법이 적용됩니다. 예) ## 운영 방식 / - 인증 규칙 / > 참고 사항',
+      emptyDocument: "명령어를 사용하려면 '/'를 입력하세요.",
+      default: "명령어를 사용하려면 '/'를 입력하세요.",
     },
   });
 
