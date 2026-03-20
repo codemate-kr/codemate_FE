@@ -13,6 +13,7 @@ import TeamActivityBoard, { ProblemDetail } from './components/TeamActivityBoard
 import SentInvitationsModal from './components/modals/SentInvitationsModal';
 import SquadsList from './components/squads/SquadsList';
 import SquadManagementPage from './components/squads/SquadManagementPage';
+import AdSenseBlock from '../../../components/common/adsense/AdSenseBlock';
 import { useTeamDetailPageState } from './hooks/useTeamDetailPageState';
 
 export default function TeamDetailPage() {
@@ -44,7 +45,7 @@ export default function TeamDetailPage() {
     <div className="relative">
       <div className="px-4 sm:px-6 lg:px-8">
         {/* 헤더 */}
-        <div className="py-4 mb-4 border-b border-gray-200">
+        <div className="pt-0 pb-4 mb-0 border-b border-gray-200">
           <div className="sm:flex sm:items-center sm:justify-between">
             <div className="sm:flex-auto">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -118,9 +119,12 @@ export default function TeamDetailPage() {
             </div>
           </div>
         </div>
+
+        <AdSenseBlock slotKey="TOP" sectionClassName="mt-3 sm:mt-4 mb-3 sm:mb-4" />
+
         {/* 스쿼드 탭 — 그리드 전체 위 */}
         {data.squads.length > 0 && (
-          <div className="mt-6">
+          <div className="mt-1">
             <SquadsList
               squads={data.squads}
               isTeamLeader={data.isTeamLeader}
@@ -233,6 +237,8 @@ export default function TeamDetailPage() {
             )}
           </div>
         </div>
+
+        <AdSenseBlock slotKey="BOTTOM" />
 
         {/* 스쿼드 관리 전체화면 */}
         {ui.showSquadManagement && (

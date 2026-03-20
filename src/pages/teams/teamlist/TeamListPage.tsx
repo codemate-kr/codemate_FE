@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Search, Users } from 'lucide-react';
 import { PublicTeamCard } from './components/PublicTeamCard';
+import AdSenseBlock from '../../../components/common/adsense/AdSenseBlock';
 import { teamsApi, type PublicTeamResponse } from '../../../api/teams';
 import usePageMeta from '../../../hooks/usePageMeta';
 
@@ -41,7 +42,7 @@ export default function TeamListPage() {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       {/* 헤더 */}
-      <div className="mb-6 sm:mb-8">
+      <div className="mb-0 pb-4 border-b border-gray-200">
         <div className="flex items-center gap-2 flex-wrap">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">팀 찾기</h1>
         </div>
@@ -49,6 +50,9 @@ export default function TeamListPage() {
           다양한 공개 스터디 팀을 탐색하고 참여하세요
         </p>
       </div>
+
+      <AdSenseBlock slotKey="TOP" sectionClassName="mt-3 sm:mt-4 mb-3 sm:mb-4" />
+
       {/* 검색 */}
       <div className="mb-4 sm:mb-6">
         <div className="relative">
@@ -126,6 +130,8 @@ export default function TeamListPage() {
           ))
         )}
       </div>
+
+      <AdSenseBlock slotKey="BOTTOM" />
     </div>
   );
 }
