@@ -31,7 +31,7 @@ export default function Layout({ children, showFooter = true, fullWidth = false 
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <Link to="/" className="flex items-center space-x-1.5 sm:space-x-2">
-                <img src="/logo-april-fool.svg" alt="CodeMate" className="h-6 w-6 sm:h-8 sm:w-8" />
+                <img src="/logo.svg" alt="CodeMate" className="h-6 w-6 sm:h-8 sm:w-8" />
                 <span className="text-base sm:text-xl font-bold text-gray-900">CodeMate</span>
               </Link>
             </div>
