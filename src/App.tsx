@@ -5,6 +5,7 @@ import { validateEnv } from './config/env';
 import Layout from './components/common/Layout';
 import AuthHandler from './components/auth/AuthHandler';
 import AuthInitializer from './components/auth/AuthInitializer';
+import ChannelIOInitializer from './components/auth/ChannelIOInitializer';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { LoginModalProvider } from './contexts/LoginModalContext';
 import LoginModal from './components/auth/LoginModal';
@@ -42,6 +43,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthInitializer>
+        <ChannelIOInitializer />
         <Router>
           <LoginModalProvider>
             <AuthHandler />

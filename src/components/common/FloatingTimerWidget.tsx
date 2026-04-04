@@ -144,7 +144,7 @@ export function FloatingTimerWidget() {
   const hasOverTime = primaryElapsed > 60 * 60;
 
   return (
-    <div className="fixed bottom-2 right-2 sm:bottom-4 sm:right-4 z-50 animate-in slide-in-from-bottom-4 fade-in duration-300">
+    <div className="fixed bottom-4 right-20 sm:bottom-4 sm:right-24 z-50 animate-in slide-in-from-bottom-4 fade-in duration-300">
       <div className="bg-white rounded-xl shadow-xl border border-gray-200/80 overflow-hidden min-w-[260px] max-w-[300px] sm:min-w-[280px] sm:max-w-[340px]">
         {/* 헤더 */}
         <button

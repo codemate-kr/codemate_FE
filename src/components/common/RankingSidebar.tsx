@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Trophy, Medal, X, Crown, ExternalLink, Loader2 } from 'lucide-react';
-import { useActiveTimerCount } from '../../store/timerStore';
 import { rankingApi, type RankingUser } from '../../api/ranking';
 
 export default function RankingSidebar() {
@@ -10,8 +9,6 @@ export default function RankingSidebar() {
   const [rankings, setRankings] = useState<RankingUser[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const activeTimerCount = useActiveTimerCount();
-  const hasActiveTimer = activeTimerCount > 0;
 
   // 홈페이지에서는 숨김
   if (location.pathname === '/') {
@@ -31,7 +28,6 @@ export default function RankingSidebar() {
     try {
       const data = await rankingApi.getGlobalRanking();
       setRankings(data.rankings);
-
     } catch (err) {
       console.error('랭킹 로드 실패:', err);
       setError('랭킹을 불러오지 못했습니다');
@@ -61,11 +57,9 @@ export default function RankingSidebar() {
 
   return (
     <>
-      {/* 플로팅 트로피 아이콘 버튼 - 타이머 활성 시 왼쪽으로 이동 */}
+      {/* 플로팅 트로피 아이콘 버튼 */}
       <div
-        className={`fixed bottom-4 z-40 ${
-          hasActiveTimer ? 'right-72 sm:right-80' : 'right-4'
-        }`}
+        className="fixed bottom-20 right-4 z-40"
       >
         <button
           onClick={() => setIsOpen(true)}
