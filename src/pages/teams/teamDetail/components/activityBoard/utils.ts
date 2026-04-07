@@ -5,10 +5,16 @@ export const getCellColor = (solvedCount: number, totalCount: number) => {
   if (totalCount === 0) return 'bg-gray-100 dark:bg-slate-900 border-gray-200 dark:border-slate-800';
   if (solvedCount === 0) return 'bg-gray-200 dark:bg-slate-800 border-gray-300 dark:border-slate-700 hover:bg-gray-300 dark:hover:bg-slate-700 hover:border-gray-400 dark:hover:border-slate-600';
   const ratio = solvedCount / totalCount;
-  if (ratio === 1) return 'bg-grass-4 border-grass-4 hover:bg-grass-4 hover:border-grass-4';
-  if (ratio >= 0.75) return 'bg-grass-3 border-grass-3 hover:bg-grass-4 hover:border-grass-4';
-  if (ratio >= 0.5) return 'bg-grass-2 border-grass-2 hover:bg-grass-3 hover:border-grass-3';
-  return 'bg-grass-1 border-grass-1 hover:bg-grass-2 hover:border-grass-2';
+  if (ratio === 1) {
+    return 'bg-grass-2 dark:bg-grass-4 border-grass-3 dark:border-grass-4 hover:bg-grass-3 dark:hover:bg-grass-4 hover:border-grass-4 dark:hover:border-grass-4';
+  }
+  if (ratio >= 0.75) {
+    return 'bg-grass-1 dark:bg-grass-3 border-grass-2 dark:border-grass-3 hover:bg-grass-2 dark:hover:bg-grass-4 hover:border-grass-3 dark:hover:border-grass-4';
+  }
+  if (ratio >= 0.5) {
+    return 'bg-grass-1 dark:bg-grass-2 border-grass-2 dark:border-grass-2 hover:bg-grass-2 dark:hover:bg-grass-3 hover:border-grass-3 dark:hover:border-grass-3';
+  }
+  return 'bg-emerald-100 dark:bg-grass-1 border-emerald-200 dark:border-grass-1 hover:bg-emerald-200 dark:hover:bg-grass-2 hover:border-emerald-300 dark:hover:border-grass-2';
 };
 
 export const truncateHandle = (handle: string | null, maxLen = 12) => {
