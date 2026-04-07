@@ -16,14 +16,14 @@ export default function HeroSection() {
   return (
     <div>
       {/* Hero */}
-      <div className="flex flex-col items-center justify-center px-5 sm:px-6 pt-12 sm:pt-28 pb-10 sm:pb-20 bg-gray-50">
+      <div className="flex flex-col items-center justify-center px-5 sm:px-6 pt-12 sm:pt-28 pb-10 sm:pb-20 bg-gray-50 dark:bg-slate-950">
         <p className="text-lg sm:text-2xl font-medium text-blue-500 tracking-widest uppercase mb-2 sm:mb-3">CodeMate</p>
         <h1 className="font-extrabold text-center mb-4 sm:mb-8 tracking-tight px-4">
           <span className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-blue-600 mb-2">알고리즘 스터디</span>
-          <span className="block text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-gray-900">매일 문제가 도착합니다</span>
+          <span className="block text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-gray-900 dark:text-white">매일 문제가 도착합니다</span>
         </h1>
 
-        <p className="text-gray-500 text-base sm:text-lg md:text-xl mb-6 sm:mb-12 px-2 text-center">
+        <p className="text-gray-500 dark:text-gray-300 text-base sm:text-lg md:text-xl mb-6 sm:mb-12 px-2 text-center">
           스터디원들과 매일 백준 문제를 풀어보세요
         </p>
 
@@ -37,35 +37,35 @@ export default function HeroSection() {
       </div>
 
       {/* 핵심 기능 */}
-      <div className="bg-gray-50 py-8 sm:py-20">
+      <div className="bg-gray-50 dark:bg-slate-950 py-8 sm:py-20">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 px-4 sm:px-6 max-w-5xl mx-auto">
-          <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white rounded-xl border border-gray-200 ">
-            <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
+          <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 ">
+            <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
               <Users className="h-4 w-4 sm:h-6 sm:w-6 text-blue-600" />
             </div>
-            <h3 className="font-semibold text-gray-900 text-sm sm:text-lg">팀 스터디</h3>
-            <p className="text-xs sm:text-base text-gray-500 leading-relaxed">팀원 모두가 안 푼 문제만<br />추천받아 함께 풀어요</p>
+            <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-lg">팀 스터디</h3>
+            <p className="text-xs sm:text-base text-gray-500 dark:text-gray-300 leading-relaxed">팀원 모두가 안 푼 문제만<br />추천받아 함께 풀어요</p>
           </div>
-          <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white rounded-xl border border-gray-200 ">
-            <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
+          <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 ">
+            <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
               <SlidersHorizontal className="h-4 w-4 sm:h-6 sm:w-6 text-blue-600" />
             </div>
-            <h3 className="font-semibold text-gray-900 text-sm sm:text-lg">맞춤 추천</h3>
-            <p className="text-xs sm:text-base text-gray-500 leading-relaxed">난이도, 알고리즘 분류,<br />문제 수, 요일을 선택해요</p>
+            <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-lg">맞춤 추천</h3>
+            <p className="text-xs sm:text-base text-gray-500 dark:text-gray-300 leading-relaxed">난이도, 알고리즘 분류,<br />문제 수, 요일을 선택해요</p>
           </div>
-          <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white rounded-xl border border-gray-200 ">
-            <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
+          <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 ">
+            <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
               <Mail className="h-4 w-4 sm:h-6 sm:w-6 text-blue-600" />
             </div>
-            <h3 className="font-semibold text-gray-900 text-sm sm:text-lg">이메일 알림</h3>
-            <p className="text-xs sm:text-base text-gray-500 leading-relaxed">오전 9시, 오늘의 문제가<br />이메일로 도착해요</p>
+            <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-lg">이메일 알림</h3>
+            <p className="text-xs sm:text-base text-gray-500 dark:text-gray-300 leading-relaxed">오전 9시, 오늘의 문제가<br />이메일로 도착해요</p>
           </div>
-          <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white rounded-xl border border-gray-200 ">
-            <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
+          <div className="flex flex-col items-center text-center gap-1.5 sm:gap-3 p-3 sm:p-5 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 ">
+            <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
               <BarChart3 className="h-4 w-4 sm:h-6 sm:w-6 text-blue-600" />
             </div>
-            <h3 className="font-semibold text-gray-900 text-sm sm:text-lg">진행률 확인</h3>
-            <p className="text-xs sm:text-base text-gray-500 leading-relaxed">팀원들의 문제 해결 현황을<br />한눈에 확인해요</p>
+            <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-lg">진행률 확인</h3>
+            <p className="text-xs sm:text-base text-gray-500 dark:text-gray-300 leading-relaxed">팀원들의 문제 해결 현황을<br />한눈에 확인해요</p>
           </div>
         </div>
       </div>
@@ -78,10 +78,10 @@ export default function HeroSection() {
       </div>
 
       {/* FAQ + GitHub Star */}
-      <div className="px-4 sm:px-6 py-10 sm:py-20 bg-gray-50">
+      <div className="px-4 sm:px-6 py-10 sm:py-20 bg-gray-50 dark:bg-slate-950">
         <div className="max-w-2xl mx-auto">
           {/* FAQ 헤더 */}
-          <h2 className="text-lg sm:text-2xl font-bold text-gray-900 mb-5 sm:mb-8">자주 묻는 질문</h2>
+          <h2 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mb-5 sm:mb-8">자주 묻는 질문</h2>
 
           {/* FAQ 목록 */}
           <div className="space-y-2.5 sm:space-y-3">
@@ -90,20 +90,20 @@ export default function HeroSection() {
                 key={i}
                 className={`rounded-xl overflow-hidden transition-all ${
                   openFaq === i
-                    ? 'bg-gray-50 border-2 border-blue-200'
-                    : 'bg-white border border-gray-200 active:border-gray-300'
+                    ? 'bg-gray-50 border-2 border-blue-200 dark:bg-blue-950/20 dark:border-blue-700'
+                    : 'bg-white border border-gray-200 active:border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:active:border-gray-600'
                 }`}
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
                   className="w-full px-4 sm:px-5 py-3.5 sm:py-4 text-left flex items-center justify-between"
                 >
-                  <span className={`font-medium text-sm sm:text-base ${openFaq === i ? 'text-blue-700' : 'text-gray-900'}`}>
+                  <span className={`font-medium text-sm sm:text-base ${openFaq === i ? 'text-blue-700 dark:text-blue-300' : 'text-gray-900 dark:text-gray-100'}`}>
                     {faq.q}
                   </span>
                   <ChevronDown
                     className={`h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 ml-2 transition-transform duration-200 ${
-                      openFaq === i ? 'rotate-180 text-blue-600' : 'text-gray-400'
+                      openFaq === i ? 'rotate-180 text-blue-600 dark:text-blue-300' : 'text-gray-400 dark:text-gray-500'
                     }`}
                   />
                 </button>
@@ -112,7 +112,7 @@ export default function HeroSection() {
                     openFaq === i ? 'max-h-40' : 'max-h-0'
                   }`}
                 >
-                  <div className="px-4 sm:px-5 pb-3.5 sm:pb-4 text-gray-600 text-sm sm:text-base leading-relaxed">{faq.a}</div>
+                  <div className="px-4 sm:px-5 pb-3.5 sm:pb-4 text-gray-600 dark:text-gray-300 text-sm sm:text-base leading-relaxed">{faq.a}</div>
                 </div>
               </div>
             ))}

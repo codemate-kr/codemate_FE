@@ -364,23 +364,23 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
     return (
       <div
         ref={popoverRef}
-        className={`bg-white border border-gray-200 rounded-lg shadow-xl p-2 sm:p-3 ${isMobile ? 'w-[200px]' : 'w-56'}`}
+        className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl p-2 sm:p-3 ${isMobile ? 'w-[200px]' : 'w-56'}`}
         style={popoverStyle}
         onMouseLeave={() => !isMobile && setPopover(null)}
       >
         <div className="flex items-center justify-between mb-1">
-          <div className="font-semibold text-gray-900 text-sm sm:text-base">{dateLabel}</div>
+          <div className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{dateLabel}</div>
           <button
             onClick={() => setPopover(null)}
-            className="p-0.5 hover:bg-gray-100 rounded"
+            className="p-0.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
           >
-            <X className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
+            <X className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400 dark:text-gray-500" />
           </button>
         </div>
-        <div className="text-xs sm:text-sm text-gray-600 mb-2">{item.count}문제 해결</div>
+        <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-2">{item.count}문제 해결</div>
         {displayProblems.length > 0 && (
           <>
-            <div className="border-t border-gray-100 my-1.5 sm:my-2" />
+            <div className="border-t border-gray-100 dark:border-gray-700 my-1.5 sm:my-2" />
             <div className="space-y-0.5 sm:space-y-1">
               {displayProblems.map((problem) => (
                 <a
@@ -388,17 +388,17 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
                   href={`https://boj.kr/${problem.problemId}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs sm:text-sm hover:bg-gray-50 rounded px-1 py-0.5 transition-colors group"
+                  className="flex items-center gap-1 text-xs sm:text-sm hover:bg-gray-50 dark:hover:bg-gray-700 rounded px-1 py-0.5 transition-colors group"
                 >
                   <span className={`font-medium shrink-0 ${getTierTextColor(problem.tier)}`}>
                     [{getTierShort(problem.tier)}]
                   </span>
-                  <span className="text-gray-700 truncate">{problem.title}</span>
-                  <ExternalLink className="h-3 w-3 text-gray-400 group-hover:text-blue-500 shrink-0" />
+                  <span className="text-gray-700 dark:text-gray-200 truncate">{problem.title}</span>
+                  <ExternalLink className="h-3 w-3 text-gray-400 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 shrink-0" />
                 </a>
               ))}
               {remainingCount > 0 && (
-                <div className="text-xs text-gray-400 px-1">외 {remainingCount}문제</div>
+                <div className="text-xs text-gray-400 dark:text-gray-500 px-1">외 {remainingCount}문제</div>
               )}
             </div>
           </>
@@ -408,7 +408,7 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 lg:col-span-2 relative">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 lg:col-span-2 relative">
       {/* 비로그인 오버레이 */}
       {!isAuthenticated && (
         <button
@@ -419,10 +419,10 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
           <p className="text-base sm:text-lg text-white/90 group-hover:text-white transition-colors">로그인이 필요해요 →</p>
         </button>
       )}
-      <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100">
+      <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-700">
         <div className="flex items-center justify-between sm:flex-row">
           <div className="flex items-center gap-2">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900">최근 활동</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">최근 활동</h3>
           </div>
           <div className="hidden sm:flex gap-1">
             {PERIOD_OPTIONS.map((option) => (
@@ -431,8 +431,8 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
                 onClick={() => setPeriod(option.value)}
                 className={`px-3 py-1 text-sm rounded-md transition-colors ${
                   period === option.value
-                    ? 'bg-blue-100 text-blue-700 font-medium'
-                    : 'text-gray-500 hover:bg-gray-100'
+                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium'
+                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
                 {option.label}
@@ -448,8 +448,8 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
               onClick={() => setPeriod(option.value)}
               className={`px-2.5 py-1 text-xs rounded-md transition-colors ${
                 period === option.value
-                  ? 'bg-blue-100 text-blue-700 font-medium'
-                  : 'text-gray-500 hover:bg-gray-100'
+                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium'
+                  : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >
               {option.label}
@@ -460,12 +460,12 @@ export default function DailySolvedChart({ isAuthenticated, onLoginClick }: Dail
       <div className="p-4 sm:p-6">
         {error ? (
           <div className="flex items-center justify-center h-44 sm:h-52">
-            <p className="text-gray-500 text-sm sm:text-base">{error}</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm sm:text-base">{error}</p>
           </div>
         ) : (
           <>
             <div className="mb-3 sm:mb-4 flex items-center gap-2">
-              <span className="text-sm sm:text-base text-gray-700">
+              <span className="text-sm sm:text-base text-gray-700 dark:text-gray-200">
                 최근 {periodConfig.label}간{' '}
                 <span className="font-bold text-blue-600">{data?.totalCount ?? 0}문제</span> 해결
               </span>

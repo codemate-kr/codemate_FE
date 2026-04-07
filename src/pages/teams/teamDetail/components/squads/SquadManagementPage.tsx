@@ -47,28 +47,28 @@ export default function SquadManagementPage({
       <div
         ref={dialogRef}
         tabIndex={-1}
-        className="bg-white rounded-xl shadow-2xl w-full max-w-5xl h-[85vh] max-h-[85vh] flex flex-col overflow-hidden"
+        className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-gray-200 dark:border-slate-800 w-full max-w-5xl h-[85vh] max-h-[85vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 헤더 */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-800 flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-50 rounded-lg">
-              <Users className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-blue-50 dark:bg-slate-800 rounded-lg">
+              <Users className="h-5 w-5 text-blue-600 dark:text-blue-300" />
             </div>
             <div>
-              <h2 id="squad-management-title" className="text-lg font-bold text-gray-900">스쿼드 관리</h2>
+              <h2 id="squad-management-title" className="text-lg font-bold text-gray-900 dark:text-gray-100">스쿼드 관리</h2>
               {isDemo && (
-                <p className="text-xs text-gray-400 mt-0.5">데모 모드 — 변경 사항이 저장되지 않습니다</p>
+                <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">데모 모드 — 변경 사항이 저장되지 않습니다</p>
               )}
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
             aria-label="닫기"
           >
-            <X className="h-5 w-5 text-gray-400" />
+            <X className="h-5 w-5 text-gray-400 dark:text-slate-500" />
           </button>
         </div>
 

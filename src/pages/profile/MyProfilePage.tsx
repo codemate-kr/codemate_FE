@@ -83,12 +83,12 @@ export default function MyProfilePage() {
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="animate-pulse space-y-6">
-            <div className="h-10 bg-gray-200 rounded w-48"></div>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="h-32 bg-gray-200"></div>
+            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-48"></div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+              <div className="h-32 bg-gray-200 dark:bg-gray-700"></div>
               <div className="p-6 space-y-4">
                 {[1, 2, 3, 4].map((n) => (
-                  <div key={n} className="h-20 bg-gray-100 rounded-lg"></div>
+                  <div key={n} className="h-20 bg-gray-100 dark:bg-gray-700/60 rounded-lg"></div>
                 ))}
               </div>
             </div>
@@ -102,7 +102,7 @@ export default function MyProfilePage() {
     return (
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center py-12">
-          <p className="text-gray-500">프로필을 불러올 수 없습니다.</p>
+          <p className="text-gray-500 dark:text-gray-400">프로필을 불러올 수 없습니다.</p>
         </div>
       </div>
     );
@@ -113,14 +113,14 @@ export default function MyProfilePage() {
       <div className="max-w-4xl mx-auto">
         {/* 헤더 */}
         <div className="mb-6">
-          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">마이페이지</h1>
-          <p className="mt-2 text-sm text-gray-700">
+          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">마이페이지</h1>
+          <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
             내 계정 정보를 확인하고 관리할 수 있습니다
           </p>
         </div>
 
         {/* 프로필 카드 */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
           <ProfileHeader profile={profile} />
           <ProfileInfo
             profile={profile}

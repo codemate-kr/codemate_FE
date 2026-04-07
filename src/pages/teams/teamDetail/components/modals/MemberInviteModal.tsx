@@ -172,13 +172,13 @@ export function MemberInviteModal({ teamId, onClose, onShowToast, onInviteSucces
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+      <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl border border-gray-200 dark:border-slate-800 w-full max-w-md">
         {/* 헤더 */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">멤버 초대</h2>
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-slate-800">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">멤버 초대</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -188,7 +188,7 @@ export function MemberInviteModal({ teamId, onClose, onShowToast, onInviteSucces
         <div className="p-4 space-y-4">
           {/* 검색 입력 */}
           <div className="relative" ref={dropdownRef}>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
               백준 핸들로 검색
             </label>
             <div className="relative">
@@ -204,7 +204,7 @@ export function MemberInviteModal({ teamId, onClose, onShowToast, onInviteSucces
                   }
                 }}
                 placeholder="백준 핸들 입력..."
-                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 pr-10 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <button
                 type="button"
@@ -212,44 +212,44 @@ export function MemberInviteModal({ teamId, onClose, onShowToast, onInviteSucces
                 className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-70 transition-opacity"
               >
                 {isSearching ? (
-                  <Loader2 className="h-5 w-5 text-gray-400 animate-spin" />
+                  <Loader2 className="h-5 w-5 text-gray-400 dark:text-slate-500 animate-spin" />
                 ) : (
-                  <Search className="h-5 w-5 text-gray-400" />
+                  <Search className="h-5 w-5 text-gray-400 dark:text-slate-500" />
                 )}
               </button>
             </div>
 
             {/* 검색 결과 드롭다운 */}
             {showDropdown && searchResults.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+              <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg max-h-64 overflow-y-auto">
                 {searchResults.map((member) => (
                   <button
                     key={member.id}
                     onClick={() => handleSelectMember(member)}
-                    className={`w-full px-4 py-3 hover:bg-gray-50 flex items-center gap-3 transition-colors border-b border-gray-100 last:border-b-0 ${
+                    className={`w-full px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-800 flex items-center gap-3 transition-colors border-b border-gray-100 dark:border-slate-800 last:border-b-0 ${
                       member.verified ? 'bg-green-50/30' : ''
                     }`}
                   >
                     <div className={`h-10 w-10 rounded-full flex items-center justify-center font-medium ${
                       member.verified
                         ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-600'
+                        : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300'
                     }`}>
                       {member.handle[0].toUpperCase()}
                     </div>
                     <div className="flex-1 text-left min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <p className="text-sm font-medium text-gray-900">@{member.handle}</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">@{member.handle}</p>
                         {member.verified && (
                           <>
-                            <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-                            <span className="text-xs px-1.5 py-0.5 bg-green-100 text-green-700 rounded flex-shrink-0">
+                            <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                            <span className="text-xs px-1.5 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded flex-shrink-0">
                               인증됨
                             </span>
                           </>
                         )}
                       </div>
-                      <p className="text-xs text-gray-500 truncate">{member.email}</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 truncate">{member.email}</p>
                     </div>
                   </button>
                 ))}
@@ -257,8 +257,8 @@ export function MemberInviteModal({ teamId, onClose, onShowToast, onInviteSucces
             )}
 
             {showDropdown && searchResults.length === 0 && !isSearching && searchQuery.trim() && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-4">
-                <p className="text-sm text-gray-500 text-center">검색 결과가 없습니다.</p>
+              <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg p-4">
+                <p className="text-sm text-gray-500 dark:text-slate-400 text-center">검색 결과가 없습니다.</p>
               </div>
             )}
           </div>
@@ -266,32 +266,32 @@ export function MemberInviteModal({ teamId, onClose, onShowToast, onInviteSucces
           {/* 선택된 멤버 리스트 */}
           {selectedMembers.length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                 초대할 멤버 ({selectedMembers.length})
               </label>
-              <div className="space-y-2 max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-3">
+              <div className="space-y-2 max-h-48 overflow-y-auto border border-gray-200 dark:border-slate-700 rounded-lg p-3">
                 {selectedMembers.map((member) => (
                   <div
                     key={member.id}
-                    className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+                    className="flex items-center justify-between p-2 bg-gray-50 dark:bg-slate-800 rounded-lg"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium text-sm">
+                      <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-300 font-medium text-sm">
                         {member.handle[0].toUpperCase()}
                       </div>
                       <div>
                         <div className="flex items-center gap-1.5">
-                          <p className="text-sm font-medium text-gray-900">@{member.handle}</p>
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">@{member.handle}</p>
                           {member.verified && (
-                            <CheckCircle className="h-3.5 w-3.5 text-green-600 flex-shrink-0" />
+                            <CheckCircle className="h-3.5 w-3.5 text-green-600 dark:text-green-400 flex-shrink-0" />
                           )}
                         </div>
-                        <p className="text-xs text-gray-500">{member.email}</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400">{member.email}</p>
                       </div>
                     </div>
                     <button
                       onClick={() => handleRemoveSelected(member.id)}
-                      className="text-gray-400 hover:text-red-600 transition-colors"
+                      className="text-gray-400 dark:text-slate-500 hover:text-red-600 transition-colors"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -303,11 +303,11 @@ export function MemberInviteModal({ teamId, onClose, onShowToast, onInviteSucces
         </div>
 
         {/* 푸터 */}
-        <div className="flex items-center justify-end gap-2 p-4 border-t border-gray-200 bg-gray-50 rounded-b-lg">
+        <div className="flex items-center justify-end gap-2 p-4 border-t border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-950 rounded-b-lg">
           <button
             onClick={onClose}
             disabled={isInviting}
-            className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors disabled:opacity-50"
           >
             취소
           </button>

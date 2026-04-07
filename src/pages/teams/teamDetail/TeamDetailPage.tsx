@@ -30,8 +30,8 @@ export default function TeamDetailPage() {
     return (
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-8 bg-gray-200 dark:bg-slate-800 rounded w-1/4 mb-4"></div>
+          <div className="h-4 bg-gray-200 dark:bg-slate-800 rounded w-1/2"></div>
         </div>
       </div>
     );
@@ -47,26 +47,26 @@ export default function TeamDetailPage() {
         <AdSenseBlock slotKey="TOP" sectionClassName="mt-0 mb-3 sm:mb-4" />
 
         {/* 헤더 */}
-        <div className="pt-0 pb-4 mb-0 border-b border-gray-200">
+        <div className="pt-0 pb-4 mb-0 border-b border-gray-200 dark:border-slate-800">
           <div className="sm:flex sm:items-center sm:justify-between">
             <div className="sm:flex-auto">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 break-words">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 break-words">
                   {data.teamInfo?.teamName || data.currentTeam?.teamName || `스터디 팀 #${route.teamId}`}
                 </h1>
                 {(data.teamInfo?.isPrivate || data.currentTeam?.isPrivate) && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 flex-shrink-0">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 flex-shrink-0">
                     <Lock className="h-3 w-3 mr-1" />
                     비공개
                   </span>
                 )}
                 {data.isTeamLeader && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 flex-shrink-0">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 flex-shrink-0">
                     팀장
                   </span>
                 )}
               </div>
-              <p className="text-sm text-gray-500 break-words">
+              <p className="text-sm text-gray-500 dark:text-slate-400 break-words">
                 {data.teamInfo?.description || data.currentTeam?.teamDescription || `${data.teamMembers.length}명의 팀원과 함께 성장하는 알고리즘 스터디`}
               </p>
             </div>
@@ -75,13 +75,13 @@ export default function TeamDetailPage() {
                 <button
                   onClick={auth.openLoginModal}
                   disabled
-                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 rounded-md cursor-not-allowed whitespace-nowrap"
+                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 dark:text-slate-500 bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-md cursor-not-allowed whitespace-nowrap"
                   title="준비 중인 기능입니다"
                 >
                   <UserPlus className="h-4 w-4 mr-1.5" />
                   <span className="hidden sm:inline">가입 신청</span>
                   <span className="sm:hidden">가입</span>
-                  <span className="ml-1.5 px-1.5 py-0.5 text-[10px] bg-gray-200 text-gray-500 rounded">준비 중</span>
+                  <span className="ml-1.5 px-1.5 py-0.5 text-[10px] bg-gray-200 dark:bg-slate-700 text-gray-500 dark:text-slate-400 rounded">준비 중</span>
                 </button>
               ) : (
                 <>
@@ -97,13 +97,13 @@ export default function TeamDetailPage() {
                   ) : !auth.isReadOnly && !data.isTeamMember && (
                     <button
                       disabled
-                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 rounded-md cursor-not-allowed whitespace-nowrap"
+                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 dark:text-slate-500 bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-md cursor-not-allowed whitespace-nowrap"
                       title="준비 중인 기능입니다"
                     >
                       <UserPlus className="h-4 w-4 mr-1.5" />
                       <span className="hidden sm:inline">가입 신청</span>
                       <span className="sm:hidden">가입</span>
-                      <span className="ml-1.5 px-1.5 py-0.5 text-[10px] bg-gray-200 text-gray-500 rounded">준비 중</span>
+                      <span className="ml-1.5 px-1.5 py-0.5 text-[10px] bg-gray-200 dark:bg-slate-700 text-gray-500 dark:text-slate-400 rounded">준비 중</span>
                     </button>
                   )}
                   {!auth.isReadOnly && (
@@ -172,23 +172,23 @@ export default function TeamDetailPage() {
 
             {/* 셀 선택 시 문제 상세 팝업 - 모바일에서는 TeamActivityBoard 바로 밑에 표시 */}
             {data.selectedCellInfo && (
-              <div className="mt-6 lg:hidden bg-white border border-gray-200 rounded-lg p-4">
+              <div className="mt-6 lg:hidden bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold text-gray-900">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                     해결 현황
                   </h3>
                   <button
                     onClick={() => actions.setSelectedCellInfo(null)}
-                    className="text-gray-400 hover:text-gray-600 text-xs"
+                    className="text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 text-xs"
                   >
                     닫기
                   </button>
                 </div>
-                <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
+                <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100 dark:border-slate-800">
                   <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] font-bold">
                     {selectedAvatarInitial}
                   </div>
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-gray-700 dark:text-slate-300">
                     @{selectedHandle}
                   </span>
                 </div>
@@ -209,23 +209,23 @@ export default function TeamDetailPage() {
 
             {/* 셀 선택 시 문제 상세 팝업 - 데스크톱에서는 사이드바에 표시 */}
             {data.selectedCellInfo && (
-              <div className="hidden lg:block bg-white border border-gray-200 rounded-lg p-4">
+              <div className="hidden lg:block bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold text-gray-900">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                     해결 현황
                   </h3>
                   <button
                     onClick={() => actions.setSelectedCellInfo(null)}
-                    className="text-gray-400 hover:text-gray-600 text-xs"
+                    className="text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 text-xs"
                   >
                     닫기
                   </button>
                 </div>
-                <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
+                <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100 dark:border-slate-800">
                   <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] font-bold">
                     {selectedAvatarInitial}
                   </div>
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-gray-700 dark:text-slate-300">
                     @{selectedHandle}
                   </span>
                 </div>

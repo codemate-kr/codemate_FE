@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { validateEnv } from './config/env';
@@ -26,6 +27,32 @@ import AboutPage from './pages/about/AboutPage';
 import GuidePage from './pages/guide/GuidePage';
 import ContactPage from './pages/contact/ContactPage';
 import LabsPage from './pages/labs/LabsPage';
+import { useThemeStore } from './store/themeStore';
+
+function ThemeWatcher() {
+  const theme = useThemeStore((state) => state.theme);
+  const syncSystemTheme = useThemeStore((state) => state.syncSystemTheme);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || theme !== 'system' || !window.matchMedia) {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (event: MediaQueryListEvent) => {
+      syncSystemTheme(event.matches ? 'dark' : 'light');
+    };
+
+    syncSystemTheme(mediaQuery.matches ? 'dark' : 'light');
+    mediaQuery.addEventListener('change', handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
+  }, [theme, syncSystemTheme]);
+
+  return null;
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,6 +71,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthInitializer>
         <ChannelIOInitializer />
+        <ThemeWatcher />
         <Router>
           <LoginModalProvider>
             <AuthHandler />
@@ -80,7 +108,16 @@ function App() {
             </Routes>
           </LoginModalProvider>
         </Router>
-        <Toaster position="top-right" />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: 'var(--toast-bg, #ffffff)',
+              color: 'var(--toast-fg, #111827)',
+              border: '1px solid var(--toast-border, #e5e7eb)',
+            },
+          }}
+        />
       </AuthInitializer>
     </QueryClientProvider>
   );

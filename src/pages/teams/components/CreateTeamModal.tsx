@@ -89,15 +89,15 @@ export default function CreateTeamModal({
         className="relative mx-auto w-full max-w-md animate-in zoom-in-95 duration-200"
         onClick={stopPropagation}
       >
-        <div className="bg-white rounded-2xl shadow-2xl">
-          <div className="px-6 py-5 border-b border-gray-200">
-            <h3 className="text-xl font-semibold text-gray-900">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-800">
+          <div className="px-6 py-5 border-b border-gray-200 dark:border-slate-800">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
               새 스터디 팀 만들기
             </h3>
           </div>
           <form onSubmit={handleSubmit} className="p-6 space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                 팀 이름 <span className="text-red-500">*</span>
               </label>
               <input
@@ -108,13 +108,13 @@ export default function CreateTeamModal({
                 onChange={handleInputChange}
                 required
                 maxLength={50}
-                className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                className="block w-full px-4 py-2.5 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 placeholder="알고리즘 스터디"
               />
-              <p className="mt-1 text-xs text-gray-400 text-right">{formData.name.length}/50</p>
+              <p className="mt-1 text-xs text-gray-400 dark:text-slate-500 text-right">{formData.name.length}/50</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                 설명
               </label>
               <textarea
@@ -123,10 +123,10 @@ export default function CreateTeamModal({
                 onChange={handleInputChange}
                 rows={4}
                 maxLength={200}
-                className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+                className="block w-full px-4 py-2.5 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
                 placeholder="팀에 대한 간단한 설명을 작성해주세요"
               />
-              <p className="mt-1 text-xs text-gray-400 text-right">{(formData.description || '').length}/200</p>
+              <p className="mt-1 text-xs text-gray-400 dark:text-slate-500 text-right">{(formData.description || '').length}/200</p>
             </div>
             <div className="flex items-center gap-2">
               <input
@@ -134,23 +134,23 @@ export default function CreateTeamModal({
                 type="checkbox"
                 checked={formData.isPrivate}
                 onChange={handlePrivateChange}
-                className="h-3.5 w-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                className="h-3.5 w-3.5 rounded border-gray-300 dark:border-slate-700 text-blue-600 focus:ring-blue-500 cursor-pointer"
               />
-              <label htmlFor="isPrivate" className="text-xs text-gray-500 cursor-pointer">비공개 팀으로 설정</label>
+              <label htmlFor="isPrivate" className="text-xs text-gray-500 dark:text-slate-400 cursor-pointer">비공개 팀으로 설정</label>
             </div>
             <div className="flex justify-end gap-3 pt-2">
               <button
                 type="button"
                 onClick={handleClose}
                 disabled={isLoading}
-                className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-slate-300 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 취소
               </button>
               <button
                 type="submit"
                 disabled={isLoading || !formData.name.trim()}
-                className="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isLoading ? (
                   <span className="flex items-center gap-2">

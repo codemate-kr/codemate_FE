@@ -18,8 +18,8 @@ export default function TeamMembersList({ members, squads }: TeamMembersListProp
   const membersRegionId = 'team-members-list';
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4">
-      <h3 className="text-sm font-semibold text-gray-900 mb-3">
+    <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-4">
+      <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
         멤버 ({members.length})
       </h3>
       <div id={membersRegionId} className="space-y-2">
@@ -33,38 +33,38 @@ export default function TeamMembersList({ members, squads }: TeamMembersListProp
             <div
               key={member.memberId}
               className={`flex items-center gap-3 p-2 rounded ${
-                member.isMe ? 'bg-blue-50' : ''
+                member.isMe ? 'bg-blue-50 dark:bg-blue-900/20' : ''
               }`}
             >
               <div className={`h-8 w-8 rounded-full flex items-center justify-center text-white text-sm font-medium ${
-                member.role === 'LEADER' ? 'bg-blue-600' : 'bg-gray-400'
+                member.role === 'LEADER' ? 'bg-blue-600' : 'bg-gray-400 dark:bg-slate-600'
               }`}>
                 {member.handle?.[0]?.toUpperCase() || '?'}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                   {member.handle ? (
                     <a
                       href={`https://www.acmicpc.net/user/${member.handle}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-blue-600 hover:underline transition-colors"
+                      className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors"
                     >
                       @{member.handle}
                     </a>
                   ) : (
                     <span>@핸들 없음</span>
                   )}
-                  {member.isMe && <span className="ml-1 text-xs text-blue-600">(나)</span>}
+                  {member.isMe && <span className="ml-1 text-xs text-blue-600 dark:text-blue-400">(나)</span>}
                 </p>
-                <p className="text-xs text-gray-500 truncate">{member.email ?? '이메일 비공개'}</p>
+                <p className="text-xs text-gray-500 dark:text-slate-400 truncate">{member.email ?? '이메일 비공개'}</p>
               </div>
               <div className="flex items-center gap-1.5 flex-shrink-0">
                 {member.role === 'LEADER' && (
-                  <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded">팀장</span>
+                  <span className="text-xs px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded">팀장</span>
                 )}
                 {memberSquadName && (
-                  <span className="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded">
+                  <span className="text-xs px-1.5 py-0.5 bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-400 rounded">
                     {memberSquadName}
                   </span>
                 )}
@@ -79,7 +79,7 @@ export default function TeamMembersList({ members, squads }: TeamMembersListProp
           onClick={() => setIsExpanded(!isExpanded)}
           aria-expanded={isExpanded}
           aria-controls={membersRegionId}
-          className="w-full flex items-center justify-center gap-1 mt-3 py-2 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+          className="w-full flex items-center justify-center gap-1 mt-3 py-2 text-xs text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-md transition-colors"
         >
           {isExpanded ? (
             <>

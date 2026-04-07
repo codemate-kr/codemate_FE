@@ -91,8 +91,8 @@ export default function TeamsPage() {
       <div className="mb-6 sm:mb-8">
         <div className="sm:flex sm:items-center sm:justify-between">
           <div className="sm:flex-auto">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">내 팀</h1>
-            <p className="mt-1 sm:mt-2 text-sm text-gray-600">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">내 팀</h1>
+            <p className="mt-1 sm:mt-2 text-sm text-gray-600 dark:text-slate-300">
               참여 중인 스터디 팀을 관리하고 새 팀을 만들어보세요.
             </p>
           </div>
@@ -100,7 +100,7 @@ export default function TeamsPage() {
           {isAuthenticated ? (
             <button
               onClick={handleCreateButtonClick}
-              className="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-auto"
+              className="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900 sm:w-auto"
             >
               <Plus className="h-4 w-4 mr-2" />
               새 팀 만들기
@@ -108,7 +108,7 @@ export default function TeamsPage() {
           ) : (
             <button
               onClick={openLoginModal}
-              className="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-auto"
+              className="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900 sm:w-auto"
             >
               로그인하기
             </button>
@@ -136,21 +136,21 @@ export default function TeamsPage() {
         {(isAuthenticated && teamsLoading) ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((n) => (
-              <div key={n} className="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-100 animate-pulse">
+              <div key={n} className="bg-white dark:bg-slate-900 overflow-hidden shadow-sm rounded-xl border border-gray-100 dark:border-slate-800 animate-pulse">
                 <div className="p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-3 flex-1">
-                      <div className="h-10 w-10 rounded-lg bg-gray-200"></div>
+                      <div className="h-10 w-10 rounded-lg bg-gray-200 dark:bg-slate-800"></div>
                       <div className="flex-1 space-y-2">
-                        <div className="h-5 bg-gray-200 rounded w-3/4"></div>
-                        <div className="h-4 bg-gray-200 rounded w-full"></div>
+                        <div className="h-5 bg-gray-200 dark:bg-slate-800 rounded w-3/4"></div>
+                        <div className="h-4 bg-gray-200 dark:bg-slate-800 rounded w-full"></div>
                       </div>
                     </div>
                   </div>
-                  <div className="mt-5 pt-5 border-t border-gray-100">
+                  <div className="mt-5 pt-5 border-t border-gray-100 dark:border-slate-800">
                     <div className="flex items-center gap-3">
-                      <div className="h-5 bg-gray-200 rounded w-16"></div>
-                      <div className="h-6 bg-gray-200 rounded w-12"></div>
+                      <div className="h-5 bg-gray-200 dark:bg-slate-800 rounded w-16"></div>
+                      <div className="h-6 bg-gray-200 dark:bg-slate-800 rounded w-12"></div>
                     </div>
                   </div>
                 </div>
@@ -169,18 +169,18 @@ export default function TeamsPage() {
           </div>
         ) : teams.length === 0 ? (
           <div className="text-center py-16 px-4">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 mb-4">
-              <Users className="h-8 w-8 text-blue-600" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 dark:bg-slate-800 mb-4">
+              <Users className="h-8 w-8 text-blue-600 dark:text-blue-300" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
               아직 참여한 스터디 팀이 없어요
             </h3>
-            <p className="text-sm text-gray-600 max-w-sm mx-auto mb-8">
+            <p className="text-sm text-gray-600 dark:text-slate-300 max-w-sm mx-auto mb-8">
               새 스터디 팀을 만들어 친구들과 함께 알고리즘 문제를 풀어보세요.
             </p>
             <button
               onClick={handleCreateButtonClick}
-              className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-slate-900 transition-colors"
             >
               <Plus className="h-5 w-5 mr-2" />
               첫 스터디 팀 만들기

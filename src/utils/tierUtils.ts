@@ -34,10 +34,10 @@ export const getTierShortName = (level: number): string => {
  * @returns Tailwind CSS 클래스 문자열
  */
 export const getTierColor = (level: number): string => {
-  if (level <= 5) return 'text-orange-600 bg-orange-50'; // Bronze
-  if (level <= 10) return 'text-gray-500 bg-gray-100'; // Silver
-  if (level <= 15) return 'text-yellow-600 bg-yellow-50'; // Gold
-  if (level <= 20) return 'text-cyan-600 bg-cyan-50'; // Platinum
-  if (level <= 25) return 'text-blue-600 bg-blue-50'; // Diamond
-  return 'text-red-600 bg-red-50'; // Ruby
+  if (level <= 5) return 'text-orange-600 dark:text-orange-300 bg-orange-50 dark:bg-orange-900/30'; // Bronze
+  if (level <= 10) return 'text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-gray-700/60'; // Silver
+  if (level <= 15) return 'text-yellow-600 dark:text-yellow-300 bg-yellow-50 dark:bg-yellow-900/30'; // Gold
+  if (level <= 20) return 'text-cyan-600 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-900/30'; // Platinum
+  if (level <= 25) return 'text-blue-600 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30'; // Diamond
+  return 'text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-900/30'; // Ruby
 };

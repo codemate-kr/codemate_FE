@@ -27,8 +27,8 @@ export default function SquadsList({
 }: SquadsListProps) {
   if (loading) {
     return (
-      <div className="flex gap-2 animate-pulse pb-3 border-b border-gray-200">
-        {[1, 2].map((i) => <div key={i} className="h-8 w-24 bg-gray-100 rounded-full" />)}
+      <div className="flex gap-2 animate-pulse pb-3 border-b border-gray-200 dark:border-slate-800">
+        {[1, 2].map((i) => <div key={i} className="h-8 w-24 bg-gray-100 dark:bg-slate-800 rounded-full" />)}
       </div>
     );
   }
@@ -38,7 +38,7 @@ export default function SquadsList({
       {/* 모바일: 탭/관리 분리 */}
       <div className="sm:hidden space-y-2">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-xs text-gray-400 font-medium shrink-0">스쿼드</span>
+          <span className="text-xs text-gray-400 dark:text-slate-500 font-medium shrink-0">스쿼드</span>
           <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide whitespace-nowrap pb-1 flex-1 min-w-0">
           {squads.map((squad) => {
             const isSelected = squad.squadId === selectedSquadId;
@@ -52,7 +52,7 @@ export default function SquadsList({
                 className={`inline-flex shrink-0 items-center gap-1 px-3 py-2 rounded-full text-sm font-medium border transition-all ${
                   isSelected
                     ? 'bg-slate-700 text-white border-slate-700 shadow-sm'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:text-gray-800'
+                    : 'bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600 hover:text-gray-800 dark:hover:text-slate-100'
                 }`}
               >
                 <button
@@ -72,10 +72,10 @@ export default function SquadsList({
                     type="button"
                     onClick={onOpenSettings}
                     aria-label="문제추천설정"
-                    className="relative group ml-1 pl-1.5 border-l border-white/30 text-white hover:text-white transition-colors min-h-[20px]"
+                    className="relative group ml-1 pl-1.5 border-l border-white/30 dark:border-slate-500 text-white hover:text-white transition-colors min-h-[20px]"
                   >
                     <Settings className="h-4 w-4" />
-                    <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-1 text-xs text-white bg-gray-800 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-1 text-xs text-white bg-gray-800 dark:bg-slate-700 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
                       문제추천설정
                     </span>
                   </button>
@@ -91,7 +91,7 @@ export default function SquadsList({
           <div className="flex items-center justify-start gap-1.5">
             <button
               onClick={onOpenManagement}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-500 dark:text-slate-300 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 hover:border-gray-300 dark:hover:border-slate-600 hover:text-gray-700 dark:hover:text-slate-100 transition-colors"
             >
               <Settings className="h-3.5 w-3.5" />
               스쿼드관리
@@ -103,7 +103,7 @@ export default function SquadsList({
 
       {/* 데스크톱: 기존 레이아웃 유지 */}
       <div className="hidden sm:flex items-center gap-2 flex-wrap">
-        <span className="text-xs text-gray-400 font-medium shrink-0">스쿼드</span>
+        <span className="text-xs text-gray-400 dark:text-slate-500 font-medium shrink-0">스쿼드</span>
         <div className="flex items-center gap-1.5 flex-wrap flex-1 min-w-0">
         {squads.map((squad) => {
           const isSelected = squad.squadId === selectedSquadId;
@@ -116,8 +116,8 @@ export default function SquadsList({
               key={squad.squadId}
               className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                 isSelected
-                  ? 'bg-slate-700 text-white border-slate-700 shadow-sm'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:text-gray-800'
+                    ? 'bg-slate-700 text-white border-slate-700 shadow-sm'
+                    : 'bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600 hover:text-gray-800 dark:hover:text-slate-100'
               }`}
             >
               <button
@@ -137,10 +137,10 @@ export default function SquadsList({
                   type="button"
                   onClick={onOpenSettings}
                   aria-label="문제추천설정"
-                  className="relative group ml-1 pl-1.5 border-l border-white/30 text-white hover:text-white transition-colors"
+                  className="relative group ml-1 pl-1.5 border-l border-white/30 dark:border-slate-500 text-white hover:text-white transition-colors"
                 >
                   <Settings className="h-4 w-4" />
-                  <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-1 text-xs text-white bg-gray-800 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-1 text-xs text-white bg-gray-800 dark:bg-slate-700 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
                     문제추천설정
                   </span>
                 </button>
@@ -151,11 +151,11 @@ export default function SquadsList({
 
         {isTeamLeader && (
           <>
-            <span className="text-gray-300 text-sm px-0.5 select-none">|</span>
+            <span className="text-gray-300 dark:text-slate-600 text-sm px-0.5 select-none">|</span>
             <div className="flex items-center gap-1.5 flex-shrink-0">
               <button
                 onClick={onOpenManagement}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-500 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-500 dark:text-slate-300 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 hover:border-gray-300 dark:hover:border-slate-600 hover:text-gray-700 dark:hover:text-slate-100 transition-colors"
               >
                 <Settings className="h-3.5 w-3.5" />
                 스쿼드관리

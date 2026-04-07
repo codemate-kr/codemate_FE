@@ -178,15 +178,15 @@ export default function ParticipationTab({
   };
 
   const getDateHeaderClass = (date: DayInfo) =>
-    `text-center text-[10px] ${date.isWeekend ? 'text-red-400' : 'text-gray-400'} ${date.isToday ? 'font-bold' : ''}`;
+    `text-center text-[10px] ${date.isWeekend ? 'text-red-400' : 'text-gray-400 dark:text-slate-400'} ${date.isToday ? 'font-bold' : ''}`;
 
   const getCellClass = (solvedCount: number, totalCount: number) => {
     const base = `rounded border flex items-center justify-center text-[10px] font-bold transition-all duration-150 ${getCellColor(solvedCount, totalCount)}`;
     const interactive = totalCount === 0
-      ? 'text-gray-400 cursor-default'
+      ? 'text-gray-400 dark:text-slate-500 cursor-default'
       : solvedCount === totalCount
-        ? 'text-white cursor-pointer hover:scale-105 hover:shadow-md'
-        : 'text-gray-600 cursor-pointer hover:scale-105 hover:shadow-md';
+        ? 'text-emerald-950 dark:text-white cursor-pointer hover:scale-105 hover:shadow-md'
+        : 'text-gray-600 dark:text-slate-300 cursor-pointer hover:scale-105 hover:shadow-md';
     return `${base} ${interactive}`;
   };
 
@@ -218,11 +218,11 @@ export default function ParticipationTab({
     { value: 'solved', label: '해결 수' },
   ];
 
-  const filterGroupClass = 'flex items-center bg-gray-100 rounded-md p-0.5';
+  const filterGroupClass = 'flex items-center bg-gray-100 dark:bg-slate-800 rounded-md p-0.5';
   const filterButtonClass = (isActive: boolean) => `px-2 py-1 text-xs font-medium rounded transition-colors ${
     isActive
-      ? 'bg-white text-blue-600 shadow-sm'
-      : 'text-gray-500 hover:text-gray-700'
+      ? 'bg-white dark:bg-slate-900 text-blue-600 shadow-sm'
+      : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
   }`;
 
   return (
@@ -232,7 +232,7 @@ export default function ParticipationTab({
 
         <div className="flex items-center gap-2 flex-wrap">
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-medium text-gray-500">보기</span>
+            <span className="text-[11px] font-medium text-gray-500 dark:text-slate-400">보기</span>
             <div className={filterGroupClass}>
               {viewModeOptions.map((option) => (
                 <button
@@ -246,10 +246,10 @@ export default function ParticipationTab({
             </div>
           </div>
 
-          <span className="text-xs text-gray-300">|</span>
+          <span className="text-xs text-gray-300 dark:text-slate-600">|</span>
 
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-medium text-gray-500">정렬</span>
+            <span className="text-[11px] font-medium text-gray-500 dark:text-slate-400">정렬</span>
             <div className={filterGroupClass}>
               {sortModeOptions.map((option) => (
                 <button
@@ -271,26 +271,26 @@ export default function ParticipationTab({
             if (row.type === 'divider') {
               return (
                 <div key={`div-${row.squadName}-${i}`} className="h-4 flex items-end pr-2 max-sm:pr-1">
-                  <span className="text-[10px] max-sm:text-[9px] font-semibold text-slate-400 tracking-wide">{row.squadName}</span>
+                  <span className="text-[10px] max-sm:text-[9px] font-semibold text-slate-400 dark:text-slate-500 tracking-wide">{row.squadName}</span>
                 </div>
               );
             }
             const member = row.member;
             const isMe = member.memberId === currentMemberId;
             return (
-              <div key={member.memberId} className={`flex items-center gap-2 max-sm:gap-1 pr-2 max-sm:pr-1 h-10 max-sm:h-8 rounded-l ${isMe ? 'bg-blue-50' : ''}`}>
+              <div key={member.memberId} className={`flex items-center gap-2 max-sm:gap-1 pr-2 max-sm:pr-1 h-10 max-sm:h-8 rounded-l ${isMe ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}>
                 <MemberAvatar handle={member.handle} isMe={isMe} />
                 {member.handle ? (
                   <a
                     href={`https://www.acmicpc.net/user/${member.handle}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs max-sm:text-[10px] font-medium text-gray-700 truncate hover:text-blue-600 hover:underline transition-colors"
+                    className="text-xs max-sm:text-[10px] font-medium text-gray-700 dark:text-slate-300 truncate hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors"
                   >
                     {truncateHandle(member.handle)}
                   </a>
                 ) : (
-                  <p className="text-xs max-sm:text-[10px] font-medium text-gray-700 truncate">(미인증)</p>
+                  <p className="text-xs max-sm:text-[10px] font-medium text-gray-700 dark:text-slate-300 truncate">(미인증)</p>
                 )}
               </div>
             );
@@ -315,7 +315,7 @@ export default function ParticipationTab({
                     {recentDays.map((date) => (
                       <div
                         key={`div-line-${row.squadName}-${i}-${date.dateStr}`}
-                        className={`${dayHeaderCellClass} border-t border-dashed border-gray-200`}
+                        className={`${dayHeaderCellClass} border-t border-dashed border-gray-200 dark:border-slate-700`}
                       />
                     ))}
                   </div>
@@ -347,10 +347,10 @@ export default function ParticipationTab({
 
       {isThirtyDays && (
         <div className="flex justify-center gap-2 pt-2">
-          <button onClick={() => scrollBy('left')} className="p-1.5 max-sm:p-1 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
+          <button onClick={() => scrollBy('left')} className="p-1.5 max-sm:p-1 rounded-full bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-600 dark:text-slate-300 transition-colors">
             <ChevronLeft className="w-4 h-4 max-sm:w-3.5 max-sm:h-3.5" />
           </button>
-          <button onClick={() => scrollBy('right')} className="p-1.5 max-sm:p-1 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
+          <button onClick={() => scrollBy('right')} className="p-1.5 max-sm:p-1 rounded-full bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-600 dark:text-slate-300 transition-colors">
             <ChevronRight className="w-4 h-4 max-sm:w-3.5 max-sm:h-3.5" />
           </button>
         </div>

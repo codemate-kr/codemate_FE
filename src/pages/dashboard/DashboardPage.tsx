@@ -68,7 +68,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AdSenseBlock slotKey="TOP" sectionClassName="mt-0 mb-3 sm:mb-4" />
 
@@ -76,10 +76,10 @@ export default function DashboardPage() {
         <div className="mb-6 sm:mb-8">
           <div className="lg:flex lg:items-center lg:justify-between lg:gap-6">
             <div className="lg:flex-1">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 break-words">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white break-words">
                 안녕하세요, {isAuthenticated ? (user?.handle || '백준 미인증') : '게스트'}님!
               </h1>
-              <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">
+              <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
                 {isAuthenticated ? '오늘도 알고리즘 문제를 풀어보세요.' : '로그인하고 알고리즘 학습을 시작하세요.'}
               </p>
             </div>

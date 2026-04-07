@@ -24,7 +24,7 @@ export default function Footer() {
   }, [isLegalMenuOpen]);
 
   return (
-    <footer className="bg-gray-50 border-t border-gray-200 mt-auto">
+    <footer className="bg-gray-50 border-t border-gray-200 dark:bg-slate-950 dark:border-slate-800 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8">
           {/* 법률 문서 드롭다운 */}
@@ -36,7 +36,7 @@ export default function Footer() {
           >
             <button
               onClick={() => setIsLegalMenuOpen(!isLegalMenuOpen)}
-              className="group flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
+              className="group flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
             >
               <Shield className="h-4 w-4 group-hover:scale-110 transition-transform" />
               <span className="font-medium">법률 정보</span>
@@ -45,11 +45,11 @@ export default function Footer() {
 
             {/* 드롭다운 메뉴 */}
             {isLegalMenuOpen && (
-              <div className="absolute bottom-full mb-0 left-1/2 -translate-x-1/2 bg-white border border-gray-200 rounded-lg shadow-lg py-2 min-w-[200px] z-10">
+              <div className="absolute bottom-full mb-0 left-1/2 -translate-x-1/2 bg-white border border-gray-200 rounded-lg shadow-lg py-2 min-w-[200px] z-10 dark:bg-gray-800 dark:border-gray-700">
                 <Link
                   to="/terms-of-service"
                   onClick={() => setIsLegalMenuOpen(false)}
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-200 dark:hover:bg-blue-900/30 dark:hover:text-blue-300 transition-colors"
                 >
                   <FileText className="h-4 w-4" />
                   <span>이용약관</span>
@@ -57,7 +57,7 @@ export default function Footer() {
                 <Link
                   to="/privacy-policy"
                   onClick={() => setIsLegalMenuOpen(false)}
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-200 dark:hover:bg-blue-900/30 dark:hover:text-blue-300 transition-colors"
                 >
                   <Shield className="h-4 w-4" />
                   <span>개인정보처리방침</span>
@@ -66,11 +66,11 @@ export default function Footer() {
             )}
           </div>
 
-          <div className="hidden sm:block w-px h-4 bg-gray-300"></div>
+          <div className="hidden sm:block w-px h-4 bg-gray-300 dark:bg-gray-700"></div>
 
           <a
             href="https://forms.gle/F1DsQs64bsWUQXgy6"
-            className="group flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
+            className="group flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -78,11 +78,11 @@ export default function Footer() {
             <span className="font-medium">피드백 보내기</span>
           </a>
 
-          <div className="hidden sm:block w-px h-4 bg-gray-300"></div>
+          <div className="hidden sm:block w-px h-4 bg-gray-300 dark:bg-gray-700"></div>
 
           <a
             href="https://blog.naver.com/ryu_eclipse"
-            className="group flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
+            className="group flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -90,11 +90,11 @@ export default function Footer() {
             <span className="font-medium">개발자 블로그</span>
           </a>
 
-          <div className="hidden sm:block w-px h-4 bg-gray-300"></div>
+          <div className="hidden sm:block w-px h-4 bg-gray-300 dark:bg-gray-700"></div>
 
           <a
             href="https://github.com/codemate-kr"
-            className="group flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
+            className="group flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -104,7 +104,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-4 sm:mt-6 text-center">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
             © 2025 CodeMate. All rights reserved.
           </p>
         </div>

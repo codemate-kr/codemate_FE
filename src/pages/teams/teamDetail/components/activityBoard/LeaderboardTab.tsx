@@ -24,7 +24,7 @@ export default function LeaderboardTab({
     <div className="space-y-3 max-sm:space-y-2">
       <div className="flex items-center justify-between">
         <DayRangeToggle dayRange={dayRange} onChange={onDayRangeChange} />
-        <div className="text-[11px] max-sm:text-[10px] text-gray-400 text-right">
+        <div className="text-[11px] max-sm:text-[10px] text-gray-400 dark:text-slate-400 text-right">
           최근 {dayRange}일 기준
         </div>
       </div>
@@ -35,38 +35,38 @@ export default function LeaderboardTab({
             <div
               key={member.memberId}
               className={`flex items-center gap-3 max-sm:gap-2 p-2.5 max-sm:p-2 rounded-lg border ${
-                isMe ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200'
+                isMe ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800/60' : 'bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800'
               }`}
             >
-              <div className="w-6 max-sm:w-5 text-center text-sm max-sm:text-xs font-bold text-gray-500">
+              <div className="w-6 max-sm:w-5 text-center text-sm max-sm:text-xs font-bold text-gray-500 dark:text-slate-400">
                 {member.rank}
               </div>
               <MemberAvatar handle={member.handle} isMe={isMe} size="md" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm max-sm:text-xs font-medium text-gray-700 truncate">
+                <p className="text-sm max-sm:text-xs font-medium text-gray-700 dark:text-slate-300 truncate">
                   {member.handle ? (
                     <a
                       href={`https://www.acmicpc.net/user/${member.handle}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-blue-600 hover:underline transition-colors"
+                      className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors"
                     >
                       @{member.handle}
                     </a>
                   ) : (
                     '(미인증)'
                   )}
-                  {isMe && <span className="text-blue-600 ml-1">(나)</span>}
+                  {isMe && <span className="text-blue-600 dark:text-blue-400 ml-1">(나)</span>}
                 </p>
               </div>
-              <span className="text-sm max-sm:text-xs font-medium text-gray-600 flex-shrink-0">{member.totalSolved}문제</span>
+              <span className="text-sm max-sm:text-xs font-medium text-gray-600 dark:text-slate-300 flex-shrink-0">{member.totalSolved}문제</span>
             </div>
           );
         })}
       </div>
 
       {myRank > 1 && myIndex > 0 && gapToPrev > 0 && (
-        <div className="text-center text-xs max-sm:text-[10px] text-gray-500 pt-2 border-t border-gray-100">
+        <div className="text-center text-xs max-sm:text-[10px] text-gray-500 dark:text-slate-400 pt-2 border-t border-gray-100 dark:border-slate-800">
           {gapToPrev}문제만 더 풀면 {myRank - 1}위!
         </div>
       )}

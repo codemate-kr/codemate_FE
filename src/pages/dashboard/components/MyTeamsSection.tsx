@@ -20,7 +20,7 @@ export default function MyTeamsSection({ isAuthenticated, onLoginClick, teams }:
   const displayTeams = isAuthenticated ? teams : SAMPLE_TEAMS;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 relative">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 relative">
       {!isAuthenticated && (
         <button
           onClick={onLoginClick}
@@ -30,12 +30,12 @@ export default function MyTeamsSection({ isAuthenticated, onLoginClick, teams }:
           <p className="text-lg text-white/90 group-hover:text-white transition-colors">로그인이 필요해요 →</p>
         </button>
       )}
-      <div className="px-6 py-4 border-b border-gray-100">
+      <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">내 스터디 팀</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">내 스터디 팀</h3>
           <Link
             to="/teams/my"
-            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+            className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
           >
             전체 보기 →
           </Link>
@@ -44,13 +44,13 @@ export default function MyTeamsSection({ isAuthenticated, onLoginClick, teams }:
       <div className="p-6">
         {isAuthenticated && teams.length === 0 ? (
           <div className="text-center py-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-              <Users className="h-8 w-8 text-gray-400" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full mb-4">
+              <Users className="h-8 w-8 text-gray-400 dark:text-gray-300" />
             </div>
-            <p className="text-sm font-medium text-gray-900 mb-1">
+            <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
               아직 참여한 팀이 없어요
             </p>
-            <p className="text-xs text-gray-500 mb-4">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
               팀을 만들고 문제 추천을 받아보세요
             </p>
             <AuroraGlow float>
@@ -69,20 +69,20 @@ export default function MyTeamsSection({ isAuthenticated, onLoginClick, teams }:
               <Link
                 key={team.teamId}
                 to={isAuthenticated ? `/teams/${team.teamId}` : '#'}
-                className={`group block bg-white border border-gray-200 rounded-lg p-4 ${
-                  isAuthenticated ? 'hover:border-gray-300 hover:bg-gray-50' : 'cursor-default'
+                className={`group block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 ${
+                  isAuthenticated ? 'hover:border-gray-300 hover:bg-gray-50 dark:hover:border-gray-600 dark:hover:bg-gray-700' : 'cursor-default'
                 } transition-colors`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-3 flex-1 min-w-0">
                     <div className="flex-shrink-0 mt-1">
-                      <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                        <Users className="h-5 w-5 text-blue-600" />
+                      <div className="h-10 w-10 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
+                        <Users className="h-5 w-5 text-blue-600 dark:text-blue-300" />
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-semibold text-gray-900 truncate">
+                        <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                           {team.teamName}
                         </h4>
                         {team.myRole === 'LEADER' && (
@@ -91,7 +91,7 @@ export default function MyTeamsSection({ isAuthenticated, onLoginClick, teams }:
                           </Tooltip>
                         )}
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         멤버 {team.memberCount}명
                       </p>
                     </div>
@@ -99,13 +99,13 @@ export default function MyTeamsSection({ isAuthenticated, onLoginClick, teams }:
                   <div className="flex items-start gap-2 ml-2">
                     {team.isRecommendationActive && (
                       <Tooltip text="문제 추천 활성화됨">
-                        <span className="px-2 py-1 text-xs font-medium rounded bg-green-100 text-green-700 flex-shrink-0">
+                        <span className="px-2 py-1 text-xs font-medium rounded bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 flex-shrink-0">
                           추천 활성
                         </span>
                       </Tooltip>
                     )}
                     <ChevronRight className={`h-5 w-5 flex-shrink-0 ${
-                      isAuthenticated ? 'text-gray-400 group-hover:text-blue-600' : 'text-gray-400'
+                      isAuthenticated ? 'text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400' : 'text-gray-400 dark:text-gray-500'
                     } transition-colors`} />
                   </div>
                 </div>
@@ -115,7 +115,7 @@ export default function MyTeamsSection({ isAuthenticated, onLoginClick, teams }:
               <div className="pt-2 text-center">
                 <Link
                   to="/teams/my"
-                  className="text-sm text-gray-500 hover:text-gray-700 font-medium"
+                  className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 font-medium"
                 >
                   외 {teams.length - 3}개 팀 →
                 </Link>

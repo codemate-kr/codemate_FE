@@ -373,20 +373,20 @@ export default function SquadMemberTab({
         draggable
         onDragStart={(e) => handleDragStart(e, member.memberId)}
         onDragEnd={handleDragEnd}
-        className={`group flex items-center gap-2 px-2.5 py-2.5 rounded-lg border bg-white select-none transition-all ${
+        className={`group flex items-center gap-2 px-2.5 py-2.5 rounded-lg border bg-white dark:bg-slate-900 select-none transition-all ${
           isDragging
             ? 'opacity-30 shadow-none'
             : isChanged
-            ? 'border-l-2 border-l-blue-400 border-t-gray-200 border-r-gray-200 border-b-gray-200 shadow-sm cursor-grab active:cursor-grabbing'
-            : 'border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 cursor-grab active:cursor-grabbing'
+            ? 'border-l-2 border-l-blue-400 border-t-gray-200 dark:border-t-slate-700 border-r-gray-200 dark:border-r-slate-700 border-b-gray-200 dark:border-b-slate-700 shadow-sm cursor-grab active:cursor-grabbing'
+            : 'border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 cursor-grab active:cursor-grabbing'
         }`}
       >
-        <GripVertical className="h-3.5 w-3.5 text-gray-200 group-hover:text-gray-400 transition-colors flex-shrink-0" />
-        <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 bg-gray-100 text-gray-600">
+        <GripVertical className="h-3.5 w-3.5 text-gray-200 dark:text-slate-600 group-hover:text-gray-400 dark:group-hover:text-slate-400 transition-colors flex-shrink-0" />
+        <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300">
           {member.handle[0].toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium text-gray-800 truncate">@{member.handle}</p>
+          <p className="text-xs font-medium text-gray-800 dark:text-slate-200 truncate">@{member.handle}</p>
         </div>
       </div>
     );
@@ -400,7 +400,7 @@ export default function SquadMemberTab({
           <button
             type="button"
             onClick={() => scrollBoardBy('left')}
-            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors shadow-sm"
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-600 dark:text-slate-300 transition-colors shadow-sm"
             aria-label="왼쪽으로 이동"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -410,7 +410,7 @@ export default function SquadMemberTab({
           <button
             type="button"
             onClick={() => scrollBoardBy('right')}
-            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors shadow-sm"
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-600 dark:text-slate-300 transition-colors shadow-sm"
             aria-label="오른쪽으로 이동"
           >
             <ChevronRight className="w-5 h-5" />
@@ -431,21 +431,21 @@ export default function SquadMemberTab({
             onDragLeave={handleDragLeave}
             onDrop={(e) => handleDrop(e, UNASSIGNED_DROP_ID)}
           >
-            <div className="bg-gray-100 px-4 py-3 flex items-center gap-2 flex-shrink-0">
-              <span className="text-sm font-semibold text-gray-400">미배정</span>
+            <div className="bg-gray-100 dark:bg-slate-800 px-4 py-3 flex items-center gap-2 flex-shrink-0">
+              <span className="text-sm font-semibold text-gray-400 dark:text-slate-400">미배정</span>
               <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${
                 hasUnassigned ? 'bg-amber-100 text-amber-600' : 'bg-gray-200 text-gray-400'
               }`}>
                 {unassignedMembers.length}
               </span>
             </div>
-            <div className="flex-1 bg-gray-50 p-2.5 space-y-2 overflow-y-auto">
+            <div className="flex-1 bg-gray-50 dark:bg-slate-900 p-2.5 space-y-2 overflow-y-auto">
               {unassignedMembers.map(renderMemberCard)}
               {unassignedMembers.length === 0 && (
                 <div className={`flex items-center justify-center h-16 rounded-lg border-2 border-dashed text-xs transition-colors ${
                   dragOverColId === UNASSIGNED_DROP_ID
                     ? 'border-amber-400 text-amber-400 bg-amber-50'
-                    : 'border-gray-200 text-gray-300'
+                    : 'border-gray-200 dark:border-slate-700 text-gray-300 dark:text-slate-600'
                 }`}>
                   없음
                 </div>
@@ -463,7 +463,7 @@ export default function SquadMemberTab({
               <div
                 key={squad.squadId}
                 className={`flex flex-col w-56 flex-shrink-0 rounded-xl overflow-hidden shadow-sm border transition-all ${
-                  isOver ? 'border-slate-400 ring-2 ring-slate-300 ring-offset-1' : 'border-gray-200'
+                  isOver ? 'border-slate-400 ring-2 ring-slate-300 ring-offset-1 dark:ring-slate-700' : 'border-gray-200 dark:border-slate-700'
                 }`}
                 onDragOver={(e) => handleDragOver(e, squad.squadId)}
                 onDragLeave={handleDragLeave}
@@ -510,11 +510,11 @@ export default function SquadMemberTab({
                 </div>
 
                 {/* 멤버 카드 영역 */}
-                <div className="flex-1 bg-gray-50 p-2.5 space-y-2 overflow-y-auto">
+                <div className="flex-1 bg-gray-50 dark:bg-slate-900 p-2.5 space-y-2 overflow-y-auto">
                   {members.map(renderMemberCard)}
                   {members.length === 0 && (
                     <div className={`flex items-center justify-center h-16 rounded-lg border-2 border-dashed text-xs transition-colors ${
-                      isOver ? 'border-slate-400 text-slate-500 bg-slate-50' : 'border-gray-200 text-gray-300'
+                      isOver ? 'border-slate-400 text-slate-500 dark:text-slate-300 bg-slate-50 dark:bg-slate-800' : 'border-gray-200 dark:border-slate-700 text-gray-300 dark:text-slate-600'
                     }`}>
                       여기에 드롭
                     </div>
@@ -527,7 +527,7 @@ export default function SquadMemberTab({
           {/* + 새 스쿼드 컬럼 */}
           <button
             onClick={() => setShowCreateModal(true)}
-            className="w-56 flex-shrink-0 rounded-xl border-2 border-dashed border-gray-200 hover:border-slate-400 hover:bg-slate-50 transition-all flex flex-col items-center justify-center gap-2 text-gray-300 hover:text-slate-500 h-32"
+            className="w-56 flex-shrink-0 rounded-xl border-2 border-dashed border-gray-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex flex-col items-center justify-center gap-2 text-gray-300 dark:text-slate-500 hover:text-slate-500 dark:hover:text-slate-300 h-32"
           >
             <Plus className="h-6 w-6" />
             <span className="text-xs font-medium">새 스쿼드</span>
@@ -538,12 +538,12 @@ export default function SquadMemberTab({
       </div>
 
       {/* 푸터 */}
-      <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+      <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-950 flex-shrink-0">
         <div className="flex flex-col gap-1">
-          <p className={`text-sm font-semibold ${hasChanges ? 'text-blue-700' : 'text-gray-400'}`}>
+          <p className={`text-sm font-semibold ${hasChanges ? 'text-blue-700 dark:text-blue-300' : 'text-gray-400 dark:text-slate-500'}`}>
             변경사항은 저장 버튼을 눌러야 최종 반영됩니다.
           </p>
-          <p className={`text-xs ${hasUnassigned ? 'text-amber-500 font-medium' : 'text-gray-400'}`}>
+          <p className={`text-xs ${hasUnassigned ? 'text-amber-500 dark:text-amber-300 font-medium' : 'text-gray-400 dark:text-slate-500'}`}>
             {hasUnassigned
               ? `미배정 멤버 ${unassignedMembers.length}명 — 저장 전 스쿼드에 배정해주세요`
               : hasChanges

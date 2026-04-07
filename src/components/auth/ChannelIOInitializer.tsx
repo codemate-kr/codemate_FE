@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
 import channelService from '../../services/channelService';
 import { useAuthStore } from '../../store/authStore';
+import { useThemeStore } from '../../store/themeStore';
 
 export default function ChannelIOInitializer() {
   const { isAuthenticated, user } = useAuthStore();
+  const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
 
   useEffect(() => {
     const pluginKey = import.meta.env.VITE_CHANNEL_IO_PLUGIN_KEY;
@@ -20,6 +22,7 @@ export default function ChannelIOInitializer() {
     const bootOption = {
       pluginKey,
       language: 'ko',
+      appearance: resolvedTheme,
       hideChannelButtonOnBoot: false,
       zIndex: 60, // 채널톡을 가장 위에 배치
     };
@@ -38,7 +41,11 @@ export default function ChannelIOInitializer() {
       // Boot as anonymous user
       channelService.boot(bootOption);
     }
-  }, [isAuthenticated, user?.id, user?.handle, user?.email]);
+  }, [isAuthenticated, user?.id, user?.handle, user?.email, resolvedTheme]);
+
+  useEffect(() => {
+    channelService.setAppearance(resolvedTheme);
+  }, [resolvedTheme]);
 
   return null;
 }

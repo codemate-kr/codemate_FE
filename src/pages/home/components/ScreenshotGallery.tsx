@@ -33,15 +33,15 @@ const TABS = [
 
 function BrowserFrame({ children, progress }: { children: React.ReactNode; progress: number }) {
   return (
-    <div className="rounded-lg sm:rounded-xl overflow-hidden shadow-lg bg-white relative">
-      <div className="bg-gray-100 border-b border-gray-200 px-3 sm:px-4 py-2 sm:py-3 flex items-center">
+    <div className="rounded-lg sm:rounded-xl overflow-hidden shadow-lg bg-white dark:bg-slate-900 relative">
+      <div className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-3 sm:px-4 py-2 sm:py-3 flex items-center">
         <div className="flex items-center gap-1.5 sm:gap-2">
           <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FF5F57]" />
           <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FEBC2E]" />
           <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#28C840]" />
         </div>
       </div>
-      <div className="bg-white overflow-hidden relative">
+      <div className="bg-white dark:bg-slate-900 overflow-hidden relative">
         {children}
         <div className="absolute top-0 left-0 right-0 h-0.5 bg-transparent">
           <div
@@ -61,7 +61,7 @@ function NavButton({ direction, onClick }: { direction: 'prev' | 'next'; onClick
   return (
     <button
       onClick={onClick}
-      className={`absolute ${isPrev ? 'left-1 sm:left-4' : 'right-1 sm:right-4'} top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-white transition-colors`}
+      className={`absolute ${isPrev ? 'left-1 sm:left-4' : 'right-1 sm:right-4'} top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 dark:bg-slate-900/90 shadow-md flex items-center justify-center text-gray-500 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white dark:hover:bg-slate-800 transition-colors`}
       aria-label={isPrev ? '이전' : '다음'}
     >
       <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -165,7 +165,7 @@ export default function ScreenshotGallery() {
           <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-blue-500 text-white text-xs sm:text-sm font-medium rounded">
             예시
           </span>
-          <span className="text-sm sm:text-lg text-gray-200">실제 사용 화면</span>
+          <span className="text-sm sm:text-lg text-gray-200 dark:text-gray-300">실제 사용 화면</span>
         </div>
 
         <div className="flex gap-2 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
@@ -176,7 +176,7 @@ export default function ScreenshotGallery() {
               className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                 i === activeTabIndex
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600 border border-gray-600'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600 border border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:border-gray-600'
               }`}
             >
               {tab.title}
@@ -220,7 +220,7 @@ export default function ScreenshotGallery() {
           </div>
         </BrowserFrame>
 
-        <p className="text-center text-sm sm:text-base text-gray-200 mt-3">{currentMedia.caption}</p>
+        <p className="text-center text-sm sm:text-base text-gray-200 dark:text-gray-300 mt-3">{currentMedia.caption}</p>
       </div>
 
       {/* 페이지네이션 */}
@@ -231,7 +231,7 @@ export default function ScreenshotGallery() {
               key={media.src}
               onClick={() => goTo(getTabStartIndex(currentTabId) + i)}
               className={`h-2 rounded-full transition-all ${
-                i === indexInTab ? 'bg-blue-500 w-6' : 'bg-gray-600 w-2'
+                i === indexInTab ? 'bg-blue-500 w-6' : 'bg-gray-600 dark:bg-gray-500 w-2'
               }`}
               aria-label={`${i + 1}번 스크린샷`}
             />

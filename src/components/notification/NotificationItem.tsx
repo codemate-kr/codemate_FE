@@ -100,20 +100,20 @@ export default function NotificationItem({ notification, onMarkAsRead, compact =
       <div
         onClick={handleMarkAsRead}
         title={isUnread ? '클릭하여 읽음 처리' : undefined}
-        className={`relative w-full px-4 py-2.5 text-left transition-colors touch-manipulation hover:bg-gray-100 active:bg-gray-200 cursor-pointer border-l-[3px] flex items-center justify-between gap-3 ${
-          isUnread ? '!border-l-blue-500' : '!border-l-gray-200'
+        className={`relative w-full px-4 py-2.5 text-left transition-colors touch-manipulation hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 cursor-pointer border-l-[3px] flex items-center justify-between gap-3 ${
+          isUnread ? '!border-l-blue-500' : '!border-l-gray-200 dark:!border-l-gray-700'
         }`}
       >
         <div className="flex-1 min-w-0">
-          <p className={`text-sm ${isUnread ? 'text-gray-900' : 'text-gray-500'}`}>
+          <p className={`text-sm ${isUnread ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'}`}>
             {message}
           </p>
-          <span className="text-xs text-gray-400 mt-0.5 block">{relativeTime}</span>
+          <span className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 block">{relativeTime}</span>
         </div>
         {isClickable && actionUrl && (
           <button
             onClick={handleNavigate}
-            className="flex items-center px-2 py-1 text-xs font-medium text-gray-600 border border-gray-300 hover:bg-gray-50 active:bg-gray-100 rounded-md transition-colors shrink-0"
+            className="flex items-center px-2 py-1 text-xs font-medium text-gray-600 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 rounded-md transition-colors shrink-0"
           >
             이동
             <ChevronRight className="w-3.5 h-3.5" />
@@ -130,20 +130,20 @@ export default function NotificationItem({ notification, onMarkAsRead, compact =
       title={isUnread ? '클릭하여 읽음 처리' : undefined}
       className={`relative w-full px-4 py-3 text-left transition-colors touch-manipulation cursor-pointer border-l-[3px] flex items-center justify-between gap-4 ${
         isUnread
-          ? 'bg-white hover:bg-gray-50 active:bg-gray-100 !border-l-blue-500'
-          : 'bg-gray-50/50 hover:bg-gray-100 active:bg-gray-150 !border-l-gray-200'
+          ? 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 !border-l-blue-500'
+          : 'bg-gray-50/50 dark:bg-gray-800/70 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 !border-l-gray-200 dark:!border-l-gray-700'
       }`}
     >
       <div className="flex-1 min-w-0">
-        <p className={`text-sm ${isUnread ? 'text-gray-900' : 'text-gray-500'}`}>
+        <p className={`text-sm ${isUnread ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'}`}>
           {message}
         </p>
-        <span className="text-xs text-gray-400 mt-1 block">{relativeTime}</span>
+        <span className="text-xs text-gray-400 dark:text-gray-500 mt-1 block">{relativeTime}</span>
       </div>
       {isClickable && actionUrl && (
         <button
           onClick={handleNavigate}
-          className="flex items-center px-2.5 py-1 text-sm font-medium text-gray-600 border border-gray-300 hover:bg-gray-50 active:bg-gray-100 rounded-md transition-colors shrink-0"
+          className="flex items-center px-2.5 py-1 text-sm font-medium text-gray-600 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 rounded-md transition-colors shrink-0"
         >
           이동
           <ChevronRight className="w-4 h-4" />

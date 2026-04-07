@@ -26,11 +26,11 @@ export default function LoginModal() {
 
   return (
     <div
-      className="fixed inset-0 bg-black/20 backdrop-blur-[1px] flex items-center justify-center p-4 z-50 animate-in fade-in duration-200"
+      className="fixed inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-[1px] flex items-center justify-center p-4 z-50 animate-in fade-in duration-200"
       onClick={handleBackdropClick}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden animate-in zoom-in-95 duration-200"
+        className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-800 max-w-sm w-full overflow-hidden animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 상단 헤더 */}
@@ -39,7 +39,7 @@ export default function LoginModal() {
           <button
             onClick={closeLoginModal}
             disabled={isLoading}
-            className="absolute top-3 right-3 p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50"
+            className="absolute top-3 right-3 p-1.5 rounded-full text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
             aria-label="닫기"
           >
             <X className="h-5 w-5" />
@@ -50,10 +50,10 @@ export default function LoginModal() {
             <img src="/logo.svg" alt="CodeMate" className="h-16 w-16" />
           </div>
 
-          <h2 className="text-2xl font-bold text-gray-900 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 text-center">
             CodeMate
           </h2>
-          <p className="text-gray-500 text-center mt-1 text-sm">
+          <p className="text-gray-500 dark:text-slate-400 text-center mt-1 text-sm">
             알고리즘 스터디의 새로운 시작
           </p>
         </div>
@@ -64,11 +64,11 @@ export default function LoginModal() {
           <button
             onClick={handleGoogleLogin}
             disabled={isLoading}
-            className="w-full flex justify-center items-center gap-3 py-3.5 px-4 bg-white border-2 border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow"
+            className="w-full flex justify-center items-center gap-3 py-3.5 px-4 bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-xl font-medium text-gray-700 dark:text-slate-100 hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-gray-300 dark:hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-900 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow"
           >
             {isLoading ? (
               <>
-                <div className="h-5 w-5 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
+                <div className="h-5 w-5 border-2 border-gray-300 dark:border-slate-600 border-t-blue-600 rounded-full animate-spin" />
                 <span>로그인 중...</span>
               </>
             ) : (
@@ -81,25 +81,25 @@ export default function LoginModal() {
 
           {/* 안내 문구 */}
           <div className="mt-5 space-y-3">
-            <div className="flex items-start gap-2 text-xs text-gray-500">
-              <div className="w-1 h-1 rounded-full bg-gray-400 mt-1.5 flex-shrink-0" />
+            <div className="flex items-start gap-2 text-xs text-gray-500 dark:text-slate-400">
+              <div className="w-1 h-1 rounded-full bg-gray-400 dark:bg-slate-500 mt-1.5 flex-shrink-0" />
               <p>로그인 후 백준(BOJ) 계정 연동이 필요해요</p>
             </div>
-            <div className="flex items-start gap-2 text-xs text-gray-500">
-              <div className="w-1 h-1 rounded-full bg-gray-400 mt-1.5 flex-shrink-0" />
+            <div className="flex items-start gap-2 text-xs text-gray-500 dark:text-slate-400">
+              <div className="w-1 h-1 rounded-full bg-gray-400 dark:bg-slate-500 mt-1.5 flex-shrink-0" />
               <p>팀원들과 함께 알고리즘 문제를 풀어보세요</p>
             </div>
           </div>
 
           {/* 하단 링크 */}
-          <div className="mt-6 pt-4 border-t border-gray-100">
-            <p className="text-xs text-center text-gray-400">
+          <div className="mt-6 pt-4 border-t border-gray-100 dark:border-slate-800">
+            <p className="text-xs text-center text-gray-400 dark:text-slate-500">
               계속 진행하면{' '}
-              <a href="/terms-of-service" className="text-blue-600 hover:underline">
+              <a href="/terms-of-service" className="text-blue-600 dark:text-blue-300 hover:underline">
                 이용약관
               </a>
               {' '}및{' '}
-              <a href="/privacy-policy" className="text-blue-600 hover:underline">
+              <a href="/privacy-policy" className="text-blue-600 dark:text-blue-300 hover:underline">
                 개인정보처리방침
               </a>
               에 동의하게 됩니다

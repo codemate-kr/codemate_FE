@@ -122,7 +122,7 @@ export default function NotificationBell() {
       {/* 벨 아이콘 버튼 */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-400 hover:text-gray-600 active:bg-gray-200 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation"
+        className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white active:bg-gray-200 dark:active:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors touch-manipulation"
         aria-label="알림"
       >
         <Bell className="w-5 h-5" />
@@ -139,14 +139,14 @@ export default function NotificationBell() {
           <div className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden animate-in fade-in duration-200" />
 
           {/* 데스크톱: 드롭다운 */}
-          <div className="hidden md:block absolute right-0 mt-2 w-96 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 animate-in fade-in zoom-in-95 duration-100">
+          <div className="hidden md:block absolute right-0 mt-2 w-96 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50 animate-in fade-in zoom-in-95 duration-100">
             {/* 헤더 */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-              <h3 className="font-semibold text-gray-900">알림</h3>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+              <h3 className="font-semibold text-gray-900 dark:text-white">알림</h3>
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllAsRead}
-                  className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
                 >
                   모두 읽음
                 </button>
@@ -154,11 +154,11 @@ export default function NotificationBell() {
             </div>
 
             {/* 알림 목록 */}
-            <div className="max-h-[320px] overflow-y-auto divide-y divide-gray-100">
+            <div className="max-h-[320px] overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700">
               {isLoading ? (
                 <div className="py-10 text-center">
-                  <Loader2 className="w-6 h-6 mx-auto mb-2 text-gray-300 animate-spin" />
-                  <p className="text-sm text-gray-500">불러오는 중...</p>
+                  <Loader2 className="w-6 h-6 mx-auto mb-2 text-gray-300 dark:text-gray-500 animate-spin" />
+                  <p className="text-sm text-gray-500 dark:text-gray-400">불러오는 중...</p>
                 </div>
               ) : notifications.length > 0 ? (
                 notifications.map((notification) => (
@@ -171,18 +171,18 @@ export default function NotificationBell() {
                 ))
               ) : (
                 <div className="py-10 text-center">
-                  <Bell className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                  <p className="text-sm text-gray-500">새로운 알림이 없습니다</p>
+                  <Bell className="w-8 h-8 mx-auto mb-2 text-gray-300 dark:text-gray-500" />
+                  <p className="text-sm text-gray-500 dark:text-gray-400">새로운 알림이 없습니다</p>
                 </div>
               )}
             </div>
 
             {/* 푸터 */}
-            <div className="border-t border-gray-100">
+            <div className="border-t border-gray-100 dark:border-gray-700">
               <Link
                 to="/notifications"
                 onClick={() => setIsOpen(false)}
-                className="block w-full py-3 text-center text-sm font-medium text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                className="block w-full py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 transition-colors"
               >
                 전체 보기
               </Link>
@@ -190,23 +190,23 @@ export default function NotificationBell() {
           </div>
 
           {/* 모바일: 바텀 시트 */}
-          <div className="md:hidden fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl animate-in slide-in-from-bottom duration-300">
+          <div className="md:hidden fixed inset-x-0 bottom-0 z-50 bg-white dark:bg-gray-800 rounded-t-2xl shadow-2xl animate-in slide-in-from-bottom duration-300">
             <div className="p-4">
               {/* 헤더 */}
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">알림</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">알림</h3>
                 <div className="flex items-center gap-2">
                   {unreadCount > 0 && (
                     <button
                       onClick={handleMarkAllAsRead}
-                      className="text-sm text-blue-600 hover:text-blue-700 font-medium px-2 py-1"
+                      className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium px-2 py-1"
                     >
                       모두 읽음
                     </button>
                   )}
                   <button
                     onClick={() => setIsOpen(false)}
-                    className="p-2 text-gray-400 hover:text-gray-600 active:bg-gray-200 rounded-lg transition-colors touch-manipulation"
+                    className="p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white active:bg-gray-200 dark:active:bg-gray-700 rounded-lg transition-colors touch-manipulation"
                   >
                     <X className="h-5 w-5" />
                   </button>
@@ -217,11 +217,11 @@ export default function NotificationBell() {
               <div className="max-h-[50vh] overflow-y-auto -mx-4">
                 {isLoading ? (
                   <div className="py-10 text-center">
-                    <Loader2 className="w-8 h-8 mx-auto mb-2 text-gray-300 animate-spin" />
-                    <p className="text-gray-500">불러오는 중...</p>
+                    <Loader2 className="w-8 h-8 mx-auto mb-2 text-gray-300 dark:text-gray-500 animate-spin" />
+                    <p className="text-gray-500 dark:text-gray-400">불러오는 중...</p>
                   </div>
                 ) : notifications.length > 0 ? (
-                  <div className="divide-y divide-gray-100">
+                  <div className="divide-y divide-gray-100 dark:divide-gray-700">
                     {notifications.map((notification) => (
                       <NotificationItem
                         key={notification.id}
@@ -233,8 +233,8 @@ export default function NotificationBell() {
                   </div>
                 ) : (
                   <div className="py-10 text-center">
-                    <Bell className="w-10 h-10 mx-auto mb-3 text-gray-300" />
-                    <p className="text-gray-500">새로운 알림이 없습니다</p>
+                    <Bell className="w-10 h-10 mx-auto mb-3 text-gray-300 dark:text-gray-500" />
+                    <p className="text-gray-500 dark:text-gray-400">새로운 알림이 없습니다</p>
                   </div>
                 )}
               </div>
@@ -243,7 +243,7 @@ export default function NotificationBell() {
               <Link
                 to="/notifications"
                 onClick={() => setIsOpen(false)}
-                className="block w-full mt-4 py-3 text-center text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 rounded-lg transition-colors touch-manipulation"
+                className="block w-full mt-4 py-3 text-center text-base font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 active:bg-gray-300 dark:active:bg-gray-500 rounded-lg transition-colors touch-manipulation"
               >
                 전체 보기
               </Link>
