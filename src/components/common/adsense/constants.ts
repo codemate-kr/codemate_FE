@@ -10,6 +10,7 @@ export const AD_SLOTS = {
 export type AdSlotKey = keyof typeof AD_SLOTS;
 
 export const ADSENSE_LOCALHOST_OVERRIDE = import.meta.env.VITE_ADSENSE_LOCALHOST_OVERRIDE === 'true';
+export const ADSENSE_BANNER_ENABLED = import.meta.env.VITE_ADSENSE_BANNER_ENABLED !== 'false';
 
 export function isLocalhostHost(hostname: string) {
   return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0';

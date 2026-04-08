@@ -9,6 +9,7 @@ interface ImportMetaEnv {
   readonly VITE_APP_TITLE: string
   readonly VITE_APP_DESCRIPTION: string
   readonly VITE_DEBUG_MODE: string
+  readonly VITE_ADSENSE_BANNER_ENABLED: string
 }
 
 interface ImportMeta {

@@ -90,7 +90,9 @@ export default function AdSenseDisplay({ slot, slotKey, className, size = 'H90' 
 
   if (isLocalhost) {
     return (
-      <div className={`w-full ${sizeStyle.heightClass} rounded-lg border border-gray-300 bg-gray-200 text-gray-600 text-xs sm:text-sm font-medium flex items-center justify-center`}>
+      <div
+        className={`w-full ${sizeStyle.heightClass} rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 text-xs sm:text-sm font-medium flex items-center justify-center`}
+      >
         Local Ad Placeholder ({size})
       </div>
     );
@@ -99,7 +101,7 @@ export default function AdSenseDisplay({ slot, slotKey, className, size = 'H90' 
   return (
     <div
       ref={containerRef}
-      className={`w-full overflow-hidden ${sizeStyle.heightClass}`}
+      className={`codemate-adsense-container w-full overflow-hidden rounded-lg bg-transparent ${sizeStyle.heightClass}`}
       style={{
         height: `${sizeStyle.height}px`,
         minHeight: `${sizeStyle.height}px`,
@@ -108,10 +110,11 @@ export default function AdSenseDisplay({ slot, slotKey, className, size = 'H90' 
     >
       <ins
         ref={adRef}
-        className={`adsbygoogle w-full ${className ?? ''}`.trim()}
+        className={`adsbygoogle codemate-adsense-slot w-full ${className ?? ''}`.trim()}
         style={{
           display: 'block',
           width: '100%',
+          backgroundColor: 'transparent',
           height: `${sizeStyle.height}px`,
           minHeight: `${sizeStyle.height}px`,
           maxHeight: `${sizeStyle.height}px`,

@@ -1,5 +1,5 @@
 import AdSenseDisplay from './AdSenseDisplay';
-import type { AdSlotKey } from './constants';
+import { ADSENSE_BANNER_ENABLED, type AdSlotKey } from './constants';
 import { cn } from '../../../utils/cn';
 
 interface AdSenseBlockProps {
@@ -21,6 +21,10 @@ export default function AdSenseBlock({
   sectionClassName,
   wrapperClassName,
 }: AdSenseBlockProps) {
+  if (!ADSENSE_BANNER_ENABLED) {
+    return null;
+  }
+
   const resolvedSize = size ?? SLOT_DEFAULT_SIZE[slotKey];
 
   return (
