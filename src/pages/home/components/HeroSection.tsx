@@ -25,6 +25,9 @@ export default function HeroSection() {
 
         <p className="text-gray-500 dark:text-gray-300 text-base sm:text-lg md:text-xl mb-6 sm:mb-12 px-2 text-center">
           스터디원들과 매일 백준 문제를 풀어보세요
+          <span className="ml-2 inline-block text-sm sm:text-base md:text-lg font-semibold text-gray-500 dark:text-gray-300">
+            #Good_Bye_BOJ
+          </span>
         </p>
 
         <Link

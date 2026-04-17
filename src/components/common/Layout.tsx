@@ -8,6 +8,7 @@ import Footer from './Footer';
 import { FloatingTimerWidget } from './FloatingTimerWidget';
 import RankingSidebar from './RankingSidebar';
 import NotificationBell from '../notification/NotificationBell';
+import BaekjoonSunsetNoticeBanner from './BaekjoonSunsetNoticeBanner';
 
 interface LayoutProps {
   children: ReactNode;
@@ -29,6 +30,7 @@ export default function Layout({ children, showFooter = true, fullWidth = false 
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-gray-100 flex flex-col">
+      <BaekjoonSunsetNoticeBanner />
       <nav className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">

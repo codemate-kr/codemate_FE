@@ -27,6 +27,7 @@ import AboutPage from './pages/about/AboutPage';
 import GuidePage from './pages/guide/GuidePage';
 import ContactPage from './pages/contact/ContactPage';
 import LabsPage from './pages/labs/LabsPage';
+import BaekjoonSunsetNoticePage from './pages/notice/BaekjoonSunsetNoticePage';
 import { useThemeStore } from './store/themeStore';
 
 function ThemeWatcher() {
@@ -97,6 +98,7 @@ function App() {
                       <Route path="/teams/:teamId" element={<TeamDetailPage />} />
                       <Route path="/problems" element={<ProblemsPage />} />
                       <Route path="/labs" element={<LabsPage />} />
+                      <Route path="/notice/good-bye-boj" element={<BaekjoonSunsetNoticePage />} />
                       <Route path="/mypage" element={<ProtectedRoute><MyProfilePage /></ProtectedRoute>} />
                       <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
                       {/* 없는 경로는 홈으로 리다이렉트 */}
