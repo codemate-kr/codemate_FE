@@ -206,6 +206,8 @@ export function useTeamDetailPageState() {
   const handleCloseLeaveConfirm = useCallback(() => setShowLeaveConfirm(false), []);
   const handleOpenDeleteConfirm = useCallback(() => setShowDeleteConfirm(true), []);
   const handleCloseDeleteConfirm = useCallback(() => setShowDeleteConfirm(false), []);
+  const handleOpenDisableRecommendConfirm = useCallback(() => setShowDisableRecommendConfirm(true), []);
+  const handleCloseDisableRecommendConfirm = useCallback(() => setShowDisableRecommendConfirm(false), []);
   const handleOpenSentInvitations = useCallback(() => setShowSentInvitationsModal(true), []);
   const handleCloseSentInvitations = useCallback(() => setShowSentInvitationsModal(false), []);
   const handleOpenSquadSettings = useCallback(() => setShowSquadSettings(true), []);

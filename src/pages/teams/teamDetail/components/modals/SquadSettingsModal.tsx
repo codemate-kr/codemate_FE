@@ -29,7 +29,7 @@ export function SquadSettingsModal({
   onSettingsUpdate,
   onShowToast,
 }: SquadSettingsModalProps) {
-  const isRecommendationSaveDisabled = false;
+  const isRecommendationSaveDisabled = true;
   const [selectedDays, setSelectedDays] = useState<RecommendationDayOfWeek[]>([]);
   const [isEnabled, setIsEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
