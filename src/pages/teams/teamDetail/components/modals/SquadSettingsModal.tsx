@@ -29,6 +29,7 @@ export function SquadSettingsModal({
   onSettingsUpdate,
   onShowToast,
 }: SquadSettingsModalProps) {
+  const isRecommendationSaveDisabled = false;
   const [selectedDays, setSelectedDays] = useState<RecommendationDayOfWeek[]>([]);
   const [isEnabled, setIsEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -149,6 +150,11 @@ export function SquadSettingsModal({
   };
 
   const handleSave = async () => {
+    if (isRecommendationSaveDisabled) {
+      onShowToast('현재 추천 설정 저장은 비활성화되어 있습니다.');
+      return;
+    }
+
     if (isEnabled && selectedDays.length === 0) {
       onShowToast('최소 하나의 요일을 선택해주세요.');
       return;
@@ -441,8 +447,13 @@ export function SquadSettingsModal({
             <button
               type="button"
               onClick={handleSave}
-              disabled={isLoading || isFetchingSettings || (isEnabled && selectedDays.length === 0)}
-              className="px-6 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+              disabled={isRecommendationSaveDisabled || isLoading || isFetchingSettings || (isEnabled && selectedDays.length === 0)}
+              title={isRecommendationSaveDisabled ? '클릭금지' : undefined}
+              className={`inline-flex items-center px-6 py-2 text-sm font-medium border rounded-md whitespace-nowrap space-x-2 ${
+                isRecommendationSaveDisabled
+                  ? 'text-gray-400 dark:text-slate-500 bg-gray-100 dark:bg-slate-800 border-gray-200 dark:border-slate-700 cursor-not-allowed'
+                  : 'text-white bg-blue-600 border-transparent hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed'
+              }`}
             >
               {isLoading ? (
                 <>
